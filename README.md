@@ -1,0 +1,1 @@
+# chef-choice_template
