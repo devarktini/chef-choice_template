@@ -1,0 +1,130 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#FFF8E7',
+          100: '#FFEEC4',
+          200: '#FFE3A1',
+          300: '#F5D07E',
+          400: '#EBBA68',
+          500: '#E5A855',
+          600: '#D89644',
+          700: '#C47F2E',
+          800: '#A96A25',
+          900: '#8B561E',
+        },
+        accent: {
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          200: '#FECACA',
+          300: '#FCA5A5',
+          400: '#F87171',
+          500: '#D14545',
+          600: '#B91C1C',
+          700: '#991B1B',
+          800: '#7F1D1D',
+          900: '#581C1C',
+        },
+        warm: {
+          50: '#FEF3E7',
+          100: '#FDDEC5',
+          200: '#FCCA9F',
+          300: '#F5B379',
+          400: '#EF9E59',
+          500: '#E67E22',
+          600: '#D96A16',
+          700: '#B8570F',
+          800: '#974509',
+          900: '#7D3805',
+        },
+        cream: {
+          50: '#FFFEF9',
+          100: '#FFFCF0',
+          200: '#FFF8E7',
+          300: '#FFF4DC',
+          400: '#FFEFC8',
+          500: '#FFE9B4',
+          600: '#F5DCA0',
+          700: '#E5CC8E',
+          800: '#D4BC7D',
+          900: '#C4AC6D',
+        },
+        earth: {
+          50: '#EFEBE9',
+          100: '#D7CCC8',
+          200: '#BCAAA4',
+          300: '#A1887F',
+          400: '#8D6E63',
+          500: '#5D4037',
+          600: '#4E342E',
+          700: '#3E2723',
+          800: '#362420',
+          900: '#2C1E1A',
+        },
+        fresh: {
+          50: '#E8F5E9',
+          100: '#C8E6C9',
+          200: '#A5D6A7',
+          300: '#81C784',
+          400: '#66BB6A',
+          500: '#27AE60',
+          600: '#2E7D32',
+          700: '#1B5E20',
+          800: '#184E1A',
+          900: '#0D3D12',
+        }
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.8s ease-in-out',
+        'slide-up': 'slideUp 0.6s ease-out',
+        'slide-down': 'slideDown 0.6s ease-out',
+        'slide-left': 'slideLeft 0.6s ease-out',
+        'slide-right': 'slideRight 0.6s ease-out',
+        'scale-in': 'scaleIn 0.5s ease-out',
+        'bounce-slow': 'bounce 3s infinite',
+        'float': 'float 3s ease-in-out infinite',
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideLeft: {
+          '0%': { transform: 'translateX(30px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideRight: {
+          '0%': { transform: 'translateX(-30px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.9)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
