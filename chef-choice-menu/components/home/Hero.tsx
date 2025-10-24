@@ -83,10 +83,10 @@ const posterSrc =
             Flavors Made for Royalty
           </h2>
           <p className="text-gray-700 leading-relaxed text-center max-w-5xl mx-auto">
-            Hosting an event shouldn't be stressful. At Chef Choice Menu, we make it effortless. 
-            Choose from our all-inclusive catering packages designed for every occasion—whether it's 
+            Hosting an event shouldnt be stressful. At Chef Choice Menu, we make it effortless. 
+            Choose from our all-inclusive catering packages designed for every occasion—whether its 
             a traditional North Indian wedding, a corporate lunch, or a festive Diwali dinner. 
-            Our chefs craft menus that celebrate India's diverse culinary heritage while also 
+            Our chefs craft menus that celebrate Indias diverse culinary heritage while also 
             offering global cuisines for modern tastes. With us, every event becomes an 
             unforgettable culinary journey.
           </p>
