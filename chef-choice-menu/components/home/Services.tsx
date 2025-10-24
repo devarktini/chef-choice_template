@@ -43,7 +43,7 @@ export default function Services() {
           {services.map((service, index) => (
             <div 
               key={index} 
-              className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 animate-scale-in card-shine"
+              className="group bg-white/10 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 animate-scale-in card-shine"
               style={{animationDelay: `${index * 0.1}s`}}
             >
               {/* Image Section */}

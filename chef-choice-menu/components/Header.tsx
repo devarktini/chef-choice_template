@@ -26,8 +26,11 @@ export default function Header() {
     >
       <nav className="container mx-auto px-4">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-primary-500 hover:text-primary-600 transition-colors duration-300 animate-slide-right">
-            Chef Choice Menu
+          <Link href="/" className=" w-20 font-bold text-primary-500 hover:text-primary-600 transition-colors duration-300 animate-slide-right">
+             <img
+              src="https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1757953170/removeb_sxbskt.png"
+              alt="Chef Choice Menu"
+            />
           </Link>
 
           {/* Desktop Menu */}

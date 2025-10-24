@@ -6,6 +6,15 @@ import Image from 'next/image';
 
 export default function VideoSection() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+
+  const videoSrc =
+  "https://res.cloudinary.com/dzvvb0z0h/video/upload/f_auto,q_auto/v1760203198/8626668-hd_1920_1080_25fps_xxekee.mp4";
+
+// Poster image for LCP
+const posterSrc =
+  "https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1760203335/Screenshot_2025-10-11_225051_rk9kfd.png";
+
 
   return (
     <section className="py-20 bg-gradient-to-br from-earth-50 to-cream-100 relative overflow-hidden">
@@ -24,12 +33,21 @@ export default function VideoSection() {
           <div className="relative rounded-3xl overflow-hidden shadow-2xl group animate-scale-in">
             {/* Video Thumbnail */}
             <div className="relative aspect-video bg-gradient-to-br from-primary-300 to-warm-300">
-              <Image
-                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&h=675&fit=crop"
-                alt="Chef Cooking Video"
-                fill
-                className="object-cover"
-              />
+              {!videoError && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+          // className={styles.videoBackground}
+          poster={posterSrc}
+          onError={() => setVideoError(true)}
+        >
+          <source src={videoSrc} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
               <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-all duration-300"></div>
 
               {/* Play Button */}

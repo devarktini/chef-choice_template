@@ -1,0 +1,277 @@
+@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.mainSection {
+  max-width: 100%;
+  height: auto;
+  background-image: url("https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1757953159/Group33_xfqtx4.png");
+  background-repeat: no-repeat;
+  background-position: bottom left;
+  background-size: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  /* Light mode defaults */
+  background-color: #FFFFFF;
+  color: #2D3748;
+}
+
+/* Dark mode styles */
+[data-theme="dark"] .mainSection {
+  background-color: #1A202C;
+  color: #FFFFFF;
+}
+
+.col2 {
+  font-family: 'Roboto', sans-serif;
+  /* Light mode */
+  color: #2D3748;
+}
+
+[data-theme="dark"] .col2 {
+  color: #FFFFFF;
+}
+
+.firstDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0px;
+  height: 20%;
+}
+
+.headingText {
+  font-size: clamp(12px, 5vw, 17px);
+  font-family: 'Julius Sans One', 'Poppins', sans-serif;
+  margin-top: 105px;
+  text-align: center;
+  color: #FC7000; /* Orange stays the same in both modes */
+}
+
+.headingText2 {
+  font-family: 'Julius Sans One','Poppins',sans-serif;
+  text-align: center;
+  font-size: clamp(18px, 5vw, 35px);
+  padding: 0px 0px;
+  margin: 2px;
+  /* Light mode */
+  color: #2D3748;
+}
+
+[data-theme="dark"] .headingText2 {
+  color: azure;
+}
+
+.secondDiv {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding-top: 50px;
+}
+
+.secondLeft {
+  width: 50%;
+  padding-left: 100px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ✅ Fixed Right Section */
+.secRigh {
+  width: 50%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding-top: 200px;
+  background-image: url("https://res.cloudinary.com/dzvvb0z0h/image/upload/v1758044068/medium-shot-man-with-delicious-muffins_noukys.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  
+  /* Add overlay for better text readability in both modes */
+  position: relative;
+}
+
+.secRigh::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.01); /* Dark overlay */
+  z-index: 1;
+}
+
+[data-theme="light"] .secRigh::before {
+  background: rgba(255, 255, 255, 0.1); /* Light overlay */
+}
+
+.secRigh > * {
+  position: relative;
+  z-index: 2; /* Keep content above overlay */
+}
+
+.secondFir {
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.secondSec {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.spanBg {
+  padding: 7px 10px;
+  background-color: #FC7000;
+  border-radius: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 600;
+  color: white; /* Ensure text is readable on orange background */
+}
+
+.secondFir p,
+.secondSec p {
+  font-size: clamp(14px, 5vw, 18px);
+  line-height: 1.8rem;
+  /* Light mode */
+  color: #2D3748;
+}
+
+[data-theme="dark"] .secondFir p,
+[data-theme="dark"] .secondSec p {
+  color: #FFFFFF;
+}
+
+/* .arrImg {
+  width: 30%;
+  height: auto;
+  color: #FC7000;
+  background-color: #FC7000; 
+} */
+
+.arrImg {
+  width: 30%;
+  height: 30%;
+  filter: invert(41%) sepia(84%) saturate(2850%) hue-rotate(360deg) brightness(100%) contrast(97%);
+}
+
+.arrImg1 {
+  width: 23%;
+  width: 23%;
+  height: auto;
+  margin-left: 130px;
+  filter: invert(41%) sepia(84%) saturate(2850%) hue-rotate(360deg) brightness(100%) contrast(97%);
+}
+
+.secRighInn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.secRighInn img {
+  width: 100%;
+  height: auto;
+}
+
+/* App Store Button Styles for both modes */
+.appButton {
+  padding: 12px 24px;
+  border: 2px solid #FC7000;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+  
+  /* Light mode */
+  background-color: transparent;
+  color: #FC7000;
+}
+
+.appButton:hover {
+  background-color: #FC7000;
+  color: white;
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .appButton {
+  background-color: transparent;
+  color: #FC7000;
+  border-color: #FC7000;
+}
+
+[data-theme="dark"] .appButton:hover {
+  background-color: #FC7000;
+  color: white;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .mainSection {
+    gap: 50px;
+  }
+  .secondDiv {
+    flex-direction: column;
+  }
+  .secondLeft {
+    padding-left: 0px;
+    width: 100%;
+  }
+  .secRigh {
+    width: 100%;
+    min-height: 60vh;
+    padding-top: 100px;
+  }
+  
+  .arrImg1 {
+    margin-left: 80px;
+  }
+  
+  .secRighInn {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+/* Additional mobile optimizations */
+@media (max-width: 480px) {
+  .secondLeft {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .arrImg1 {
+    margin-left: 40px;
+  }
+  
+  .headingText {
+    margin-top: 80px;
+  }
+}

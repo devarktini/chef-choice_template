@@ -8,6 +8,14 @@ import { useState } from 'react';
 export default function Hero() {
   const [imageError, setImageError] = useState(false);
 
+  const videoSrc =
+  "https://res.cloudinary.com/dzvvb0z0h/video/upload/f_auto,q_auto/v1760203198/8626668-hd_1920_1080_25fps_xxekee.mp4";
+
+// Poster image for LCP
+const posterSrc =
+  "https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1760203335/Screenshot_2025-10-11_225051_rk9kfd.png";
+
+
   return (
     <section className="relative bg-gradient-to-br from-cream-100 via-primary-50 to-warm-50 py-20 overflow-hidden">
       {/* Decorative Elements */}

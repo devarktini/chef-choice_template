@@ -7,6 +7,7 @@ import Testimonials from "@/components/home/Testimonials";
 import FAQ from "@/components/home/FAQ";
 import VideoSection from "@/components/home/VideoSection";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import ThirdSection from "@/components/home/ThirdSection/ThirdSection";
 
 export default function Home() {
   return (
@@ -16,7 +17,8 @@ export default function Home() {
         <Hero />
         <VideoSection />
         <Services />
-        <BookingSteps />
+        <ThirdSection />
+        {/* <BookingSteps /> */}
         <AddOnServices />
         <Occasions />
         <Testimonials />
