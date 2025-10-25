@@ -53,7 +53,7 @@ const posterSrc =
           <div className="relative animate-slide-left">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl img-hover-zoom">
               <Image
-                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=600&fit=crop"
+                src="https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1757953147/AboutHero_sap22a.jpg"
                 alt="Professional Chef Cooking"
                 width={800}
                 height={600}
