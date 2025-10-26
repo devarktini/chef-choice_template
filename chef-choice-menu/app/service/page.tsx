@@ -14,7 +14,6 @@ export default function ServicePage() {
               <p className="text-5xl font-bold text-primary-500">5+</p>
               <p className="text-gray-700">Years of Experience</p>
             </div>
-
             <div className="relative rounded-3xl overflow-hidden shadow-2xl max-w-4xl mx-auto mb-12 animate-fade-in">
               <Image
                 src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=1200&h=400&fit=crop"
