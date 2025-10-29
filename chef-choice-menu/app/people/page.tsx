@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Container from "@/components/Container";
 import FormNavigate from "@/components/FormNavigate";
-import { FaMinus, FaPlus, FaUsers } from "react-icons/fa";
+import { FaArrowLeft, FaMinus, FaPlus, FaUsers } from "react-icons/fa";
 import { useStore } from "../../useStore";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -138,16 +138,19 @@ function ServicesPeople() {
       <div className="flex justify-center mt-12 space-x-4 px-4">
         <FormNavigate
           bgColor="bg-gray-600"
-          hoverColor="hover:bg-gray-700"
+          hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/schedule/service"
           handleBtnClick={() => true}
           navigationDisabled={false}
         >
-          <span className="text-white">Previous</span>
+          <span className="text-white flex items-center space-x-2">
+                       <FaArrowLeft />
+                       <span>Previous</span>
+                     </span>
         </FormNavigate>
         <FormNavigate
           bgColor={`${totalPeople >= 2 ? 'bg-green-600' : 'bg-gray-400 cursor-not-allowed'}`}
-          hoverColor={`${totalPeople >= 2 ? 'hover:bg-green-700' : 'hover:bg-gray-400'}`}
+          hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/budget"
           handleBtnClick={onNextBtnClick}
           navigationDisabled={totalPeople < 2}

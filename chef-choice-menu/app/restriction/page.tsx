@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Container from "@/components/Container";
 import FormNavigate from "@/components/FormNavigate";
 import { IoMdRadioButtonOn, IoMdRadioButtonOff } from "react-icons/io";
-import { FaUtensils, FaQuestionCircle, FaCheckCircle } from "react-icons/fa";
+import { FaUtensils, FaQuestionCircle, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 import { useStore } from "../../useStore";
 
 function ServicesRestriction() {
@@ -147,7 +147,7 @@ function ServicesRestriction() {
                           </h3>
                           <p
                             className={`mt-1 ${
-                              opt.setActiv ? 'text-white' : 'text-gray-300'
+                              opt.setActiv ? 'text-white' : 'text-gray-800'
                             }`}
                           >
                             {opt.description}
@@ -202,17 +202,20 @@ function ServicesRestriction() {
         <div className="flex justify-center mt-8 space-x-4 px-4">
           <FormNavigate
             bgColor="bg-gray-600"
-            hoverColor="hover:bg-gray-700"
+            hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             navigateTo="/budget"
             handleBtnClick={() => true}
             navigationDisabled={false}
           >
-            <span className="text-white">Previous</span>
+             <span className="text-white flex items-center space-x-2">
+              <FaArrowLeft />
+              <span>Previous</span>
+            </span>
           </FormNavigate>
           
           <FormNavigate
             bgColor="bg-gradient-to-r from-green-600 to-emerald-700"
-            hoverColor="hover:from-green-700 hover:to-emerald-800"
+            hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             navigateTo={
               getRestrictionOptVal()?.text === "None"
                 ? "/summary"
@@ -221,7 +224,7 @@ function ServicesRestriction() {
             handleBtnClick={() => true}
             navigationDisabled={false}
           >
-            <span className="text-white flex items-center space-x-2">
+            <span className="text-white flex items-center justify-center space-x-2">
               <span>Next</span>
               {getRestrictionOptVal()?.text === "None" && (
                 <FaCheckCircle className="text-sm" />

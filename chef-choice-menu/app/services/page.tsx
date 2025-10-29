@@ -175,21 +175,21 @@ function ServicesSchedule() {
       <div className="flex justify-center mt-7 space-x-5">
         <FormNavigate
           bgColor="bg-red-500"
-          hoverColor="hover:bg-red-400"
+          hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/date"
             handleBtnClick={() => true}
             navigationDisabled={false}
         >
-          <span className="text-gray-800">Previous</span>
+          <span className="text-white">Previous</span>
         </FormNavigate>
         <FormNavigate
           bgColor="bg-green-500"
-          hoverColor="hover:bg-green-400"
+          hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/people"
           handleBtnClick={onNextBtnClick}
           navigationDisabled={false}
         >
-          <span className="text-gray-800">Next</span>
+          <span className="text-white justify-center">Next</span>
         </FormNavigate>
       </div>
       <ToastContainer />

@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useStore } from "../../useStore";
 import { ToastContainer, toast } from "react-toastify";
 import { PartyPopper, Cake, Users, Heart, Briefcase, Star, Utensils, Calendar } from "lucide-react";
+import { FaArrowLeft } from 'react-icons/fa';
 
 function Occasion() {
   const { addUserInputData, userInputData } = useStore();
@@ -127,7 +128,7 @@ function Occasion() {
             key={item.id}
             onClick={() => handleOccasionClick(item.id, ServiceType === "Single Services" ? 0 : 1)}
             className={`
-              relative cursor-pointer p-6 rounded-2xl transition-all duration-300 transform hover:scale-105
+              relative cursor-pointer p-6 border-gray-500 rounded-2xl transition-all duration-300 transform hover:scale-105
               border-2 backdrop-blur-sm group
               ${item.isActiv
                 ? 'bg-gradient-to-br from-orange-500 to-red-500 border-orange-300 shadow-2xl scale-105'
@@ -196,22 +197,25 @@ function Occasion() {
       {/* Navigation Buttons */}
       <div className="flex justify-center gap-4 md:gap-6 mt-12">
         <FormNavigate
-          bgColor="bg-gradient-to-r from-red-500 to-red-600"
-          hoverColor="hover:from-red-600 hover:to-red-700"
+          bgColor="bg-gradient-to-r from-red-500 to-red-600 text-white"
+          hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/book-chef"
           handleBtnClick={() => true}
           navigationDisabled={false}
         >
-          <span className="text-gray-800 font-semibold">← Previous</span>
+           <span className="text-white flex items-center space-x-2">
+                        <FaArrowLeft />
+                        <span>Previous</span>
+                      </span>
         </FormNavigate>
         <FormNavigate
-          bgColor="bg-gradient-to-r from-green-500 to-green-600"
-          hoverColor="hover:from-green-600 hover:to-green-700"
+          bgColor="bg-gradient-to-r from-green-500 text-white to-green-600"
+          hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/location"
           handleBtnClick={handleOccasionBtnClick}
           navigationDisabled={false}
         >
-          <span className="text-gray-800 font-semibold">Next →</span>
+          <span className="text-white font-semibold">Next</span>
         </FormNavigate>
       </div>
 

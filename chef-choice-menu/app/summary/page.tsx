@@ -200,7 +200,7 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
 
         {/* Form Section */}
         <div className="max-w-4xl mx-auto px-4 w-full">
-          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8 shadow-2xl border border-white/20">
+          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 md:p-8 shadow-2xl border border-gray-600">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
               {/* Left Column */}
               <div className="space-y-6">
@@ -213,7 +213,7 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
                   </label>
                   <input
                     onChange={(e) => handlesummaryData(e, "name")}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
                     value={summaryData.name}
                     placeholder="Enter your full name"
                   />
@@ -229,7 +229,7 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
                   <input
                     type="email"
                     onChange={(e) => handlesummaryData(e, "email")}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 bg-white/5 border border-gray-600 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
                     value={summaryData.email}
                     placeholder="your.email@example.com"
                   />
@@ -242,7 +242,7 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
                     <span>Phone Number</span>
                     <span className="text-red-400">*</span>
                   </label>
-                  <div className="[&_.react-international-phone-input]:w-full [&_.react-international-phone-input]:px-4 [&_.react-international-phone-input]:py-3 [&_.react-international-phone-input]:bg-white/5 [&_.react-international-phone-input]:border [&_.react-international-phone-input]:border-white/20 [&_.react-international-phone-input]:rounded-xl [&_.react-international-phone-input]:text-gray-800 [&_.react-international-phone-input-container]:bg-transparent [&_.react-international-phone-country-selector]:bg-white/10 [&_.react-international-phone-country-selector]:text-gray-800">
+                  <div className="[&_.react-international-phone-input]:w-full [&_.react-international-phone-input]:px-4 [&_.react-international-phone-input]:py-3 [&_.react-international-phone-input]:bg-white/5 [&_.react-international-phone-input]:border [&_.react-international-phone-input]:border-gray-600 [&_.react-international-phone-input]:rounded-xl [&_.react-international-phone-input]:text-gray-800 [&_.react-international-phone-input-container]:bg-transparent [&_.react-international-phone-country-selector]:bg-white/10 [&_.react-international-phone-country-selector]:text-gray-800">
                     <PhoneInput
                       defaultCountry="in"
                       value={summaryData.phno}
@@ -270,7 +270,7 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
                         className={`flex items-center space-x-3 p-3 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                           summaryData.appliances.includes(appliance.value)
                             ? "bg-orange-500/20 border-orange-500 text-gray-800"
-                            : "bg-white/5 border-white/20 text-gray-300 hover:bg-white/10"
+                            : "bg-white/5 border-gray-400 text-gray-700 hover:bg-white/10"
                         }`}
                       >
                         <input
@@ -338,7 +338,7 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
         <div className="flex justify-center mt-8 space-x-4 px-4">
           <FormNavigate
             bgColor="bg-gray-600"
-            hoverColor="hover:bg-gray-700"
+            hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             navigateTo="/restriction"
             handleBtnClick={() => true}
             navigationDisabled={false}
@@ -351,13 +351,13 @@ Submitted: ${new Date().toLocaleString("en-GB", { hour12: true })}
           
           <FormNavigate
             bgColor="bg-gradient-to-r from-green-600 to-emerald-700"
-            hoverColor="hover:from-green-700 hover:to-emerald-800"
+            hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             handleBtnClick={onNextBtnClick}
             navigationDisabled={false}
           >
-            <span className="text-white w-full flex items-center space-x-2">
+            <span className="text-white w-full flex items-center justify-center space-x-2">
               <FaPaperPlane />
-              <span>Submit Request</span>
+              <span>Submit</span>
             </span>
           </FormNavigate>
         </div>

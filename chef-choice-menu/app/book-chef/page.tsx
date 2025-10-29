@@ -148,8 +148,8 @@ export default function BookChefPage() {
             {/* Navigation Buttons */}
             <div className="flex justify-center space-x-5 mt-12">
               <FormNavigate
-                bgColor="hover:bg-red-600"
-                hoverColor="bg-red-500"
+                bgColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
+                hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
                 navigationDisabled={true}
                 navigateTo=""
                 handleBtnClick={() => true}
@@ -158,7 +158,7 @@ export default function BookChefPage() {
               </FormNavigate>
               <FormNavigate
                 bgColor="hover:bg-green-600"
-                hoverColor="bg-green-500"
+                hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
                 navigateTo="/occasion"
                 handleBtnClick={handleCheckUserInput}
                 navigationDisabled={false}

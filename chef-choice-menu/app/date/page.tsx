@@ -56,17 +56,17 @@ function DateSelector() {
       <div
         className={`
           relative cursor-pointer w-full max-w-md px-6 py-4 rounded-2xl 
-          border-2 backdrop-blur-sm transition-all duration-300
+           border border-gray-300 backdrop-blur-sm transition-all duration-300
           group hover:scale-105
           ${value 
             ? 'bg-white/10 border-orange-500 text-gray-800 shadow-lg' 
-            : 'bg-white/10 border-white/20 text-gray-800/60 hover:border-white/30 hover:bg-white/15'
+            : 'bg-white/10 border-white/20 text-gray-800/60 border border-gray-300 hover:bg-gray-200'
           }
         `}
         onClick={onClick}
         ref={ref}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between ">
           <div className="flex items-center gap-3">
             <Calendar className={`w-5 h-5 ${value ? 'text-orange-400' : 'text-gray-800/60'}`} />
             <span className={`font-medium ${value ? 'text-gray-800' : 'text-gray-800/60'}`}>
@@ -147,7 +147,7 @@ function DateSelector() {
 
       {/* Event Context Card */}
       <div className="max-w-md mx-auto mb-8 animate-fade-in">
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-gray-300 shadow-md">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center">
               <MapPin className="w-5 h-5 text-orange-400" />
@@ -171,7 +171,7 @@ function DateSelector() {
           minDate={new Date()}
           isClearable
           customInput={<CustomInput />}
-          calendarClassName="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-gray-800"
+          calendarClassName="bg-white/10 backdrop-blur-sm border border-gray-200 rounded-2xl p-4 text-gray-800"
           dayClassName={(date) => 
             `rounded-lg hover:bg-orange-500 hover:text-gray-800 transition-colors ${
               date.getDate() === new Date().getDate() && date.getMonth() === new Date().getMonth() 
@@ -213,7 +213,7 @@ function DateSelector() {
       <div className="flex justify-center gap-4 md:gap-6 mt-12 animate-fade-in" style={{ animationDelay: "0.6s" }}>
         <FormNavigate
           bgColor="bg-gradient-to-r from-red-500 to-red-600"
-          hoverColor="hover:from-red-600 hover:to-red-700"
+          hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/location"
           handleBtnClick={() => true}
           navigationDisabled={false}
@@ -225,14 +225,14 @@ function DateSelector() {
         </FormNavigate>
         <FormNavigate
           bgColor="bg-gradient-to-r from-green-500 to-green-600"
-          hoverColor="hover:from-green-600 hover:to-green-700"
+          hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/services"
           handleBtnClick={onNextBtnClick}
           navigationDisabled={false}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             Next
-            <ArrowRight className="w-4 h-4" />
+            {/* <ArrowRight className="w-4 h-4" /> */}
           </div>
         </FormNavigate>
       </div>

@@ -122,7 +122,7 @@ function Location() {
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-800/60 w-5 h-5" />
           <input
             onChange={getUserLocation}
-            className="w-full pl-12 pr-4 py-4 text-gray-800 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl placeholder-white/60 focus:outline-none focus:border-orange-500 focus:bg-white/15 transition-all duration-300 text-lg"
+            className="w-full pl-12 pr-4 py-4 text-gray-800 placeholder:text-slate-600 bg-white/10 backdrop-blur-sm border-2 border-gray-300 rounded-2xl placeholder-white/60 focus:outline-none focus:border-orange-500 focus:bg-white/15 transition-all duration-300 text-lg"
             type="text"
             placeholder="Enter event location or address..."
             value={userLocation.addr}
@@ -177,7 +177,7 @@ function Location() {
       <div className="flex justify-center gap-4 md:gap-6 mt-12 animate-fade-in" style={{ animationDelay: "0.4s" }}>
         <FormNavigate
           bgColor="bg-gradient-to-r from-red-500 to-red-600"
-          hoverColor="hover:from-red-600 hover:to-red-700"
+          hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/occasion"
           handleBtnClick={() => true}
           navigationDisabled={false}
@@ -189,14 +189,14 @@ function Location() {
         </FormNavigate>
         <FormNavigate
           bgColor="bg-gradient-to-r from-green-500 to-green-600"
-          hoverColor="hover:from-green-600 hover:to-green-700"
+          hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
           navigateTo="/date"
           handleBtnClick={onNextBtnClick}
           navigationDisabled={false}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center gap-2">
             Next
-            <ArrowRight className="w-4 h-4" />
+            {/* <ArrowRight className="w-4 h-4" /> */}
           </div>
         </FormNavigate>
       </div>

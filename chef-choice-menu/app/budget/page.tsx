@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from "react";
 import { IoMdRadioButtonOn, IoMdRadioButtonOff } from "react-icons/io";
-import { FaStar, FaMoneyBillWave, FaAward, FaCrown } from "react-icons/fa";
+import { FaStar, FaMoneyBillWave, FaAward, FaCrown, FaArrowLeft } from "react-icons/fa";
 import Container from "@/components/Container";
 import FormNavigate from "@/components/FormNavigate";
 import { useStore } from "../../useStore";
@@ -94,13 +94,13 @@ function ServicesBudget() {
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-gradient-to-r from-orange-500 to-red-600 rounded-full shadow-lg">
-              <FaMoneyBillWave className="text-white text-2xl" />
+              <FaMoneyBillWave className="text-gray-800 text-2xl" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
             {servicesbudgetdata.title}
           </h1>
-          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
             Choose the package that best fits your culinary vision and budget
           </p>
         </div>
@@ -121,7 +121,7 @@ function ServicesBudget() {
                   {/* Selected Indicator */}
                   {budget.isActiv && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+                      <div className="bg-gradient-to-r from-orange-500 to-red-600 text-gray-800 px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
                         Selected
                       </div>
                     </div>
@@ -146,21 +146,21 @@ function ServicesBudget() {
                         >
                           <IconComponent
                             className={`text-2xl ${
-                              budget.isActiv ? 'text-white' : 'text-white'
+                              budget.isActiv ? 'text-white' : 'text-gray-800'
                             }`}
                           />
                         </div>
                         <div>
                           <h3
                             className={`text-xl font-bold ${
-                              budget.isActiv ? 'text-white' : 'text-white'
+                              budget.isActiv ? 'text-white' : 'text-gray-800'
                             }`}
                           >
                             {budget.title}
                           </h3>
                           {/* <p
                             className={`text-sm ${
-                              budget.isActiv ? 'text-white/90' : 'text-gray-300'
+                              budget.isActiv ? 'text-gray-800/90' : 'text-gray-300'
                             }`}
                           >
                             {budget.priceRange}
@@ -179,7 +179,7 @@ function ServicesBudget() {
                     {/* Description */}
                     <p
                       className={`mb-4 leading-relaxed ${
-                        budget.isActiv ? 'text-white/90' : 'text-gray-300'
+                        budget.isActiv ? 'text-white' : 'text-gray-600'
                       }`}
                     >
                       {budget.text}
@@ -189,13 +189,13 @@ function ServicesBudget() {
                     <div
                       className={`mt-4 p-3 rounded-lg ${
                         budget.isActiv
-                          ? 'bg-white/20'
-                          : 'bg-gray-800/50'
+                          ? 'bg-white'
+                          : 'bg-gray-800'
                       }`}
                     >
                       <p
                         className={`text-sm font-semibold text-center ${
-                          budget.isActiv ? 'text-white' : 'text-gray-300'
+                          budget.isActiv ? 'text-gray-800' : 'text-gray-300'
                         }`}
                       >
                         {budget.subText}
@@ -211,7 +211,7 @@ function ServicesBudget() {
         {/* Important Points */}
         <div className="max-w-4xl mx-auto px-4 mb-8">
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-gray-300/30 shadow-lg">
-            <h3 className="text-xl font-bold text-white mb-4 text-center">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
               Important Information
             </h3>
             <div className="space-y-3">
@@ -220,7 +220,7 @@ function ServicesBudget() {
                   <div className="flex-shrink-0 mt-1">
                     <FaStar className="text-yellow-400 text-sm" />
                   </div>
-                  <p className="text-gray-300 leading-relaxed">{item}</p>
+                  <p className="text-gray-600 leading-relaxed">{item}</p>
                 </div>
               ))}
             </div>
@@ -231,16 +231,19 @@ function ServicesBudget() {
         <div className="flex justify-center mt-8 space-x-4 px-4">
           <FormNavigate
             bgColor="bg-gray-600"
-            hoverColor="hover:bg-gray-700"
+            hoverColor="bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800 px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             navigateTo="/people"
             handleBtnClick={() => true}
             navigationDisabled={false}
           >
-            <span className="text-white">Previous</span>
+            <span className="text-white flex items-center space-x-2">
+                         <FaArrowLeft />
+                         <span>Previous</span>
+                       </span>
           </FormNavigate>
           <FormNavigate
             bgColor="bg-gradient-to-r from-green-600 to-emerald-700"
-            hoverColor="hover:from-green-700 hover:to-emerald-800"
+            hoverColor="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             navigateTo="/restriction"
             handleBtnClick={onNextBtnClick}
             navigationDisabled={false}

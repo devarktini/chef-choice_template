@@ -23,7 +23,7 @@ export default function FormNavigate({
       disabled={navigationDisabled}
       className={`${bgColor} ${
         navigationDisabled ? "cursor-not-allowed" : "cursor-pointer"
-      } ${hoverColor} w-40 rounded-md px-4 py-2 text-white transition-colors duration-200`}
+      } ${hoverColor} w-40  px-4 py-2 text-white transition-colors duration-200`}
       onClick={handleNavigationClick}
     >
       {children}
