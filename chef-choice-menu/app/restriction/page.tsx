@@ -219,7 +219,7 @@ function ServicesRestriction() {
             navigateTo={
               getRestrictionOptVal()?.text === "None"
                 ? "/summary"
-                : "/select/restriction"
+                : "/ServicesSelectRestriction"
             }
             handleBtnClick={() => true}
             navigationDisabled={false}
