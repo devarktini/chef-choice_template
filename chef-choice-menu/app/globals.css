@@ -155,3 +155,183 @@ html {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+/* Add to your globals.css */
+.prose {
+  color: #374151;
+  max-width: 65ch;
+}
+
+.prose h2 {
+  color: #111827;
+  font-weight: 700;
+  font-size: 1.5em;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+.prose h3 {
+  color: #111827;
+  font-weight: 600;
+  font-size: 1.25em;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+}
+
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  line-height: 1.75;
+}
+
+.prose ul, .prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose blockquote {
+  font-weight: 500;
+  font-style: italic;
+  color: #6B7280;
+  border-left-width: 0.25rem;
+  border-left-color: #E5E7EB;
+  quotes: "\201C""\201D""\2018""\2019";
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1em;
+}
+
+/* BlogDetail.module.css */
+
+/* page container */
+.blogContainer {
+  background-color: #f9fafb;
+  min-height: 100vh;
+  padding-top: 4%;
+  padding-bottom: 4%;
+}
+
+/* markdown wrapper used by component */
+.markdownWrapper {
+  background-color: white;
+  color: #111827;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  /* allow content to grow but keep readable line-length */
+  max-width: 100%;
+  word-break: break-word;
+}
+
+/* fine-tune inner content width for very long lines (optional) */
+.wmde-markdown {
+  --max-line-length: 85ch; /* optional: cap line length for readability */
+  max-width: var(--max-line-length);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ensure headings/paras spacing remains tight & balanced */
+.wmde-markdown :where(h1, h2, h3, p) {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Headings */
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Paragraphs */
+.wmde-markdown p {
+  margin-top: 0.25rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.6;
+  color: #1f2937;
+}
+
+/* Lists */
+.wmde-markdown ul,
+.wmde-markdown ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+}
+.wmde-markdown li {
+  margin: 0.25rem 0;
+  line-height: 1.5;
+}
+
+/* Blockquotes */
+.wmde-markdown blockquote {
+  margin: 0.75rem 0;
+  padding: 0.65rem 1rem;
+  border-left: 4px solid #6366f1;
+  background-color: #f8fafc;
+  color: #374151;
+  border-radius: 0.25rem;
+}
+
+/* Code blocks */
+.wmde-markdown pre {
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background-color: #0f172a;
+  color: #f8fafc;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+}
+
+/* Inline code */
+.wmde-markdown code {
+  background-color: #f3f4f6;
+  padding: 0.12rem 0.35rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
+
+/* Tables */
+.wmde-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.9rem 0;
+}
+.wmde-markdown th,
+.wmde-markdown td {
+  border: 1px solid #e6e9ee;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+
+/* Images */
+.wmde-markdown img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+  border-radius: 0.5rem;
+}
+
+/* General markdown base */
+.wmde-markdown {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #111827;
+}
+
