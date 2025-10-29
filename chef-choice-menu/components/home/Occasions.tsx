@@ -79,7 +79,7 @@ export default function Occasions() {
       icon: <Flame className="w-8 h-8" />, 
       title: "Pooja Ceremony", 
       description: "Enhance pooja ceremonies with traditional offerings.",
-      image: "https://images.unsplash.com/photo-1528827224517-8c1bed67da60?w=400&h=300&fit=crop",
+      image: "https://images.unsplash.com/photo-1662720868850-e60cefb03201?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1473",
       color: "from-orange-400 to-orange-500"
     },
     { 
