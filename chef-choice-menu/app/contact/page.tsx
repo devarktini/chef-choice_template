@@ -1,10 +1,58 @@
 "use client";
 import { MapPin, Phone, Mail } from 'lucide-react';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import AnimatedBackground from '@/components/AnimatedBackground';
 
 export default function ContactPage() {
+
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+   const [status, setStatus] = useState("idle");
+  const [message, setMessage] = useState("");
+  const FORMSPREE_ID = "xyzdgree";
+
+    async function submitToFormspree(payload: any) {
+    const endpoint = `https://formspree.io/f/${FORMSPREE_ID}`;
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || "Submit failed");
+    }
+  }
+ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((d) => ({ ...d, [name]: value }));
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("submitting");
+    setMessage("");
+
+    try {
+      await submitToFormspree({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+      });
+      setStatus("success");
+      setMessage("Thanks! Your message has been sent.");
+      setFormData({ name: '', email: '', phone: '', message: '' });
+
+      // setTimeout(() => navigate("/thanks"), 1000);
+    } catch (err: any) {
+      setStatus("error");
+      setMessage(err.message || "Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -40,13 +88,28 @@ export default function ContactPage() {
 
               <div className="bg-gradient-to-br from-cream-50 to-white p-8 rounded-2xl shadow-xl animate-slide-left">
                 <h3 className="text-2xl font-bold mb-6">Send Message</h3>
-                <form className="space-y-4">
-                  <input type="text" placeholder="Your Name" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none" />
-                  <input type="email" placeholder="Your Email" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none" />
-                  <input type="tel" placeholder="Phone Number" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none" />
-                  <textarea rows={4} placeholder="Your Message" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none"></textarea>
-                  <button className="w-full bg-gradient-to-r from-primary-500 to-warm-500 text-white py-4 rounded-lg font-semibold hover:shadow-lg transition-all">Send Message</button>
-                </form>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <input value={formData.name} type="text" placeholder="Your Name" onChange={handleChange} name="name" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <input value={formData.email} type="email" placeholder="Your Email" onChange={handleChange} name="email" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <input value={formData.phone} type="tel" placeholder="Phone Number" onChange={handleChange} name="phone" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none" />
+                  <textarea value={formData.message} rows={4} placeholder="Your Message" onChange={handleChange} name="message" className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-primary-500 outline-none"></textarea>
+                  <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary-500 to-warm-500 text-white py-4 rounded-lg font-semibold hover:shadow-lg transition-all"
+                disabled={status === "submitting"}
+              >
+                {status === "submitting" ? "Sending..." : "Send Message"}
+              </button>
+
+              <div aria-live="polite" style={{ marginTop: 10 }}>
+                {status === "success" && (
+                  <span style={{ color: "#13c296" }}>{message}</span>
+                )}
+                {status === "error" && (
+                  <span style={{ color: "#f87171" }}>{message}</span>
+                )}
+              </div>
+                  </form>
               </div>
             </div>
           </div>

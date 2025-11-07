@@ -83,7 +83,20 @@ function ServicesBudget() {
       return false;
     }
 
-    addUserInputData({ id: "service-budget", data: selectedBudgetPackage });
+    // Send only essential data instead of entire object
+    const essentialData = {
+      title: selectedBudgetPackage.title,
+      priceRange: selectedBudgetPackage.priceRange,
+      description: selectedBudgetPackage.text,
+    };
+
+    console.log("Sending budget data to store:", essentialData);
+
+    addUserInputData({ 
+      id: "service-budget", 
+      data: essentialData 
+    });
+    
     return true;
   }
 
@@ -158,13 +171,6 @@ function ServicesBudget() {
                           >
                             {budget.title}
                           </h3>
-                          {/* <p
-                            className={`text-sm ${
-                              budget.isActiv ? 'text-gray-800/90' : 'text-gray-300'
-                            }`}
-                          >
-                            {budget.priceRange}
-                          </p> */}
                         </div>
                       </div>
                       <div className="flex-shrink-0">
@@ -184,6 +190,17 @@ function ServicesBudget() {
                     >
                       {budget.text}
                     </p>
+
+                    {/* Price Range */}
+                    <div className="mb-4">
+                      <p
+                        className={`text-lg font-semibold ${
+                          budget.isActiv ? 'text-white' : 'text-gray-800'
+                        }`}
+                      >
+                        {budget.priceRange}
+                      </p>
+                    </div>
 
                     {/* Subtext */}
                     <div
@@ -237,9 +254,9 @@ function ServicesBudget() {
             navigationDisabled={false}
           >
             <span className="text-white flex items-center space-x-2">
-                         <FaArrowLeft />
-                         <span>Previous</span>
-                       </span>
+              <FaArrowLeft />
+              <span>Previous</span>
+            </span>
           </FormNavigate>
           <FormNavigate
             bgColor="bg-gradient-to-r from-green-600 to-emerald-700"

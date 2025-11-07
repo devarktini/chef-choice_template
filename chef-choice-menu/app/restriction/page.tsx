@@ -44,7 +44,7 @@ function ServicesRestriction() {
     if (prevData) {
       setFoodRestrictionOpt((prev) =>
         prev.map((opt) =>
-          opt.text === prevData.data.text
+          opt.text === prevData.data.selectedOption
             ? { ...opt, setActiv: true }
             : { ...opt, setActiv: false }
         )
@@ -59,11 +59,39 @@ function ServicesRestriction() {
         opt.id === id ? { ...opt, setActiv: true } : { ...opt, setActiv: false }
       )
     );
-    addUserInputData({ id: "service-restriction", data: selectedOption });
+    
+    // Send only essential data
+    addUserInputData({ 
+      id: "service-restriction", 
+      data: {
+        hasFoodRestrictions: selectedOption?.text === "Yes",
+        selectedOption: selectedOption?.text,
+        description: selectedOption?.description,
+      }
+    });
+    
+    // For debugging - see what's being stored
+    console.log("Stored restriction data:", {
+      hasFoodRestrictions: selectedOption?.text === "Yes",
+      selectedOption: selectedOption?.text,
+      optionId: selectedOption?.id
+    });
   }
 
   function getRestrictionOptVal() {
     return foodRestrictionOpt.find((opt) => opt.setActiv === true);
+  }
+
+  function handleNextClick() {
+    const selectedOption = getRestrictionOptVal();
+    const finalData = {
+      hasFoodRestrictions: selectedOption?.text === "Yes",
+      selectedOption: selectedOption?.text,
+      optionId: selectedOption?.id
+    };
+    
+    console.log("Final data being sent on Next click:", finalData);
+    return true;
   }
 
   return (
@@ -170,34 +198,6 @@ function ServicesRestriction() {
           </div>
         </div>
 
-        {/* Additional Info */}
-        {/* <div className="max-w-2xl mx-auto px-4 mb-8">
-          <div className="bg-blue-500/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/30">
-            <div className="flex items-start space-x-4">
-              <div className="flex-shrink-0 mt-1">
-                <div className="p-2 bg-blue-500 rounded-lg">
-                  <FaUtensils className="text-gray-800 text-lg" />
-                </div>
-              </div>
-              <div>
-                <h4 className="text-gray-800 font-semibold text-lg mb-2">
-                  Common Dietary Restrictions
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Nut Allergies', 'Halal', 'Kosher'].map((item) => (
-                    <span 
-                      key={item}
-                      className="px-3 py-1 bg-white/10 rounded-full text-gray-800 text-sm border border-white/20"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
         {/* Navigation Buttons */}
         <div className="flex justify-center mt-8 space-x-4 px-4">
           <FormNavigate
@@ -221,7 +221,7 @@ function ServicesRestriction() {
                 ? "/summary"
                 : "/ServicesSelectRestriction"
             }
-            handleBtnClick={() => true}
+            handleBtnClick={handleNextClick}
             navigationDisabled={false}
           >
             <span className="text-white flex items-center justify-center space-x-2">
