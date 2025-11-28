@@ -83,7 +83,7 @@ const posterSrc =
             Flavors Made for Royalty
           </h2>
           <p className="text-gray-700 leading-relaxed text-center max-w-5xl mx-auto">
-            Food isnt just part of a celebration—it is the celebration. Its the bite that becomes a memory… the flavor that speaks to the heart. At ChefChoiceMenu, we make every dish unforgettable, every moment delicious. Because long after the music fades, what stays is the feeling you created: 'The food was AMAZING!' Lets make your party the one they talk about forever.
+            Food isnt just part of a celebration—it is the celebration. Its the bite that becomes a memory… the flavor that speaks to the heart. At ChefChoiceMenu, we make every dish unforgettable, every moment delicious. Because long after the music fades, what stays is the feeling you created: The food was AMAZING! Lets make your party the one they talk about forever.
           </p>
         </div>
       </div>
