@@ -1,4 +1,5 @@
 import { Check, Star, ChefHat, Clock, Calendar, Users, Utensils, Heart, Zap, Crown, Shield, Gift } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SubscriptionPlans() {
   const plans = [
@@ -138,6 +139,7 @@ export default function SubscriptionPlans() {
                   </div>
 
                   {/* CTA Button */}
+                   <Link href="/contact">
                   <button className={`w-full py-3 rounded-xl font-bold transition-all ${
                     plan.popular
                       ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg'
@@ -145,6 +147,7 @@ export default function SubscriptionPlans() {
                   }`}>
                     {plan.cta}
                   </button>
+                  </Link>
                 </div>
               </div>
             </div>

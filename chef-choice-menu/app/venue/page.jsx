@@ -1,5 +1,6 @@
 import { MapPin, Users, Star, Heart, Calendar, Utensils } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function VenuePage() {
   const venues = [
@@ -157,11 +158,13 @@ export default function VenuePage() {
                       <span className="text-sm">{venue.capacity}</span>
                     </div>
                   </div>
-
-                  <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Book Venue
-                  </button>
+                  
+                  <Link href="/contact">
+                    <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Book Venue
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -179,10 +182,12 @@ export default function VenuePage() {
             Let us help you create unforgettable memories in the perfect setting
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/contact">
             <button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
               <Utensils className="w-5 h-5" />
               Book Venue & Catering
             </button>
+            </Link>
             <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-colors">
               View All Venues
             </button>

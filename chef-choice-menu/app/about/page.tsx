@@ -1,6 +1,7 @@
 import { Clock, MapPin, Users, Award, Target, Utensils, Heart, Star, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
+import Link from 'next/link';
 
 export default function AboutPage() {
   return (
@@ -281,10 +282,11 @@ export default function AboutPage() {
                 Lets work together to make your next celebration truly special with exceptional food and seamless service.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
+                
+                 <Link href="/contact"><button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
                   Book a Consultation
                   <ChevronRight className="w-5 h-5" />
-                </button>
+                </button></Link>
                 <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-colors">
                   View Our Chefs
                 </button>

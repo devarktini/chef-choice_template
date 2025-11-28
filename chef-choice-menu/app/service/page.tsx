@@ -3,6 +3,7 @@ import { Heart, Sparkles, Users, Building, Home, Star, Award, ChevronRight, Chef
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ServicePage() {
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -173,6 +174,14 @@ export default function ServicePage() {
 
                   {/* CTA Buttons */}
                   <div className="flex gap-4 mt-8">
+                    <Link href="/contact">
+                    <button 
+                     
+                      className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Book Now
+                    </button>
+                    </Link>
                     <button 
                       onClick={() => setSelectedService(null)}
                       className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-8 py-3 rounded-lg font-semibold transition-colors"
