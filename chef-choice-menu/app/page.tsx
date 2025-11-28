@@ -8,6 +8,7 @@ import FAQ from "@/components/home/FAQ";
 import VideoSection from "@/components/home/VideoSection";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import ThirdSection from "@/components/home/ThirdSection/ThirdSection";
+import SubscriptionPlans from "@/components/home/SubscriptionPlans";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
         <ThirdSection />
         {/* <BookingSteps /> */}
         <AddOnServices />
+        <SubscriptionPlans />
         <Occasions />
         <Testimonials />
         <FAQ />

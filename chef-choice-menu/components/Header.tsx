@@ -47,12 +47,21 @@ export default function Header() {
               Services
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
+            
             <Link href="/blog" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
               Blog
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link href="/contact" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
               Contact
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+            <Link href="/venue" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+              Venue
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+            <Link href="/gallery" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+              Gallery
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
           </div>

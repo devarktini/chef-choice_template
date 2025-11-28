@@ -39,7 +39,7 @@ const posterSrc =
             </h1>
 
             <p className="text-xl text-gray-600 mb-8 animate-slide-up" style={{animationDelay: '0.2s'}}>
-              Discover the finest dishes crafted with love
+             Celebrate with Choice, Cherish with Menu
             </p>
 
             <Link href="/book-chef">
@@ -83,12 +83,7 @@ const posterSrc =
             Flavors Made for Royalty
           </h2>
           <p className="text-gray-700 leading-relaxed text-center max-w-5xl mx-auto">
-            Hosting an event shouldnt be stressful. At Chef Choice Menu, we make it effortless. 
-            Choose from our all-inclusive catering packages designed for every occasion—whether its 
-            a traditional North Indian wedding, a corporate lunch, or a festive Diwali dinner. 
-            Our chefs craft menus that celebrate Indias diverse culinary heritage while also 
-            offering global cuisines for modern tastes. With us, every event becomes an 
-            unforgettable culinary journey.
+            Food isn’t just part of a celebration—it is the celebration. It’s the bite that becomes a memory… the flavor that speaks to the heart. At ChefChoiceMenu, we make every dish unforgettable, every moment delicious. Because long after the music fades, what stays is the feeling you created: 'The food was AMAZING!' Let’s make your party the one they talk about forever.
           </p>
         </div>
       </div>

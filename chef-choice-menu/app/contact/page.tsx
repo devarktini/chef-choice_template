@@ -70,7 +70,7 @@ export default function ContactPage() {
             <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
               <div className="space-y-6">
                 {[
-                  { icon: <MapPin />, title: "Location", info: "B-99, 5th Floor, Panchsheel Park, New Delhi" },
+                  { icon: <MapPin />, title: "Location", info: "2nd Floor, Plot - 300, Block - F, Sector - 63, Noida. 2010307" },
                   { icon: <Phone />, title: "Phone", info: "+91 85 959 039 39" },
                   { icon: <Mail />, title: "Email", info: "info@chefchoicemenu.com" }
                 ].map((item, i) => (
