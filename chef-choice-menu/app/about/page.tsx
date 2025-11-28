@@ -17,7 +17,7 @@ export default function AboutPage() {
               </p>
               <h1 className="text-5xl font-bold text-gray-900 mb-6">About ChefChoiceMenu</h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Connecting you with India's finest culinary talents for unforgettable celebrations
+                Connecting you with India is finest culinary talents for unforgettable celebrations
               </p>
             </div>
 
@@ -26,12 +26,12 @@ export default function AboutPage() {
                 <h2 className="text-4xl font-bold text-gray-900 mb-2">Who We Are</h2>
                 <div className="space-y-4 text-gray-700 leading-relaxed">
                   <p className="text-lg">
-                    At <span className="font-bold text-orange-600">ChefChoiceMenu</span>, we believe that great food is the heart of every celebration. Whether you're hosting an intimate house gathering or a grand, luxurious party, we're here to make it unforgettable.
+                    At <span className="font-bold text-orange-600">ChefChoiceMenu</span>, we believe that great food is the heart of every celebration. Whether you are hosting an intimate house gathering or a grand, luxurious party, we are here to make it unforgettable.
                   </p>
                   
                   <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-lg">
                     <p className="text-gray-700 italic">
-                      "We proudly connect customers with professional chefs and caterers across India—<span className="font-bold text-orange-600">1000+ verified vendors</span> and <span className="font-bold text-orange-600">500+ talented chefs</span> who bring culinary excellence to your table."
+                      We proudly connect customers with professional chefs and caterers across India—<span className="font-bold text-orange-600">1000+ verified vendors</span> and <span className="font-bold text-orange-600">500+ talented chefs</span> who bring culinary excellence to your table.
                     </p>
                   </div>
 
@@ -97,7 +97,7 @@ export default function AboutPage() {
                       Our Mission
                     </h3>
                     <p className="text-lg leading-relaxed">
-                      Our journey is rooted in the joy of serving—matching the right chef or caterer with your taste, theme, and budget. We're more than just a platform; we're your event partner.
+                      Our journey is rooted in the joy of serving—matching the right chef or caterer with your taste, theme, and budget. We are more than just a platform; we are your event partner.
                     </p>
                   </div>
                 </div>
@@ -113,7 +113,7 @@ export default function AboutPage() {
                       Our Vision
                     </h3>
                     <p className="text-lg leading-relaxed">
-                      To be India's most trusted culinary partner, transforming every celebration into an unforgettable experience through exceptional food and seamless service.
+                      To be India is most trusted culinary partner, transforming every celebration into an unforgettable experience through exceptional food and seamless service.
                     </p>
                   </div>
                 </div>
@@ -278,7 +278,7 @@ export default function AboutPage() {
             <div className="max-w-3xl mx-auto animate-slide-up">
               <h2 className="text-4xl font-bold mb-6">Ready to Create Unforgettable Memories?</h2>
               <p className="text-xl mb-8 text-orange-100">
-                Let's work together to make your next celebration truly special with exceptional food and seamless service.
+                Lets work together to make your next celebration truly special with exceptional food and seamless service.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">

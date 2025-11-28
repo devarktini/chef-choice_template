@@ -76,10 +76,10 @@ export default function VenuePage() {
           
           <div className="max-w-3xl mx-auto mb-12">
             <p className="text-xl text-gray-700 leading-relaxed">
-              From cozy private parties to grand celebrations — we've got the perfect space with help of our preferred event Management company for every moment! Enjoy exclusive access to party halls, farmhouses, and beautiful event venues, all paired with our top-notch catering service.
+              From cozy private parties to grand celebrations — we have got the perfect space with help of our preferred event Management company for every moment! Enjoy exclusive access to party halls, farmhouses, and beautiful event venues, all paired with our top-notch catering service.
             </p>
             <p className="text-xl text-gray-700 leading-relaxed mt-4">
-              With ChefChoiceMenu, your special occasion becomes an unforgettable experience — full of flavor, elegance, and joy. Let's make your moments magical together!
+              With ChefChoiceMenu, your special occasion becomes an unforgettable experience — full of flavor, elegance, and joy. Lets make your moments magical together!
             </p>
           </div>
 
