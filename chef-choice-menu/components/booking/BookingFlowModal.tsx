@@ -170,7 +170,7 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
                 <div className="w-full md:w-1/4 bg-gray-50 border-r border-gray-100 p-6 flex flex-col">
                     <div className="flex items-center space-x-2 text-primary-600 mb-8">
                         <ChefHat className="w-8 h-8" />
-                        <span className="text-xl font-bold tracking-tight">Chef's Choice</span>
+                        <span className="text-xl font-bold tracking-tight">Chefs Choice</span>
                     </div>
 
                     <div className="space-y-1 flex-1 overflow-y-auto">
@@ -239,7 +239,7 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
                                 {step === 1 && (
                                     <div className="grid md:grid-cols-2 gap-8 h-full">
                                         <div className="flex flex-col h-full">
-                                            <h3 className="text-lg font-semibold text-gray-800 mb-4">What's the occasion?</h3>
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Whats the occasion?</h3>
                                             <div className="grid grid-cols-2 gap-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
                                                 {EVENT_TYPES.map(type => (
                                                     <button
@@ -436,7 +436,7 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
                                     <div className="space-y-6 h-full flex flex-col">
                                         <div className="bg-primary-50 p-4 rounded-xl border border-primary-100 shrink-0">
                                             <p className="text-primary-800 text-sm">
-                                                Based on your selected cuisines ({data.cuisines.map(c => CUISINES.find(opt => opt.value === c)?.label).join(', ')}), select the dishes you'd like.
+                                                Based on your selected cuisines ({data.cuisines.map(c => CUISINES.find(opt => opt.value === c)?.label).join(', ')}), select the dishes youd like.
                                             </p>
                                         </div>
 

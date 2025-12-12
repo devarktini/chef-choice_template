@@ -23,7 +23,7 @@ export default function DashboardPage() {
                         Welcome back, {user?.first_name}! 👋
                     </h1>
                     <p className="text-white/90">
-                        Here's what's happening with your bookings today.
+                        Heres whats happening with your bookings today.
                     </p>
                 </div>
 
