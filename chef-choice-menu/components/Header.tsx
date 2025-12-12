@@ -2,11 +2,21 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import LoginModal from './LoginModal';
+import BookingFlowModal from '@/components/booking/BookingFlowModal';
+import { useAuthStore } from '@/stores/authStore';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  const { user, isAuthenticated, logout, initializeAuth } = useAuthStore();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,18 +26,28 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Initialize auth state from localStorage
+    initializeAuth();
+  }, [initializeAuth]);
+
+  const handleLogout = () => {
+    logout();
+    setShowUserMenu(false);
+    router.push('/');
+  };
+
   return (
-    <header 
-      className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white shadow-lg py-3' 
-          : 'bg-white/95 backdrop-blur-sm py-4'
-      }`}
+    <header
+      className={`fixed w-full top-0 z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white shadow-lg py-3'
+        : 'bg-white/95 backdrop-blur-sm py-4'
+        }`}
     >
       <nav className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link href="/" className=" w-28 font-bold text-primary-500 hover:text-primary-600 transition-colors duration-300 animate-slide-right">
-             <img
+            <img
               src="https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1757953170/removeb_sxbskt.png"
               alt="Chef Choice Menu"
             />
@@ -47,7 +67,7 @@ export default function Header() {
               Services
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
-            
+
             <Link href="/blog" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
               Blog
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
@@ -66,17 +86,55 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="hidden md:block animate-slide-left">
-            <Link 
-              href="/book-chef"
+          <div className="hidden md:flex items-center space-x-4 animate-slide-left">
+            <button
+              onClick={() => setIsBookingModalOpen(true)}
               className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             >
               Book Now
-            </Link>
+            </button>
+
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 px-4 py-2.5 rounded-full border-2 border-primary-500 text-primary-600 hover:bg-primary-50 transition-all duration-300"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="font-medium">{user.first_name}</span>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50">
+                    <Link
+                      href="/dashboard"
+                      className="block px-4 py-2 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center space-x-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="px-6 py-2.5 rounded-full border-2 border-primary-500 text-primary-600 hover:bg-primary-50 transition-all duration-300 font-semibold"
+              >
+                Login
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
+          <button
             className="md:hidden text-gray-700 hover:text-primary-500 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -91,51 +149,93 @@ export default function Header() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 pb-4 space-y-4 animate-slide-down">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="block text-gray-700 hover:text-primary-500 transition-colors font-medium py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
-            <Link 
-              href="/about" 
+            <Link
+              href="/about"
               className="block text-gray-700 hover:text-primary-500 transition-colors font-medium py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
-            <Link 
-              href="/service" 
+            <Link
+              href="/service"
               className="block text-gray-700 hover:text-primary-500 transition-colors font-medium py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Services
             </Link>
-            <Link 
-              href="/blog" 
+            <Link
+              href="/blog"
               className="block text-gray-700 hover:text-primary-500 transition-colors font-medium py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Blog
             </Link>
-            <Link 
-              href="/contact" 
+            <Link
+              href="/contact"
               className="block text-gray-700 hover:text-primary-500 transition-colors font-medium py-2"
               onClick={() => setIsMenuOpen(false)}
             >
               Contact
             </Link>
-            <Link 
-              href="/book-chef"
-              className="block bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-full hover:shadow-lg transition-all font-semibold text-center"
-              onClick={() => setIsMenuOpen(false)}
+            <button
+              className="block w-full bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-full hover:shadow-lg transition-all font-semibold text-center"
+              onClick={() => {
+                setIsMenuOpen(false);
+                setIsBookingModalOpen(true);
+              }}
             >
               Book Now
-            </Link>
+            </button>
+
+            {isAuthenticated && user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="block text-center bg-primary-50 text-primary-600 px-6 py-3 rounded-full hover:bg-primary-100 transition-all font-semibold"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard ({user.first_name})
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="block w-full text-center text-red-600 px-6 py-3 rounded-full hover:bg-red-50 transition-all font-semibold"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+                className="block w-full text-center border-2 border-primary-500 text-primary-600 px-6 py-3 rounded-full hover:bg-primary-50 transition-all font-semibold"
+              >
+                Login
+              </button>
+            )}
           </div>
         )}
       </nav>
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+      <BookingFlowModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+      />
     </header>
   );
 }

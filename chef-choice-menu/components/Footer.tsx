@@ -1,15 +1,22 @@
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Heart } from 'lucide-react';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith('/dashboard')) return null;
+
   return (
     <footer className="bg-gradient-to-br from-earth-700 to-earth-900 text-white relative overflow-hidden">
       {/* Decorative SVG Background */}
       <div className="absolute inset-0 opacity-5">
         <svg className="w-full h-full" viewBox="0 0 1000 400">
-          <path d="M0 200 Q250 100 500 200 T1000 200" fill="none" stroke="currentColor" strokeWidth="2"/>
-          <path d="M0 220 Q250 120 500 220 T1000 220" fill="none" stroke="currentColor" strokeWidth="2"/>
-          <path d="M0 240 Q250 140 500 240 T1000 240" fill="none" stroke="currentColor" strokeWidth="2"/>
+          <path d="M0 200 Q250 100 500 200 T1000 200" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M0 220 Q250 120 500 220 T1000 220" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M0 240 Q250 140 500 240 T1000 240" fill="none" stroke="currentColor" strokeWidth="2" />
         </svg>
       </div>
 
@@ -20,7 +27,7 @@ export default function Footer() {
               Chef Choice Menu
             </h3>
             <p className="text-gray-300 leading-relaxed">
-              Discover the finest dishes crafted with love. Making every event 
+              Discover the finest dishes crafted with love. Making every event
               an unforgettable culinary journey.
             </p>
             <div className="mt-4 flex items-center space-x-2 text-sm text-gray-300">
@@ -30,7 +37,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
+          <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
             <h4 className="text-lg font-semibold mb-4 text-primary-300">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link href="/" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Home</Link></li>
@@ -41,7 +48,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
+          <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <h4 className="text-lg font-semibold mb-4 text-primary-300">Legal</h4>
             <ul className="space-y-2">
               <li><Link href="/privacy" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Privacy Policy</Link></li>
@@ -50,7 +57,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="animate-slide-up" style={{animationDelay: '0.3s'}}>
+          <div className="animate-slide-up" style={{ animationDelay: '0.3s' }}>
             <h4 className="text-lg font-semibold mb-4 text-primary-300">Contact Us</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-3 group">
