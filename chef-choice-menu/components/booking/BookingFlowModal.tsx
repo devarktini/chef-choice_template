@@ -160,11 +160,12 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
             <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
 
             {/* Modal Container */}
+            {/* Modal Container */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative bg-white w-full max-w-6xl h-[90vh] md:h-[85vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+                className="relative w-full h-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
             >
                 {/* Sidebar - Progress */}
                 <div className="w-full md:w-1/4 bg-gray-50 border-r border-gray-100 p-6 flex flex-col">
