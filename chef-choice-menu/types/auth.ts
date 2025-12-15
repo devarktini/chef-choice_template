@@ -27,7 +27,18 @@ export interface ServiceProviderProfile {
     updated_date: string;
     meta_info: Record<string, any>;
     user: string;
-    // Add other service provider specific fields as needed
+    provider_type: 'individual' | 'company';
+    service_type: string;
+    provides: string;
+    service_area: string;
+    company_name: string;
+    experience_years: number;
+    specialization: Record<string, any> | string[]; // Can be an object (from GET) or list (our intent) - making flexible
+    description: string;
+    services: Record<string, any>;
+    verified: boolean;
+    avg_rating: number;
+    review_count: number;
 }
 
 export interface Address {

@@ -6,6 +6,11 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { X, ChevronRight, ChevronLeft, Calendar as CalendarIcon, Utensils, Clock, Users, ChefHat, CheckCircle2, AlertCircle } from 'lucide-react';
 import MultiSelect from '@/components/ui/MultiSelect'; // Import the custom MultiSelect
+import { BookingService, Booking } from '@/services/bookingService';
+import { AddressService } from '@/services/addressService';
+import { Address } from '@/types/auth'; // Ensure this type exists or is imported correctly.
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 // --- Dummy Data ---
 const EVENT_TYPES = [
@@ -76,6 +81,7 @@ interface BookingData {
     selectedMenu: string[];
     guests: { adults: number; children: number; babies: number };
     serviceProviders: string[];
+    eventAddressId?: string;
 }
 
 const INITIAL_DATA: BookingData = {
@@ -87,13 +93,65 @@ const INITIAL_DATA: BookingData = {
     isMealConfigSkipped: false,
     selectedMenu: [],
     guests: { adults: 0, children: 0, babies: 0 },
-    serviceProviders: []
+    serviceProviders: [],
+    eventAddressId: ''
 };
 
-export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export default function BookingFlowModal({ isOpen, onClose, existingBooking }: { isOpen: boolean; onClose: () => void; existingBooking?: Booking }) {
     const [step, setStep] = useState(1);
-    const [data, setData] = useState<BookingData>(INITIAL_DATA);
+
+    // Initialize data from existingBooking if provided
+    const [data, setData] = useState<BookingData>(() => {
+        if (existingBooking) {
+            // Map API response to BookingData
+            return {
+                eventType: existingBooking.event_type || '',
+                dates: existingBooking.dates
+                    ? Object.values(existingBooking.dates).map(d => new Date(d))
+                    : [],
+                menuType: (existingBooking.food_cuisines_preferences?.type as any) || '',
+                cuisines: existingBooking.food_cuisines_preferences?.cuisines || [],
+                mealConfig: existingBooking.meal_timings || {},
+                isMealConfigSkipped: false, // Infer?
+                selectedMenu: existingBooking.menu_items_details?.items || [],
+                guests: existingBooking.guests || { adults: 0, children: 0, babies: 0 },
+                serviceProviders: existingBooking.services_selections?.providers || [],
+                eventAddressId: existingBooking.event_address?.id || ''
+            };
+        }
+        return INITIAL_DATA;
+    });
+
+    // Reset data when existingBooking changes (e.g. opening modal for different booking)
+    // This is important if the modal instance is reused
+    useMemo(() => {
+        if (isOpen && existingBooking) {
+            setData({
+                eventType: existingBooking.event_type || '',
+                dates: existingBooking.dates
+                    ? Object.values(existingBooking.dates).map(d => new Date(d))
+                    : [],
+                menuType: (existingBooking.food_cuisines_preferences?.type as any) || '',
+                cuisines: existingBooking.food_cuisines_preferences?.cuisines || [],
+                mealConfig: existingBooking.meal_timings || {},
+                isMealConfigSkipped: false,
+                selectedMenu: existingBooking.menu_items_details?.items || [],
+                guests: existingBooking.guests || { adults: 0, children: 0, babies: 0 },
+                serviceProviders: existingBooking.services_selections?.providers || [],
+                eventAddressId: existingBooking.event_address?.id || ''
+            });
+        } else if (isOpen && !existingBooking) {
+            // If opening fresh, reset to initial? 
+            // Better not reset here to avoid clearing if user just closed and reopened. 
+            // But if 'existingBooking' prop changes from undefined to defined, we must update.
+        }
+    }, [existingBooking, isOpen]);
+
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [loadingAddresses, setLoadingAddresses] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
     const totalSteps = 7;
 
@@ -125,11 +183,73 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log('Booking Submission:', data);
-        alert('Booking Captured (Check Console for details):\n' + JSON.stringify(data, null, 2));
-        onClose();
+        setIsSubmitting(true);
+        try {
+            // Map data to API payload
+            const payload = {
+                event_type: data.eventType,
+                event_address: data.eventAddressId,
+                dates: data.dates.reduce((acc, date) => {
+                    // Format date as YYYY-MM-DD
+                    const dateStr = date.toISOString().split('T')[0];
+                    return { ...acc, [dateStr]: dateStr };
+                }, {}),
+                food_cuisines_preferences: {
+                    type: data.menuType,
+                    cuisines: data.cuisines
+                },
+                meal_timings: data.mealConfig,
+                menu_items_details: {
+                    items: data.selectedMenu
+                },
+                booking_teams: {
+                    // Empty as per requirement, or we can map providers here?
+                    // The user said "services_selections" for providers in the prompt?
+                    // "services_selections": {}, "booking_teams": {}
+                    // Logic: "booking_teams" usually refers to staff? 
+                    // Let's verify prompt mapping: "services_selections": {} 
+                    // I will put providers in services_selections as it seems more appropriate.
+                },
+                guests: data.guests,
+                client_materials: {}, // Empty for now
+                services_selections: {
+                    providers: data.serviceProviders
+                },
+                other_requirements: {}
+            };
+
+            if (existingBooking) {
+                await BookingService.updateBooking(existingBooking.id, payload);
+                toast.success('Booking updated successfully!');
+            } else {
+                await BookingService.createBooking(payload);
+                toast.success('Booking request submitted successfully!');
+                // Redirect to bookings page for new bookings
+                router.push('/dashboard/bookings');
+            }
+
+            onClose();
+            // Force refresh if needed? The parent likely handles data refresh.
+        } catch (error: any) {
+            console.error('Booking Error:', error);
+            toast.error('Failed to submit booking: ' + (error.message || 'Unknown error'));
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    // Load addresses when reaching Summary step
+    useMemo(() => {
+        if (step === 7) {
+            setLoadingAddresses(true);
+            AddressService.getAddresses()
+                .then(setAddresses)
+                .catch(err => console.error('Failed to load addresses', err))
+                .finally(() => setLoadingAddresses(false));
+        }
+    }, [step]);
 
     // Validation Logic
     const canProceed = () => {
@@ -148,6 +268,7 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
             case 4: return data.selectedMenu.length > 0; // Unless logic says skippable? Assume mandatory if not skipped
             case 5: return (data.guests.adults + data.guests.children) > 0;
             case 6: return data.serviceProviders.length > 0; // Mandatory? User said "we can search... and select". Assume yes.
+            case 7: return !!data.eventAddressId && !isSubmitting;
             default: return true;
         }
     };
@@ -566,8 +687,43 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
                                             <CheckCircle2 className="w-6 h-6 text-primary-600 mt-1 shrink-0" />
                                             <div>
                                                 <p className="font-bold text-primary-800">Ready to Book?</p>
-                                                <p className="text-primary-700 text-sm">Our team will contact you shortly to confirm the availability and final quote.</p>
+                                                <p className="text-primary-700 text-sm">Please select the address for the event and confirm.</p>
                                             </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h3 className="text-lg font-semibold text-gray-800">Select Event Address</h3>
+                                            {loadingAddresses ? (
+                                                <div className="text-center py-4 text-gray-500">Loading addresses...</div>
+                                            ) : addresses.length === 0 ? (
+                                                <div className="p-4 border border-dashed border-red-300 bg-red-50 rounded-lg text-red-600">
+                                                    No addresses found. Please add an address in your profile first.
+                                                </div>
+                                            ) : (
+                                                <div className="grid gap-3">
+                                                    {addresses.map(addr => (
+                                                        <div
+                                                            key={addr.id}
+                                                            onClick={() => updateData({ eventAddressId: addr.id })}
+                                                            className={`p-4 border rounded-xl cursor-pointer transition-all ${data.eventAddressId === addr.id
+                                                                ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
+                                                                : 'border-gray-200 hover:border-primary-200'
+                                                                }`}
+                                                        >
+                                                            <div className="flex items-start justify-between">
+                                                                <div>
+                                                                    <p className="font-semibold text-gray-800">{addr.label}</p>
+                                                                    <p className="text-sm text-gray-600">
+                                                                        {addr.address_line1}, {addr.address_line2 ? addr.address_line2 + ', ' : ''}
+                                                                        {addr.city}, {addr.state} - {addr.zip_code}
+                                                                    </p>
+                                                                </div>
+                                                                {data.eventAddressId === addr.id && <CheckCircle2 className="w-5 h-5 text-primary-500" />}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -594,7 +750,7 @@ export default function BookingFlowModal({ isOpen, onClose }: { isOpen: boolean;
                             disabled={!canProceed()}
                             className="flex items-center px-8 py-3 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:transform-none"
                         >
-                            {step === totalSteps ? 'Confirm Selection' : 'Next Step'}
+                            {step === totalSteps ? (isSubmitting ? 'Submitting...' : 'Confirm Selection') : 'Next Step'}
                             {step !== totalSteps && <ChevronRight className="w-5 h-5 ml-2" />}
                         </button>
                     </div>

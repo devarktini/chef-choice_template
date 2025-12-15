@@ -4,13 +4,17 @@ import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { useAuthStore } from '@/stores/authStore';
 import { AuthService } from '@/services/authService';
-import { Address } from '@/types/auth';
+import { Address, ServiceProviderProfile } from '@/types/auth';
 import { AddressService as AddressApiService } from '@/services/addressService';
+import { ProviderService } from '@/services/providerService';
 import ConfirmationModal from '@/components/ConfirmationModal';
-import { Mail, Phone, MapPin, Calendar, Plus, Edit2, Trash2, X, Upload, Loader2, Search } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Plus, Edit2, Trash2, X, Upload, Loader2, Search, Briefcase, Award } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { useProgressStore } from '@/stores/progressStore';
 
 export default function ProfilePage() {
     const { user, clientProfile, tokens, login } = useAuthStore();
+    const { startLoading, stopLoading } = useProgressStore();
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -46,8 +50,29 @@ export default function ProfilePage() {
     const [profileFormError, setProfileFormError] = useState('');
     const [profileFormLoading, setProfileFormLoading] = useState(false);
 
+    // Service Provider Modal State
+    const [providerData, setProviderData] = useState<ServiceProviderProfile | null>(null);
+    const [isProviderModalOpen, setIsProviderModalOpen] = useState(false);
+    const [providerFormData, setProviderFormData] = useState({
+        provider_type: 'individual' as 'individual' | 'company',
+        service_type: '',
+        provides: '',
+        service_area: '',
+        company_name: '',
+        experience_years: 0,
+        specialization: '',
+        description: '',
+    });
+    const [providerFormError, setProviderFormError] = useState('');
+    const [providerFormLoading, setProviderFormLoading] = useState(false);
+    const [servicePincodeLoading, setServicePincodeLoading] = useState(false);
+    const [serviceLocationData, setServiceLocationData] = useState({ area: '', city: '', state: '', pincode: '' });
+
     useEffect(() => {
         fetchAddresses();
+        if (user?.role === 'service_provider') {
+            fetchProviderData();
+        }
     }, []);
 
     // Initialize profile form data when modal opens
@@ -66,12 +91,15 @@ export default function ProfilePage() {
 
     const fetchAddresses = async () => {
         try {
+            startLoading();
             const data = await AddressApiService.getAddresses();
             setAddresses(data);
         } catch (error) {
             console.error('Failed to fetch addresses', error);
+            toast.error('Failed to load addresses');
         } finally {
             setLoading(false);
+            stopLoading();
         }
     };
 
@@ -144,6 +172,7 @@ export default function ProfilePage() {
         e.preventDefault();
         setAddressFormLoading(true);
         setAddressFormError('');
+        startLoading();
 
         try {
             const payload = {
@@ -154,16 +183,20 @@ export default function ProfilePage() {
 
             if (editingAddress) {
                 await AddressApiService.updateAddress(editingAddress.id, payload);
+                toast.success('Address updated successfully');
             } else {
                 await AddressApiService.createAddress(payload);
+                toast.success('Address added successfully');
             }
 
             await fetchAddresses();
             handleCloseAddressModal();
         } catch (error: any) {
             setAddressFormError(error.message || 'Failed to save address');
+            toast.error(error.message || 'Failed to save address');
         } finally {
             setAddressFormLoading(false);
+            stopLoading();
         }
     };
 
@@ -175,15 +208,18 @@ export default function ProfilePage() {
         if (!deleteModal.addressId) return;
 
         setDeleteLoading(true);
+        startLoading();
         try {
             await AddressApiService.deleteAddress(deleteModal.addressId);
             await fetchAddresses();
             setDeleteModal({ isOpen: false, addressId: '' });
+            toast.success('Address deleted successfully');
         } catch (error) {
             console.error('Failed to delete address', error);
-            alert('Failed to delete address');
+            toast.error('Failed to delete address');
         } finally {
             setDeleteLoading(false);
+            stopLoading();
         }
     };
 
@@ -204,6 +240,7 @@ export default function ProfilePage() {
         e.preventDefault();
         setProfileFormLoading(true);
         setProfileFormError('');
+        startLoading();
 
         try {
             const formData = new FormData();
@@ -247,14 +284,170 @@ export default function ProfilePage() {
                     } : currentData.client_profile
                 };
                 AuthService.storeUserData(updatedData);
+                // Also update the store if login function supports partial update or re-init
+                // Since this uses useAuthStore, we might need to manually trigger a re-hydration or state update
+                // The logical existing flow was reload, but now we want SPA feel.
+                // Assuming login() call might not be appropriate here as it might require full object.
+                // Ideally, AuthService.storeUserData updates localStorage, so a reload would fix it.
+                // To avoid reload, we must update the store state.
+                // Let's assume useAuthStore syncs with localStorage or we can just force update if possible.
+                // For now, removing reload and letting the user see the success message.
+                // If the store doesn't auto-update from localStorage, we might need to call login(updatedData.user, updatedData.token).
+                if (updatedData.user && updatedData.access_token) {
+                    // We need to fetch current tokens because updatedData (from localStorage) might not have them in the right structure
+                    // and login() expects (data, tokens)
+                    const currentTokens = AuthService.getTokens();
+                    if (currentTokens.access) {
+                        login(updatedData, {
+                            access: currentTokens.access,
+                            refresh: currentTokens.refresh || ''
+                        });
+                    }
+                }
             }
 
-            alert('Profile updated successfully!');
-            window.location.reload();
+            toast.success('Profile updated successfully!');
+            setIsProfileModalOpen(false); // Close modal on success
         } catch (error: any) {
             setProfileFormError(error.message || 'Failed to update profile');
+            toast.error(error.message || 'Failed to update profile');
         } finally {
             setProfileFormLoading(false);
+            stopLoading();
+        }
+    };
+
+    // --- Service Provider Handlers ---
+
+    const fetchProviderData = async () => {
+        try {
+            startLoading();
+            const data = await ProviderService.getProvider();
+            setProviderData(data);
+        } catch (error) {
+            console.error('Failed to fetch provider data', error);
+        } finally {
+            stopLoading();
+        }
+    };
+
+    const handleOpenProviderModal = () => {
+        if (providerData) {
+            // Parse existing service_area if it exists
+            const parts = providerData.service_area.split(', ');
+            setServiceLocationData({
+                pincode: parts[0] || '',
+                area: parts[1] || '',
+                city: parts[2] || '',
+                state: parts[3] || '',
+            });
+            setProviderFormData({
+                provider_type: providerData.provider_type,
+                service_type: providerData.service_type,
+                provides: providerData.provides,
+                service_area: providerData.service_area,
+                company_name: providerData.company_name,
+                experience_years: providerData.experience_years,
+                specialization: Array.isArray(providerData.specialization)
+                    ? providerData.specialization.join(', ')
+                    : '',
+                description: providerData.description,
+            });
+        } else {
+            setServiceLocationData({ area: '', city: '', state: '', pincode: '' });
+            setProviderFormData({
+                provider_type: 'individual',
+                service_type: '',
+                provides: '',
+                service_area: '',
+                company_name: '',
+                experience_years: 0,
+                specialization: '',
+                description: '',
+            });
+        }
+        setProviderFormError('');
+        setIsProviderModalOpen(true);
+    };
+
+    const handleProviderInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setProviderFormData(prev => ({
+            ...prev,
+            [name]: name === 'experience_years' ? parseInt(value) || 0 : value
+        }));
+
+        // Trigger pincode lookup for service area
+        if (name === 'service_pincode' && value.length === 6) {
+            lookupServicePincode(value);
+        }
+    };
+
+    const lookupServicePincode = async (pincode: string) => {
+        setServicePincodeLoading(true);
+        try {
+            const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+            const data = await response.json();
+
+            if (data && data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
+                const office = data[0].PostOffice[0];
+                setServiceLocationData({
+                    pincode: pincode,
+                    area: office.Name,
+                    city: office.District,
+                    state: office.State
+                });
+            }
+        } catch (error) {
+            console.error('Pincode lookup failed', error);
+        } finally {
+            setServicePincodeLoading(false);
+        }
+    };
+
+    const handleProviderSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setProviderFormLoading(true);
+        setProviderFormError('');
+        startLoading();
+
+        try {
+            // Format service_area: "pincode, area, city, state"
+            const formattedServiceArea = [
+                serviceLocationData.pincode,
+                serviceLocationData.area,
+                serviceLocationData.city,
+                serviceLocationData.state
+            ].filter(Boolean).join(', ');
+
+            const payload = {
+                provider_type: providerFormData.provider_type,
+                service_type: providerFormData.service_type,
+                provides: providerFormData.provides,
+                service_area: formattedServiceArea,
+                company_name: providerFormData.company_name,
+                experience_years: providerFormData.experience_years,
+                specialization: {},
+                description: providerFormData.description,
+                services: {},
+            };
+
+            if (providerData) {
+                await ProviderService.updateProvider(providerData.id, payload);
+                toast.success('Provider details updated successfully');
+            } else {
+                await ProviderService.createProvider(payload);
+                toast.success('Provider details added successfully');
+            }
+
+            await fetchProviderData();
+            setIsProviderModalOpen(false);
+        } catch (error: any) {
+            setProviderFormError(error.message || 'Failed to save provider details');
+            toast.error(error.message || 'Failed to save provider details');
+        } finally {
+            setProviderFormLoading(false);
+            stopLoading();
         }
     };
 
@@ -270,61 +463,67 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Profile Card */}
-                <div className="bg-white rounded-xl shadow-md overflow-hidden relative group">
-                    {/* Header Banner */}
-                    <div className="h-32 bg-gradient-to-r from-primary-500 to-warm-500"></div>
-
-                    {/* Edit Button */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 relative">
+                    {/* Edit Button - Top Right */}
                     <button
                         onClick={() => setIsProfileModalOpen(true)}
-                        className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg backdrop-blur-sm transition-all"
+                        className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg shadow-sm hover:bg-primary-600 transition-colors"
                     >
-                        <Edit2 className="w-5 h-5" />
+                        <Edit2 className="w-4 h-4" />
+                        <span className="text-sm font-medium">Edit Profile</span>
                     </button>
 
-                    {/* Profile Content */}
-                    <div className="px-6 pb-6">
-                        <div className="flex flex-col md:flex-row md:items-end md:space-x-6 -mt-16">
+                    {/* Profile Header */}
+                    <div className="p-8 border-b border-gray-100">
+                        <div className="flex items-start gap-6">
                             {/* Avatar */}
-                            <div className="w-32 h-32 bg-white rounded-full border-4 border-white shadow-xl flex items-center justify-center overflow-hidden">
+                            <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary-100 shadow-sm">
                                 {user?.profile_picture ? (
                                     <img src={user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-r from-primary-500 to-warm-500 flex items-center justify-center text-white text-4xl font-bold">
+                                    <div className="w-full h-full bg-gradient-to-br from-primary-400 to-warm-400 flex items-center justify-center text-white text-3xl font-bold">
                                         {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
                                     </div>
                                 )}
                             </div>
 
-                            {/* Name and Role */}
-                            <div className="mt-4 md:mt-0 md:mb-4">
-                                <h2 className="text-2xl font-bold text-gray-800">
+                            {/* User Info */}
+                            <div className="flex-1">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-1">
                                     {user?.first_name} {user?.last_name}
                                 </h2>
-                                <p className="text-gray-600 capitalize">{user?.role?.replace('_', ' ')}</p>
-                                <span className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${user?.is_verified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                    }`}>
-                                    {user?.is_verified ? 'Verified' : 'Not Verified'}
-                                </span>
+                                <p className="text-gray-600 capitalize mb-3">{user?.role?.replace('_', ' ')}</p>
+                                <div className="flex items-center gap-3">
+                                    <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${user?.is_verified
+                                            ? 'bg-green-50 text-green-700 border border-green-200'
+                                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                                        }`}>
+                                        {user?.is_verified ? '✓ Verified' : 'Pending Verification'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Info Grid */}
+                    <div className="p-8 grid md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                            <div className="p-2 bg-primary-100 rounded-lg">
+                                <Mail className="w-5 h-5 text-primary-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-gray-500 mb-0.5">Email Address</p>
+                                <p className="font-semibold text-gray-900 truncate">{user?.email}</p>
                             </div>
                         </div>
 
-                        {/* Contact Information */}
-                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
-                                <Mail className="w-5 h-5 text-primary-600" />
-                                <div>
-                                    <p className="text-sm text-gray-500">Email</p>
-                                    <p className="font-medium text-gray-800">{user?.email}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                            <div className="p-2 bg-primary-100 rounded-lg">
                                 <Phone className="w-5 h-5 text-primary-600" />
-                                <div>
-                                    <p className="text-sm text-gray-500">Phone</p>
-                                    <p className="font-medium text-gray-800">{user?.phone_number}</p>
-                                </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-gray-500 mb-0.5">Phone Number</p>
+                                <p className="font-semibold text-gray-900">{user?.phone_number}</p>
                             </div>
                         </div>
                     </div>
@@ -408,9 +607,9 @@ export default function ProfilePage() {
 
                             <div>
                                 <p className="text-sm font-medium text-gray-500 mb-2">Culinary Preferences</p>
-                                {clientProfile.culinary_preferences.length > 0 ? (
+                                {clientProfile?.culinary_preferences?.length > 0 ? (
                                     <div className="flex flex-wrap gap-2">
-                                        {clientProfile.culinary_preferences.map((preference, index) => (
+                                        {clientProfile?.culinary_preferences?.map((preference, index) => (
                                             <span key={index} className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
                                                 {preference}
                                             </span>
@@ -421,6 +620,105 @@ export default function ProfilePage() {
                                 )}
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Service Provider Details Section */}
+                {user?.role === 'service_provider' && (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                                <Briefcase className="w-5 h-5 mr-2 text-primary-600" />
+                                Service Provider Details
+                            </h2>
+                            {providerData && (
+                                <button
+                                    onClick={handleOpenProviderModal}
+                                    className="flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
+                                >
+                                    <Edit2 className="w-4 h-4 mr-2" />
+                                    Edit Details
+                                </button>
+                            )}
+                        </div>
+
+                        {!providerData ? (
+                            <div className="text-center py-12 bg-gradient-to-br from-primary-50 to-warm-50 rounded-xl border-2 border-dashed border-primary-200">
+                                <Briefcase className="w-16 h-16 mx-auto mb-4 text-primary-400" />
+                                <p className="text-gray-600 mb-4">Add your professional details to get started</p>
+                                <button
+                                    onClick={handleOpenProviderModal}
+                                    className="px-6 py-3 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
+                                >
+                                    <Plus className="w-4 h-4 inline mr-2" />
+                                    Add Provider Details
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-xl shadow-md border border-gray-100">
+                                {/* Header */}
+                                <div className="border-b border-gray-100 p-6">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <div className="p-2 bg-primary-50 rounded-lg">
+                                                    <Briefcase className="w-5 h-5 text-primary-600" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-bold text-gray-900">
+                                                        {providerData.company_name || `${user.first_name} ${user.last_name}`}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600 capitalize">
+                                                        {providerData.provider_type} • {providerData.service_type}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-lg">
+                                            <Award className="w-5 h-5 text-primary-600" />
+                                            <div className="text-center">
+                                                <div className="text-lg font-bold text-gray-900">{providerData.avg_rating.toFixed(1)}</div>
+                                                <div className="text-xs text-gray-500">{providerData.review_count} reviews</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-6 space-y-4">
+                                    <div className="grid md:grid-cols-3 gap-4">
+                                        <div className="p-4 bg-cream-50 rounded-lg border border-primary-100">
+                                            <p className="text-xs font-medium text-primary-700 mb-1">Experience</p>
+                                            <p className="text-lg font-bold text-gray-900">{providerData.experience_years} years</p>
+                                        </div>
+                                        <div className="p-4 bg-cream-50 rounded-lg border border-primary-100">
+                                            <p className="text-xs font-medium text-primary-700 mb-1">Service Type</p>
+                                            <p className="text-lg font-bold text-gray-900 capitalize">{providerData.provides}</p>
+                                        </div>
+                                        <div className="p-4 bg-cream-50 rounded-lg border border-primary-100">
+                                            <p className="text-xs font-medium text-primary-700 mb-1">Service Area</p>
+                                            <p className="text-sm font-semibold text-gray-900">{providerData.service_area}</p>
+                                        </div>
+                                    </div>
+
+                                    {providerData.description && (
+                                        <div className="p-4 bg-gray-50 rounded-lg">
+                                            <p className="text-sm font-semibold text-gray-700 mb-2">About</p>
+                                            <p className="text-gray-600 leading-relaxed text-sm">{providerData.description}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                                        <span className={`px-4 py-2 rounded-lg text-xs font-semibold ${providerData.verified
+                                            ? 'bg-green-50 text-green-700 border border-green-200'
+                                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                                            }`}>
+                                            {providerData.verified ? '✓ Verified Provider' : '⏳ Pending Verification'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -652,6 +950,174 @@ export default function ProfilePage() {
                                         className="px-6 py-2 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50"
                                     >
                                         {profileFormLoading ? 'Updating...' : 'Update Profile'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Service Provider Modal */}
+                {isProviderModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsProviderModalOpen(false)}></div>
+                        <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-gray-800">
+                                    {providerData ? 'Edit Provider Details' : 'Add Provider Details'}
+                                </h3>
+                                <button onClick={() => setIsProviderModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleProviderSubmit} className="space-y-4">
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Provider Type</label>
+                                        <select
+                                            name="provider_type"
+                                            value={providerFormData.provider_type}
+                                            onChange={handleProviderInputChange}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            required
+                                        >
+                                            <option value="individual">Individual</option>
+                                            <option value="company">Company</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+                                        <input
+                                            type="text"
+                                            name="service_type"
+                                            value={providerFormData.service_type}
+                                            onChange={handleProviderInputChange}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            placeholder="e.g. Chef, Caterer, Hall"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Company Name (if applicable)</label>
+                                    <input
+                                        type="text"
+                                        name="company_name"
+                                        value={providerFormData.company_name}
+                                        onChange={handleProviderInputChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        placeholder="Leave blank for individual providers"
+                                    />
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Provides</label>
+                                        <input
+                                            type="text"
+                                            name="provides"
+                                            value={providerFormData.provides}
+                                            onChange={handleProviderInputChange}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            placeholder="What do you provide?"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Experience (years)</label>
+                                        <input
+                                            type="number"
+                                            name="experience_years"
+                                            value={providerFormData.experience_years}
+                                            onChange={handleProviderInputChange}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            min="0"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Service Area Pincode</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            name="service_pincode"
+                                            value={serviceLocationData.pincode}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                setServiceLocationData(prev => ({ ...prev, pincode: value }));
+                                                if (value.length === 6) {
+                                                    lookupServicePincode(value);
+                                                }
+                                            }}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            placeholder="Enter 6-digit Pincode"
+                                            required
+                                            maxLength={6}
+                                        />
+                                        {servicePincodeLoading && (
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    {serviceLocationData.area && (
+                                        <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
+                                            <p><strong>Area:</strong> {serviceLocationData.area}</p>
+                                            <p><strong>City:</strong> {serviceLocationData.city}</p>
+                                            <p><strong>State:</strong> {serviceLocationData.state}</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Specialization (comma-separated)</label>
+                                    <input
+                                        type="text"
+                                        name="specialization"
+                                        value={providerFormData.specialization}
+                                        onChange={handleProviderInputChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        placeholder="e.g. Italian, Indian, Chinese"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea
+                                        name="description"
+                                        value={providerFormData.description}
+                                        onChange={handleProviderInputChange}
+                                        rows={4}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        placeholder="Tell us about your services..."
+                                    />
+                                </div>
+
+                                {providerFormError && (
+                                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                                        {providerFormError}
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end space-x-3 mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsProviderModalOpen(false)}
+                                        className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                                        disabled={providerFormLoading}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={providerFormLoading}
+                                        className="px-6 py-2 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+                                    >
+                                        {providerFormLoading ? 'Saving...' : 'Save Details'}
                                     </button>
                                 </div>
                             </form>

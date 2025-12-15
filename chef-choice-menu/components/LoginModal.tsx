@@ -74,7 +74,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         setError('');
 
         try {
-            const response = await AuthService.verifyOTP(phoneNumber, otp);
+            const response = await AuthService.verifyOTP(phoneNumber, otp, role);
 
             // Store authentication data
             // We assume the verified token allows us to proceed.
@@ -211,8 +211,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     <button
                                         onClick={() => setRole('client')}
                                         className={`p-3 rounded-lg border-2 transition-all font-medium ${role === 'client'
-                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                                : 'border-gray-200 hover:border-primary-200 text-gray-600'
+                                            ? 'border-primary-500 bg-primary-50 text-primary-700'
+                                            : 'border-gray-200 hover:border-primary-200 text-gray-600'
                                             }`}
                                     >
                                         Client
@@ -220,8 +220,8 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                                     <button
                                         onClick={() => setRole('service_provider')}
                                         className={`p-3 rounded-lg border-2 transition-all font-medium ${role === 'service_provider'
-                                                ? 'border-primary-500 bg-primary-50 text-primary-700'
-                                                : 'border-gray-200 hover:border-primary-200 text-gray-600'
+                                            ? 'border-primary-500 bg-primary-50 text-primary-700'
+                                            : 'border-gray-200 hover:border-primary-200 text-gray-600'
                                             }`}
                                     >
                                         Service Provider

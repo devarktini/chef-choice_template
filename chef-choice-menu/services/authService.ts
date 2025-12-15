@@ -35,18 +35,24 @@ export class AuthService {
     /**
      * Verify OTP code
      */
-    static async verifyOTP(phoneNumber: string, code: string): Promise<VerifyOTPResponse> {
+    static async verifyOTP(phoneNumber: string, code: string, role?: string): Promise<VerifyOTPResponse> {
         try {
+            const body: any = {
+                phone_number: phoneNumber,
+                code: code,
+            };
+
+            if (role) {
+                body.role = role;
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp/`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    phone_number: phoneNumber,
-                    code: code,
-                }),
+                body: JSON.stringify(body),
             });
 
             if (!response.ok) {
