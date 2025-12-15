@@ -930,7 +930,7 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                                     {data.otherRequirements.other && (
                                                         <div className="col-span-2">
                                                             <span className="text-gray-600 block">Notes</span>
-                                                            <span className="font-medium text-gray-800 italic">"{data.otherRequirements.other}"</span>
+                                                            <span className="font-medium text-gray-800 italic">&quot;{data.otherRequirements.other}&quot;</span>
                                                         </div>
                                                     )}
                                                 </div>

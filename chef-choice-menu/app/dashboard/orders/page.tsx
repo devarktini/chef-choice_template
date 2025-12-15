@@ -85,7 +85,7 @@ export default function OrdersPage() {
                         </div>
                         <h3 className="text-lg font-bold text-gray-800 mb-2">No Orders Yet</h3>
                         <p className="text-gray-500 max-w-sm mx-auto">
-                            You haven't received any service requests yet. Complete your profile to improve visibility.
+                            You haven&apos;t received any service requests yet. Complete your profile to improve visibility.
                         </p>
                     </div>
                 ) : (
