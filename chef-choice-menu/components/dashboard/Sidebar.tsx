@@ -13,7 +13,8 @@ import {
     Menu,
     X,
     ClipboardList,
-    Landmark
+    Landmark,
+    FileText
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -34,6 +35,8 @@ export default function Sidebar() {
         { name: 'Profile', href: '/dashboard/profile', icon: User },
         { name: 'Order', href: '/dashboard/orders', icon: ClipboardList },
         { name: 'Bank Accounts', href: '/dashboard/bank-accounts', icon: Landmark },
+        { name: 'Documents', href: '/dashboard/documents', icon: FileText },
+        { name: 'Services', href: '/dashboard/services', icon: Briefcase },
     ];
 
     const menuItems = user?.role === 'service_provider' ? serviceProviderMenuItems : clientMenuItems;

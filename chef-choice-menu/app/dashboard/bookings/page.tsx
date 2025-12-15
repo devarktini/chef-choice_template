@@ -1,12 +1,18 @@
 "use client";
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import { Calendar, Clock, MapPin, User, ChefHat, AlertCircle, Loader2, ChevronLeft, ChevronRight, Eye, Edit2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, ChefHat, AlertCircle, Loader2, ChevronLeft, ChevronRight, Eye, Edit2, CreditCard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { BookingService, Booking } from '@/services/bookingService';
 import BookingFlowModal from '@/components/booking/BookingFlowModal';
 import BookingDetailsModal from '@/components/booking/BookingDetailsModal';
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast'; // Kept for existing toasts
+import { toast as sonnerToast } from 'sonner'; // Added for PaymentService which uses sonner toast style messages
+import { PaymentService } from '@/services/paymentService';
+import { loadRazorpayScript } from '@/utils/razorpay';
+import { useAuthStore } from '@/stores/authStore';
+import ReviewModal from '@/components/booking/ReviewModal';
+import PaymentHistoryModal from '@/components/booking/PaymentHistoryModal';
 
 export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -27,6 +33,79 @@ export default function BookingsPage() {
     const [viewingBooking, setViewingBooking] = useState<Booking | undefined>(undefined);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+    // Review Modal
+    const [reviewingBooking, setReviewingBooking] = useState<Booking | undefined>(undefined);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+    // Payment History Modal
+    const [viewingPaymentsBooking, setViewingPaymentsBooking] = useState<Booking | undefined>(undefined);
+    const [isPaymentHistoryOpen, setIsPaymentHistoryOpen] = useState(false);
+
+    const { user } = useAuthStore();
+    const [isProcessingPaymentId, setIsProcessingPaymentId] = useState<string | null>(null);
+
+    const handlePayment = async (booking: Booking, type: 'token' | 'final' = 'token') => {
+        setIsProcessingPaymentId(booking.id);
+        try {
+            const isScriptLoaded = await loadRazorpayScript();
+            if (!isScriptLoaded) {
+                sonnerToast.error('Razorpay SDK failed to load. Are you online?');
+                return;
+            }
+
+            // Determine amount based on type
+            let amount = 0;
+            if (type === 'token') {
+                amount = Number(booking.token_amount_required || 0);
+            } else {
+                // Final payment placeholder logic
+                amount = 5000; // Placeholder final amount
+            }
+
+            const order = await PaymentService.createOrder(booking.id, amount, type);
+
+            const options = {
+                key: order.key || order.key_id,
+                amount: order.amount,
+                currency: "INR",
+                name: "Chef Choice Menu",
+                description: `${type === 'token' ? 'Token' : 'Final'} Payment for Booking #${booking.id}`,
+                order_id: order.order_id,
+                handler: async function (response: any) {
+                    try {
+                        const verifyData = {
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                        };
+                        await PaymentService.verifyPayment(booking.id, verifyData);
+                        sonnerToast.success('Payment Successful!');
+                        fetchBookings(currentPage);
+                    } catch (error) {
+                        sonnerToast.error('Payment verification failed');
+                    }
+                },
+                prefill: {
+                    name: `${user?.first_name} ${user?.last_name}`,
+                    email: user?.email,
+                    contact: user?.phone_number,
+                },
+                theme: {
+                    color: "#F97316",
+                },
+            };
+
+            const paymentObject = new (window as any).Razorpay(options);
+            paymentObject.open();
+
+        } catch (error) {
+            console.error('Payment Error:', error);
+            sonnerToast.error('Failed to initiate payment');
+        } finally {
+            setIsProcessingPaymentId(null);
+        }
+    };
+
     useEffect(() => {
         fetchBookings(currentPage);
     }, [currentPage]);
@@ -38,7 +117,6 @@ export default function BookingsPage() {
             setBookings(response.results);
             setNextPage(response.next);
             setPrevPage(response.previous);
-            // Calculate total pages roughly if count is mostly accurate
             setTotalPages(Math.ceil(response.count / 10)); // Assuming 10 per page default
         } catch (err: any) {
             setError(err.message || 'Failed to fetch bookings');
@@ -69,6 +147,11 @@ export default function BookingsPage() {
         setViewingBooking(undefined);
     };
 
+    const handleViewPayments = (booking: Booking) => {
+        setViewingPaymentsBooking(booking);
+        setIsPaymentHistoryOpen(true);
+    };
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'confirmed':
@@ -77,9 +160,16 @@ export default function BookingsPage() {
                 return 'bg-yellow-100 text-yellow-700';
             case 'cancelled':
                 return 'bg-red-100 text-red-700';
+            case 'completed':
+                return 'bg-blue-100 text-blue-700';
             default:
                 return 'bg-gray-100 text-gray-700';
         }
+    };
+
+    const handleReview = (booking: Booking) => {
+        setReviewingBooking(booking);
+        setIsReviewModalOpen(true);
     };
 
     return (
@@ -113,6 +203,19 @@ export default function BookingsPage() {
                             // Helper to get formatted date and time
                             const dateKey = Object.keys(booking.dates || {})[0];
                             const time = dateKey && booking.meal_timings?.[dateKey]?.time;
+
+                            // Status and Payment logic
+                            const hasPaidToken = booking.payments?.some(p => p.payment_type === 'token' && p.status === 'success');
+                            const hasPaidFinal = booking.payments?.some(p => p.payment_type === 'final' && p.status === 'success');
+                            const tokenAmount = Number(booking.token_amount_required || 0);
+
+                            const isApproved = booking.request_status?.toLowerCase() === 'approved';
+                            const isConfirmed = booking.request_status?.toLowerCase() === 'confirmed';
+                            const isCompleted = booking.request_status?.toLowerCase() === 'completed';
+
+                            const showTokenPay = user?.role === 'client' && isApproved && tokenAmount > 0 && !hasPaidToken;
+                            const showFinalPay = user?.role === 'client' && isConfirmed && !hasPaidFinal;
+                            const showReview = user?.role === 'client' && isCompleted;
 
                             return (
                                 <div
@@ -170,6 +273,55 @@ export default function BookingsPage() {
                                                 {booking.request_status}
                                             </span>
                                             <div className="flex space-x-2">
+                                                {showTokenPay && (
+                                                    <button
+                                                        onClick={() => handlePayment(booking, 'token')}
+                                                        disabled={isProcessingPaymentId === booking.id}
+                                                        className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                                    >
+                                                        {isProcessingPaymentId === booking.id ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                                        ) : (
+                                                            <CreditCard className="w-4 h-4 mr-2" />
+                                                        )}
+                                                        Pay Token (₹{tokenAmount})
+                                                    </button>
+                                                )}
+
+                                                {showFinalPay && (
+                                                    <button
+                                                        onClick={() => handlePayment(booking, 'final')}
+                                                        disabled={isProcessingPaymentId === booking.id}
+                                                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                                    >
+                                                        {isProcessingPaymentId === booking.id ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                                        ) : (
+                                                            <CreditCard className="w-4 h-4 mr-2" />
+                                                        )}
+                                                        Final Pay (Complete)
+                                                    </button>
+                                                )}
+
+                                                {showReview && (
+                                                    <button
+                                                        onClick={() => handleReview(booking)}
+                                                        className="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-500 transition-all text-sm font-bold flex items-center shadow-sm"
+                                                    >
+                                                        <CreditCard className="w-4 h-4 mr-2" /> {/* Maybe Star icon? */}
+                                                        Review
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    onClick={() => handleViewPayments(booking)}
+                                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-medium flex items-center"
+                                                    title="View Payment History"
+                                                >
+                                                    <span className="text-base mr-2">💰</span>
+                                                    Wallet
+                                                </button>
+
                                                 <button
                                                     onClick={() => handleView(booking)}
                                                     className="px-4 py-2 border border-primary-500 text-primary-600 rounded-lg hover:bg-primary-50 transition-all text-sm font-medium flex items-center"
@@ -241,6 +393,29 @@ export default function BookingsPage() {
                     onClose={handleCloseViewModal}
                     booking={viewingBooking}
                 />
+
+                {/* Payment History Modal */}
+                <PaymentHistoryModal
+                    isOpen={isPaymentHistoryOpen}
+                    onClose={() => {
+                        setIsPaymentHistoryOpen(false);
+                        setViewingPaymentsBooking(undefined);
+                    }}
+                    booking={viewingPaymentsBooking}
+                />
+
+                {/* Review Modal */}
+                {reviewingBooking && (
+                    <ReviewModal
+                        isOpen={isReviewModalOpen}
+                        onClose={() => {
+                            setIsReviewModalOpen(false);
+                            setReviewingBooking(undefined);
+                        }}
+                        booking={reviewingBooking}
+                        onSuccess={() => fetchBookings(currentPage)}
+                    />
+                )}
             </div>
         </DashboardLayout>
     );

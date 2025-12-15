@@ -15,6 +15,7 @@ interface MultiSelectProps {
     onChange: (value: string[]) => void;
     placeholder?: string;
     label?: string;
+    disabled?: boolean;
 }
 
 export default function MultiSelect({
@@ -22,7 +23,8 @@ export default function MultiSelect({
     value,
     onChange,
     placeholder = "Select options...",
-    label
+    label,
+    disabled = false
 }: MultiSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
@@ -53,6 +55,7 @@ export default function MultiSelect({
 
     const handleRemove = (e: React.MouseEvent, optionValue: string) => {
         e.stopPropagation();
+        if (disabled) return;
         onChange(value.filter(v => v !== optionValue));
     };
 
@@ -61,9 +64,9 @@ export default function MultiSelect({
             {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
 
             <div
-                className={`min-h-[42px] w-full border rounded-lg bg-white px-3 py-2 cursor-pointer flex flex-wrap gap-2 items-center transition-all ${isOpen ? 'border-primary-500 ring-2 ring-primary-100' : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                onClick={() => setIsOpen(!isOpen)}
+                className={`min-h-[42px] w-full border rounded-lg bg-white px-3 py-2 flex flex-wrap gap-2 items-center transition-all ${disabled ? 'bg-gray-100 cursor-not-allowed border-gray-200' : 'cursor-pointer border-gray-300 hover:border-gray-400'
+                    } ${isOpen ? 'border-primary-500 ring-2 ring-primary-100' : ''}`}
+                onClick={() => !disabled && setIsOpen(!isOpen)}
             >
                 {value.length === 0 ? (
                     <span className="text-gray-400 text-sm">{placeholder}</span>
@@ -110,8 +113,8 @@ export default function MultiSelect({
                                 <div
                                     key={option.value}
                                     className={`flex items-center px-3 py-2 rounded-md cursor-pointer text-sm transition-colors ${value.includes(option.value)
-                                            ? 'bg-primary-50 text-primary-900'
-                                            : 'text-gray-700 hover:bg-gray-50'
+                                        ? 'bg-primary-50 text-primary-900'
+                                        : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                     onClick={() => handleSelect(option.value)}
                                 >

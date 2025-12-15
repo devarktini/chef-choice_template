@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import { useProgressStore } from '@/stores/progressStore';
 
 export default function ProfilePage() {
-    const { user, clientProfile, tokens, login } = useAuthStore();
+    const { user, clientProfile, tokens, login, updateUser } = useAuthStore();
     const { startLoading, stopLoading } = useProgressStore();
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,10 +70,23 @@ export default function ProfilePage() {
 
     useEffect(() => {
         fetchAddresses();
+        fetchUserDetails();
         if (user?.role === 'service_provider') {
             fetchProviderData();
         }
     }, []);
+
+    const fetchUserDetails = async () => {
+        if (!user?.id) return;
+        try {
+            const freshUser = await AuthService.getUser(user.id);
+            if (freshUser) {
+                updateUser(freshUser);
+            }
+        } catch (error) {
+            console.error('Failed to fetch user details', error);
+        }
+    };
 
     // Initialize profile form data when modal opens
     useEffect(() => {
@@ -495,8 +508,8 @@ export default function ProfilePage() {
                                 <p className="text-gray-600 capitalize mb-3">{user?.role?.replace('_', ' ')}</p>
                                 <div className="flex items-center gap-3">
                                     <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${user?.is_verified
-                                            ? 'bg-green-50 text-green-700 border border-green-200'
-                                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                                        ? 'bg-green-50 text-green-700 border border-green-200'
+                                        : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
                                         }`}>
                                         {user?.is_verified ? '✓ Verified' : 'Pending Verification'}
                                     </span>

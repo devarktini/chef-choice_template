@@ -30,10 +30,33 @@ export interface Booking {
         babies: number;
         children: number;
     };
+    service_provider: {
+        id: string;
+        name: string;
+        company_name: string;
+        service_type: string;
+        provider_type: string;
+    };
     services_selections: {
         providers: string[];
     };
     request_status: string;
+    token_amount_required?: number;
+    payments?: {
+        id: string;
+        payment_type: 'token' | 'final';
+        amount: number;
+        status: 'success' | 'pending' | 'failed';
+        created_at: string;
+    }[];
+    payment_details?: {
+        id: string;
+        payment_type: 'token' | 'final';
+        amount: number;
+        status: 'success' | 'pending' | 'failed';
+        created_at: string;
+        // Add other fields if known, or keep generic for now
+    }[];
     // ... add other fields as needed
 }
 

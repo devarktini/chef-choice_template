@@ -59,4 +59,13 @@ export const useAuthStore = create<AuthState>((set) => ({
             });
         }
     },
+
+    updateUser: (user) => {
+        set({ user });
+        // Also update local storage to persist
+        const currentData = AuthService.getUserData();
+        if (currentData) {
+            AuthService.storeUserData({ ...currentData, user });
+        }
+    }
 }));

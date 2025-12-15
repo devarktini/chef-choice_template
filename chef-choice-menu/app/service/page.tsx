@@ -2,11 +2,34 @@
 import { Heart, Sparkles, Users, Building, Home, Star, Award, ChevronRight, ChefHat, Utensils, UtensilsCrossed, Wine, X } from 'lucide-react';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ProviderService } from '@/services/providerService';
+import { ServiceProviderProfile } from '@/types/auth';
 
 export default function ServicePage() {
   const [selectedService, setSelectedService] = useState<any>(null);
+  const [providers, setProviders] = useState<ServiceProviderProfile[]>([]);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const data = await ProviderService.searchProviders();
+        if (Array.isArray(data)) {
+          setProviders(data);
+        } else if (data && typeof data === 'object' && 'results' in data && Array.isArray((data as any).results)) {
+          setProviders((data as any).results);
+        } else {
+          console.warn('Unexpected providers data structure:', data);
+          setProviders([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch providers', error);
+        setProviders([]);
+      }
+    };
+    fetchProviders();
+  }, []);
 
   const services = [
     {
@@ -129,9 +152,9 @@ export default function ServicePage() {
                   <p className="text-orange-600 font-semibold mb-3">{service.subtitle}</p>
                   <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
-                
-                <button 
-                  onClick={() => setSelectedService(service)} 
+
+                <button
+                  onClick={() => setSelectedService(service)}
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   Learn More
@@ -157,7 +180,7 @@ export default function ServicePage() {
                         <p className="text-orange-600 font-semibold text-lg">{selectedService.subtitle}</p>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setSelectedService(null)}
                       className="text-gray-400 hover:text-gray-600 transition-colors"
                     >
@@ -167,7 +190,7 @@ export default function ServicePage() {
 
                   {/* Full Description */}
                   <div className="space-y-4 text-gray-700 leading-relaxed">
-                    {selectedService?.fullDescription.map((paragraph:any, index:any) => (
+                    {selectedService?.fullDescription.map((paragraph: any, index: any) => (
                       <p key={index} className="text-lg">{paragraph}</p>
                     ))}
                   </div>
@@ -175,14 +198,14 @@ export default function ServicePage() {
                   {/* CTA Buttons */}
                   <div className="flex gap-4 mt-8">
                     <Link href="/contact">
-                    <button 
-                     
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      Book Now
-                    </button>
+                      <button
+
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                      >
+                        Book Now
+                      </button>
                     </Link>
-                    <button 
+                    <button
                       onClick={() => setSelectedService(null)}
                       className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-8 py-3 rounded-lg font-semibold transition-colors"
                     >
@@ -207,11 +230,11 @@ export default function ServicePage() {
               ].map((s, i) => (
                 <div key={i} className="group rounded-3xl shadow-xl overflow-hidden">
                   <div className="relative h-64">
-                    <Image 
-                      src={s.img} 
-                      alt={s.title} 
-                      fill 
-                      className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                    <Image
+                      src={s.img}
+                      alt={s.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                     <div className="absolute bottom-6 left-6 text-white">
@@ -223,6 +246,79 @@ export default function ServicePage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* New Service Providers Section */}
+        <section className="py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-4xl font-bold text-center mb-4">Our Service Providers</h2>
+            <p className="text-xl text-gray-600 text-center mb-16 max-w-2xl mx-auto">
+              Meet our top-rated professionals ready to make your event extraordinary
+            </p>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              {providers.map((provider) => (
+                <Link key={provider.id} href={`/service-provider/${provider.id}`}>
+                  <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border border-gray-100 h-full flex flex-col">
+                    <div className="h-32 bg-gradient-to-r from-orange-100 to-amber-100 relative">
+                      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
+                        <div className="w-16 h-16 rounded-full bg-white p-1 shadow-lg">
+                          <div className="w-full h-full rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-bold text-xl">
+                            {provider.company_name ? provider.company_name.charAt(0).toUpperCase() : <ChefHat className="w-8 h-8" />}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-10 p-6 flex-1 flex flex-col text-center">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">
+                        {provider.company_name || 'Individual Provider'}
+                      </h3>
+                      <p className="text-sm text-gray-500 mb-3 line-clamp-1">
+                        {provider.service_area?.split(',')[0]}
+                      </p>
+
+                      <div className="flex items-center justify-center gap-2 mb-4">
+                        <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium capitalize">
+                          {provider.provider_type}
+                        </span>
+                        {provider.avg_rating > 0 && (
+                          <span className="flex items-center gap-1 bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full font-medium">
+                            <Star className="w-3 h-3 fill-current" /> {provider.avg_rating}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1">
+                        {provider.description || "No description provided."}
+                      </p>
+
+                      <div className="flex flex-wrap justify-center gap-1 mb-4">
+                        {provider.service_type?.split(',').slice(0, 3).map((type, i) => (
+                          <span key={i} className="text-[10px] uppercase tracking-wider bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                            {type.trim()}
+                          </span>
+                        ))}
+                        {provider.service_type?.split(',').length > 3 && (
+                          <span className="text-[10px] text-gray-400 px-1 py-1">+More</span>
+                        )}
+                      </div>
+
+                      <button className="w-full mt-auto py-2 border border-orange-200 text-orange-600 rounded-lg text-sm font-semibold group-hover:bg-orange-50 transition-colors">
+                        View Profile
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+
+              {providers.length === 0 && (
+                <div className="col-span-full text-center py-12 text-gray-500">
+                  <p>No service providers found at the moment.</p>
+                </div>
+              )}
             </div>
           </div>
         </section>

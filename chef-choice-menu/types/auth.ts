@@ -88,4 +88,5 @@ export interface AuthState {
     login: (data: VerifyOTPResponse['data'], tokens: Tokens) => void;
     logout: () => void;
     initializeAuth: () => void;
+    updateUser: (user: User) => void;
 }

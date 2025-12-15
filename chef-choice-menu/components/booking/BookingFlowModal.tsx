@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import { X, ChevronRight, ChevronLeft, Calendar as CalendarIcon, Utensils, Clock, Users, ChefHat, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Calendar as CalendarIcon, Utensils, Clock, Users, ChefHat, CheckCircle2, AlertCircle, FileText } from 'lucide-react';
 import MultiSelect from '@/components/ui/MultiSelect'; // Import the custom MultiSelect
 import { BookingService, Booking } from '@/services/bookingService';
 import { AddressService } from '@/services/addressService';
@@ -82,6 +82,17 @@ interface BookingData {
     guests: { adults: number; children: number; babies: number };
     serviceProviders: string[];
     eventAddressId?: string;
+    // New fields
+    clientMaterials: {
+        providedMaterials: string[];
+        kitchenType: 'own_kitchen' | 'provided_kitchen' | ''; // own_kitchen = Chef brings, provided_kitchen = Client provides
+    };
+    otherRequirements: {
+        bartender: boolean;
+        waiters: boolean;
+        cleaners: boolean; // Added cleaners as likely common
+        other: string;
+    };
 }
 
 const INITIAL_DATA: BookingData = {
@@ -94,11 +105,23 @@ const INITIAL_DATA: BookingData = {
     selectedMenu: [],
     guests: { adults: 0, children: 0, babies: 0 },
     serviceProviders: [],
-    eventAddressId: ''
+    eventAddressId: '',
+    clientMaterials: {
+        providedMaterials: [],
+        kitchenType: ''
+    },
+    otherRequirements: {
+        bartender: false,
+        waiters: false,
+        cleaners: false,
+        other: ''
+    }
 };
 
 export default function BookingFlowModal({ isOpen, onClose, existingBooking }: { isOpen: boolean; onClose: () => void; existingBooking?: Booking }) {
+    const isRestricted = existingBooking?.request_status?.toLowerCase() === 'confirmed';
     const [step, setStep] = useState(1);
+
 
     // Initialize data from existingBooking if provided
     const [data, setData] = useState<BookingData>(() => {
@@ -116,7 +139,17 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                 selectedMenu: existingBooking.menu_items_details?.items || [],
                 guests: existingBooking.guests || { adults: 0, children: 0, babies: 0 },
                 serviceProviders: existingBooking.services_selections?.providers || [],
-                eventAddressId: existingBooking.event_address?.id || ''
+                eventAddressId: existingBooking.event_address?.id || '',
+                clientMaterials: {
+                    providedMaterials: [],
+                    kitchenType: ''
+                },
+                otherRequirements: {
+                    bartender: false,
+                    waiters: false,
+                    cleaners: false,
+                    other: ''
+                }
             };
         }
         return INITIAL_DATA;
@@ -138,7 +171,21 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                 selectedMenu: existingBooking.menu_items_details?.items || [],
                 guests: existingBooking.guests || { adults: 0, children: 0, babies: 0 },
                 serviceProviders: existingBooking.services_selections?.providers || [],
-                eventAddressId: existingBooking.event_address?.id || ''
+                eventAddressId: existingBooking.event_address?.id || '',
+                // Map new fields (Assuming API might return them in future, or defaults)
+                clientMaterials: {
+                    // Start with defaults or map from API if structure existed
+                    providedMaterials: [],
+                    kitchenType: ''
+                    // To do properly: existingBooking.client_materials?.provided_materials || []
+                },
+                otherRequirements: {
+                    bartender: false,
+                    waiters: false,
+                    cleaners: false,
+                    other: ''
+                    // To do properly: existingBooking.other_requirements?.bartender || false
+                }
             });
         } else if (isOpen && !existingBooking) {
             // If opening fresh, reset to initial? 
@@ -153,7 +200,7 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
-    const totalSteps = 7;
+    const totalSteps = 8;
 
     const updateData = (updates: Partial<BookingData>) => {
         setData(prev => ({ ...prev, ...updates }));
@@ -213,11 +260,19 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                     // I will put providers in services_selections as it seems more appropriate.
                 },
                 guests: data.guests,
-                client_materials: {}, // Empty for now
+                client_materials: {
+                    provided_materials: data.clientMaterials.providedMaterials,
+                    kitchen_type: data.clientMaterials.kitchenType
+                },
                 services_selections: {
                     providers: data.serviceProviders
                 },
-                other_requirements: {}
+                other_requirements: {
+                    bartender: data.otherRequirements.bartender,
+                    waiters: data.otherRequirements.waiters,
+                    cleaners: data.otherRequirements.cleaners,
+                    other_notes: data.otherRequirements.other
+                }
             };
 
             if (existingBooking) {
@@ -242,7 +297,7 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
 
     // Load addresses when reaching Summary step
     useMemo(() => {
-        if (step === 7) {
+        if (step === 8) {
             setLoadingAddresses(true);
             AddressService.getAddresses()
                 .then(setAddresses)
@@ -268,7 +323,8 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
             case 4: return data.selectedMenu.length > 0; // Unless logic says skippable? Assume mandatory if not skipped
             case 5: return (data.guests.adults + data.guests.children) > 0;
             case 6: return data.serviceProviders.length > 0; // Mandatory? User said "we can search... and select". Assume yes.
-            case 7: return !!data.eventAddressId && !isSubmitting;
+            case 7: return !!data.clientMaterials.kitchenType; // Kitchen type selection is mandatory? Let's assume yes for clarity.
+            case 8: return !!data.eventAddressId && !isSubmitting;
             default: return true;
         }
     };
@@ -303,7 +359,8 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                             { id: 4, label: 'Menu Selection', icon: Utensils },
                             { id: 5, label: 'Guests', icon: Users },
                             { id: 6, label: 'Service Provider', icon: ChefHat },
-                            { id: 7, label: 'Review', icon: CheckCircle2 },
+                            { id: 7, label: 'Materials & Reqs', icon: FileText },
+                            { id: 8, label: 'Review', icon: CheckCircle2 },
                         ].map((s) => (
                             <div
                                 key={s.id}
@@ -337,9 +394,16 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                 {step === 4 && "Select Your Menu"}
                                 {step === 5 && "Guest List"}
                                 {step === 6 && "Choose Service Provider"}
-                                {step === 7 && "Review & Confirm"}
+                                {step === 7 && "Materials & Requirements"}
+                                {step === 8 && "Review & Confirm"}
                             </h2>
                             <p className="text-gray-500 text-sm mt-1">Step {step} of {totalSteps}</p>
+                            {isRestricted && (step === 1 || step === 3 || step === 6 || step === 7) && (
+                                <p className="text-xs text-orange-600 font-medium mt-1 flex items-center">
+                                    <AlertCircle className="w-3 h-3 mr-1" />
+                                    This section is locked for confirmed bookings
+                                </p>
+                            )}
                         </div>
                         <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500">
                             <X className="w-6 h-6" />
@@ -366,11 +430,12 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                                 {EVENT_TYPES.map(type => (
                                                     <button
                                                         key={type.value}
-                                                        onClick={() => updateData({ eventType: type.value })}
+                                                        onClick={() => !isRestricted && updateData({ eventType: type.value })}
+                                                        disabled={isRestricted}
                                                         className={`p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-3 transition-all h-[120px] ${data.eventType === type.value
                                                             ? 'border-primary-500 bg-primary-50 text-primary-700 shadow-md'
                                                             : 'border-gray-100 hover:border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                            }`}
+                                                            } ${isRestricted ? 'opacity-70 cursor-not-allowed' : ''}`}
                                                     >
                                                         <span className="text-3xl">{type.icon}</span>
                                                         <span className="font-medium text-center leading-tight">{type.label}</span>
@@ -381,7 +446,7 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
 
                                         <div className="flex flex-col h-full">
                                             <h3 className="text-lg font-semibold text-gray-800 mb-4">When is it happening?</h3>
-                                            <div className="flex-1 bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col items-center">
+                                            <div className={`flex-1 bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col items-center ${isRestricted ? 'opacity-70 pointer-events-none' : ''}`}>
                                                 <DatePicker
                                                     selected={null}
                                                     onChange={(date: Date | null) => {
@@ -482,13 +547,14 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                                     checked={data.isMealConfigSkipped}
                                                     onChange={(e) => updateData({ isMealConfigSkipped: e.target.checked })}
                                                     className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500"
+                                                    disabled={isRestricted}
                                                 />
                                                 <span className="font-semibold text-sm">Skip for now</span>
                                             </label>
                                         </div>
 
                                         {!data.isMealConfigSkipped && (
-                                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6">
+                                            <div className={`flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6 ${isRestricted ? 'opacity-70 pointer-events-none' : ''}`}>
                                                 {data.dates.map((date) => {
                                                     const dateKey = date.toISOString().split('T')[0];
                                                     const config = data.mealConfig[dateKey] || { meals: [], time: '' };
@@ -631,6 +697,7 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                                 onChange={(vals) => updateData({ serviceProviders: vals })}
                                                 placeholder="Search for chefs, catering services, or venues..."
                                                 label="Service Providers"
+                                                disabled={isRestricted}
                                             />
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
@@ -651,8 +718,158 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                     </div>
                                 )}
 
-                                {/* --- STEP 7: Summary --- */}
+                                {/* --- STEP 7: Client Materials & Requirements --- */}
                                 {step === 7 && (
+                                    <div className="space-y-8">
+                                        {/* 1. Kitchen Details */}
+                                        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                                <Utensils className="w-5 h-5 mr-2 text-primary-500" />
+                                                Kitchen Details
+                                            </h3>
+                                            <div className="grid md:grid-cols-2 gap-4">
+                                                {/* Own Kitchen */}
+                                                <label className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${data.clientMaterials.kitchenType === 'own_kitchen'
+                                                    ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
+                                                    : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                                    }`}>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${data.clientMaterials.kitchenType === 'own_kitchen' ? 'border-primary-500' : 'border-gray-300'}`}>
+                                                            {data.clientMaterials.kitchenType === 'own_kitchen' && <div className="w-2.5 h-2.5 rounded-full bg-primary-500" />}
+                                                        </div>
+                                                        <div>
+                                                            <span className="font-semibold text-gray-800 block">Chef Provides Kitchen</span>
+                                                            <span className="text-xs text-gray-500">Chef brings their own setup</span>
+                                                        </div>
+                                                    </div>
+                                                    <input
+                                                        type="radio"
+                                                        name="kitchenType"
+                                                        value="own_kitchen"
+                                                        checked={data.clientMaterials.kitchenType === 'own_kitchen'}
+                                                        onChange={() => updateData({ clientMaterials: { ...data.clientMaterials, kitchenType: 'own_kitchen' } })}
+                                                        className="hidden"
+                                                        disabled={isRestricted}
+                                                    />
+                                                </label>
+
+                                                {/* Provided Kitchen */}
+                                                <label className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${data.clientMaterials.kitchenType === 'provided_kitchen'
+                                                    ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
+                                                    : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                                    }`}>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${data.clientMaterials.kitchenType === 'provided_kitchen' ? 'border-primary-500' : 'border-gray-300'}`}>
+                                                            {data.clientMaterials.kitchenType === 'provided_kitchen' && <div className="w-2.5 h-2.5 rounded-full bg-primary-500" />}
+                                                        </div>
+                                                        <div>
+                                                            <span className="font-semibold text-gray-800 block">I Will Provide Kitchen</span>
+                                                            <span className="text-xs text-gray-500">Open kitchen / Facility available</span>
+                                                        </div>
+                                                    </div>
+                                                    <input
+                                                        type="radio"
+                                                        name="kitchenType"
+                                                        value="provided_kitchen"
+                                                        checked={data.clientMaterials.kitchenType === 'provided_kitchen'}
+                                                        onChange={() => updateData({ clientMaterials: { ...data.clientMaterials, kitchenType: 'provided_kitchen' } })}
+                                                        className="hidden"
+                                                        disabled={isRestricted}
+                                                    />
+                                                </label>
+                                            </div>
+
+                                            {isRestricted && (
+                                                <div className="absolute inset-0 z-10 bg-white/50" />
+                                            )}
+                                        </div>
+
+                                        {/* 2. Materials Provided */}
+                                        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                                <CheckCircle2 className="w-5 h-5 mr-2 text-green-500" />
+                                                Materials You Can Provide
+                                            </h3>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                                {['Utensils', 'Gas Stove', 'Water', 'Cleaning Supplies', 'Tables', 'Chairs'].map(item => (
+                                                    <label key={item} className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${data.clientMaterials.providedMaterials.includes(item)
+                                                        ? 'bg-green-50 border-green-200 text-green-800'
+                                                        : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'
+                                                        } ${isRestricted ? 'pointer-events-none opacity-80' : ''}`}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={data.clientMaterials.providedMaterials.includes(item)}
+                                                            onChange={(e) => {
+                                                                const current = data.clientMaterials.providedMaterials;
+                                                                const updated = e.target.checked
+                                                                    ? [...current, item]
+                                                                    : current.filter(i => i !== item);
+                                                                updateData({ clientMaterials: { ...data.clientMaterials, providedMaterials: updated } });
+                                                            }}
+                                                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500 mr-2"
+                                                            disabled={isRestricted}
+                                                        />
+                                                        <span className="text-sm font-medium">{item}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* 3. Additional Requirements */}
+                                        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                                <Users className="w-5 h-5 mr-2 text-blue-500" />
+                                                Additional Requirements
+                                            </h3>
+                                            <div className="grid md:grid-cols-3 gap-4 mb-4">
+                                                {[
+                                                    { key: 'bartender', label: 'Bartender', icon: '🍷' },
+                                                    { key: 'waiters', label: 'Waiters/Servers', icon: '🤵' },
+                                                    { key: 'cleaners', label: 'Cleaners', icon: '🧹' }
+                                                ].map(item => (
+                                                    <label key={item.key} className={`flex flex-col items-center justify-center p-4 rounded-xl border cursor-pointer transition-all aspect-square text-center ${isRestricted ? 'pointer-events-none opacity-80' : ''} ${
+                                                        // @ts-ignore    
+                                                        data.otherRequirements[item.key]
+                                                            ? 'bg-primary-50 border-primary-500 text-primary-700 shadow-md ring-1 ring-primary-500'
+                                                            : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                                                        }`}>
+                                                        <input
+                                                            type="checkbox"
+                                                            // @ts-ignore
+                                                            checked={data.otherRequirements[item.key]}
+                                                            // @ts-ignore
+                                                            onChange={(e) => updateData({ otherRequirements: { ...data.otherRequirements, [item.key]: e.target.checked } })}
+                                                            className="hidden"
+                                                            disabled={isRestricted}
+                                                        />
+                                                        <span className="text-3xl mb-2">{item.icon}</span>
+                                                        <span className="text-sm font-medium">{item.label}</span>
+                                                        {
+                                                            // @ts-ignore
+                                                            data.otherRequirements[item.key] && (
+                                                                <div className="absolute top-2 right-2 text-primary-500">
+                                                                    <CheckCircle2 className="w-4 h-4" />
+                                                                </div>
+                                                            )}
+                                                    </label>
+                                                ))}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">Other Request / Notes</label>
+                                                <textarea
+                                                    value={data.otherRequirements.other}
+                                                    onChange={(e) => updateData({ otherRequirements: { ...data.otherRequirements, other: e.target.value } })}
+                                                    placeholder="Any specific instructions or requests..."
+                                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none text-sm min-h-[80px]"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- STEP 8: Summary (Formerly Step 7) --- */}
+                                {step === 8 && (
                                     <div className="space-y-6">
                                         <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
                                             <div className="flex justify-between border-b border-gray-200 pb-4">
@@ -680,6 +897,43 @@ export default function BookingFlowModal({ isOpen, onClose, existingBooking }: {
                                                 <span className="font-bold text-gray-800 text-right">
                                                     {data.serviceProviders.map(p => SERVICE_PROVIDERS.find(sp => sp.value === p)?.label).join(', ')}
                                                 </span>
+                                            </div>
+
+                                            {/* Client Materials & Req Summary */}
+                                            <div className="pt-4 border-t border-gray-200">
+                                                <p className="font-semibold text-gray-800 mb-2">Requirements & Materials</p>
+                                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                                    <div>
+                                                        <span className="text-gray-600 block">Kitchen</span>
+                                                        <span className="font-medium text-gray-800">
+                                                            {data.clientMaterials.kitchenType === 'own_kitchen' ? 'Chef Provides' : 'Client Provides'}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-gray-600 block">Provided Materials</span>
+                                                        <span className="font-medium text-gray-800">
+                                                            {data.clientMaterials.providedMaterials.length > 0
+                                                                ? data.clientMaterials.providedMaterials.join(', ')
+                                                                : 'None'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="col-span-2">
+                                                        <span className="text-gray-600 block">Additional Staff</span>
+                                                        <span className="font-medium text-gray-800">
+                                                            {[
+                                                                data.otherRequirements.bartender && 'Bartender',
+                                                                data.otherRequirements.waiters && 'Waiters',
+                                                                data.otherRequirements.cleaners && 'Cleaners'
+                                                            ].filter(Boolean).join(', ') || 'None'}
+                                                        </span>
+                                                    </div>
+                                                    {data.otherRequirements.other && (
+                                                        <div className="col-span-2">
+                                                            <span className="text-gray-600 block">Notes</span>
+                                                            <span className="font-medium text-gray-800 italic">"{data.otherRequirements.other}"</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
 

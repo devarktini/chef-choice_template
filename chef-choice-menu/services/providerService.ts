@@ -75,4 +75,56 @@ export class ProviderService {
 
         return response.json();
     }
+    /**
+     * Get provider details by ID (Public)
+     */
+    static async getProviderById(id: string): Promise<ServiceProviderProfile | null> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/service-providers/${id}/`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store',
+            });
+
+            if (response.status === 404) {
+                return null;
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch provider details');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Get Provider By ID error:', error);
+            throw error;
+        }
+    }
+    /**
+     * Search/List all service providers
+     */
+    static async searchProviders(): Promise<ServiceProviderProfile[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/service-providers/search/`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch providers');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Search Providers error:', error);
+            throw error;
+        }
+    }
 }
