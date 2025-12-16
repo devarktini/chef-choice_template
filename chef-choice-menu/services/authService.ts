@@ -106,6 +106,7 @@ export class AuthService {
      * Store user data in localStorage
      */
     static storeUserData(data: any): void {
+    
         if (typeof window !== 'undefined') {
             localStorage.setItem('user_data', JSON.stringify(data));
         }
@@ -128,6 +129,29 @@ export class AuthService {
         try {
             const tokens = this.getTokens();
             const response = await fetch(`${API_BASE_URL}/api/users/${userId}/`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${tokens.access}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to fetch user details');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Get User error:', error);
+            throw error;
+        }
+    }
+
+        static async getUser1(): Promise<any> {
+        try {
+            const tokens = this.getTokens();
+            const response = await fetch(`${API_BASE_URL}/api/users/me/`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
