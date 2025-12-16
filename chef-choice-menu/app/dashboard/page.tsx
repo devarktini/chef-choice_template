@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Calendar, MessageSquare, Heart, TrendingUp, ClipboardList, Landmark, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { DashboardService } from '@/services/dashboardService';
+import Link from 'next/link';
 
 export default function DashboardPage() {
     const { user, clientProfile } = useAuthStore();
@@ -119,15 +120,15 @@ export default function DashboardPage() {
                             </>
                         ) : (
                             <>
-                                <button onClick={() => document.location.href = '/dashboard/bookings'} className="p-4 border-2 border-primary-500 text-primary-600 rounded-xl hover:bg-primary-50 transition-all font-semibold">
+                                <Link href='/dashboard/bookings' className="p-4 border-2 border-primary-500 text-primary-600 rounded-xl hover:bg-primary-50 transition-all font-semibold">
                                     Book a Chef
-                                </button>
-                                <button onClick={() => document.location.href = '/dashboard/bookings'} className="p-4 border-2 border-warm-500 text-warm-600 rounded-xl hover:bg-warm-50 transition-all font-semibold">
+                                </Link>
+                                <Link href='/dashboard/bookings' className="p-4 border-2 border-warm-500 text-warm-600 rounded-xl hover:bg-warm-50 transition-all font-semibold">
                                     View Bookings
-                                </button>
-                                <button className="p-4 border-2 border-accent-500 text-accent-600 rounded-xl hover:bg-accent-50 transition-all font-semibold">
-                                    Message Chef
-                                </button>
+                                </Link>
+                                <Link href='/dashboard/chats' className="p-4 border-2 border-accent-500 text-accent-600 rounded-xl hover:bg-accent-50 transition-all font-semibold">
+                                    Go to Chat
+                                </Link>
                             </>
                         )}
                     </div>

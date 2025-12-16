@@ -6,9 +6,10 @@ import { Menu, X, User, LogOut } from 'lucide-react';
 import LoginModal from './LoginModal';
 import BookingFlowModal from '@/components/booking/BookingFlowModal';
 import { useAuthStore } from '@/stores/authStore';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Header() {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -36,6 +37,8 @@ export default function Header() {
     setShowUserMenu(false);
     router.push('/');
   };
+  
+    // if (pathname?.startsWith('/dashboard')) return null;
 
   return (
     <header
@@ -54,6 +57,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Menu */}
+          {pathname?.startsWith('/dashboard') ? null : (    
           <div className="hidden md:flex items-center space-x-8 animate-slide-down">
             <Link href="/" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
               Home
@@ -85,6 +89,7 @@ export default function Header() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
           </div>
+          )}
 
           <div className="hidden md:flex items-center space-x-4 animate-slide-left">
             <button
