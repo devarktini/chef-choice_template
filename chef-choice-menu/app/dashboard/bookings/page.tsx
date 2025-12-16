@@ -181,9 +181,9 @@ export default function BookingsPage() {
                         <h1 className="text-3xl font-bold text-gray-800">My Bookings</h1>
                         <p className="text-gray-600 mt-1">View and manage your chef bookings</p>
                     </div>
-                    <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
+                    {/* <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
                         New Booking
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* Bookings List */}

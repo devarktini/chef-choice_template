@@ -79,14 +79,16 @@ export default function ProfilePage() {
     const fetchUserDetails = async () => {
         if (!user?.id) return;
         try {
-            const freshUser = await AuthService.getUser(user.id);
+            const freshUser = await AuthService.getUser1();
+            console.log("sssss", freshUser.data)
             if (freshUser) {
-                updateUser(freshUser);
+                updateUser(freshUser.data.user);
             }
         } catch (error) {
             console.error('Failed to fetch user details', error);
         }
     };
+    console.log("ssssssssssssssssssssss",user)
 
     // Initialize profile form data when modal opens
     useEffect(() => {
@@ -249,88 +251,124 @@ export default function ProfilePage() {
         }
     };
 
-    const handleProfileSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setProfileFormLoading(true);
-        setProfileFormError('');
-        startLoading();
+    // const handleProfileSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     setProfileFormLoading(true);
+    //     setProfileFormError('');
+    //     startLoading();
 
-        try {
-            const formData = new FormData();
-            formData.append('first_name', profileFormData.first_name);
-            formData.append('last_name', profileFormData.last_name);
-            formData.append('email', profileFormData.email);
-            formData.append('dietary_restrictions', profileFormData.dietary_restrictions);
-            formData.append('culinary_preferences', profileFormData.culinary_preferences);
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append('first_name', profileFormData.first_name);
+    //         formData.append('last_name', profileFormData.last_name);
+    //         formData.append('email', profileFormData.email);
+    //         formData.append('dietary_restrictions', profileFormData.dietary_restrictions);
+    //         formData.append('culinary_preferences', profileFormData.culinary_preferences);
 
-            if (profileImage) {
-                formData.append('profile_picture', profileImage);
-            }
+    //         if (profileImage) {
+    //             formData.append('profile_picture', profileImage);
+    //         }
 
-            // Update Profile
-            await AuthService.updateUserProfile(formData);
+    //         // Update Profile
+    //         await AuthService.updateUserProfile(formData);
 
-            // Fetch latest user data (standard fields)
-            let freshUser = user;
-            if (user?.id) {
-                try {
-                    freshUser = await AuthService.getUser(user.id);
-                } catch (e) {
-                    console.warn("Could not fetch fresh user details", e);
-                }
-            }
+    //         // Fetch latest user data (standard fields)
+    //         let freshUser = user;
+    //         if (user?.id) {
+    //             try {
+    //                 freshUser = await AuthService.getUser(user.id);
+    //             } catch (e) {
+    //                 console.warn("Could not fetch fresh user details", e);
+    //             }
+    //         }
 
-            // Update LocalStorage to ensure changes persist on reload
-            const currentData = AuthService.getUserData();
-            if (currentData) {
-                const updatedData = {
-                    ...currentData,
-                    // Merge fresh user details
-                    user: { ...currentData.user, ...freshUser },
-                    // Manually merge client profile preferences (optimistic update)
-                    // This ensures dietary restrictions show up immediately even if 
-                    // the user endpoint doesn't return the nested profile.
-                    client_profile: currentData.client_profile ? {
-                        ...currentData.client_profile,
-                        dietary_restrictions: profileFormData.dietary_restrictions.split(',').map((s: string) => s.trim()).filter(Boolean),
-                        culinary_preferences: profileFormData.culinary_preferences.split(',').map((s: string) => s.trim()).filter(Boolean),
-                    } : currentData.client_profile
-                };
-                AuthService.storeUserData(updatedData);
-                // Also update the store if login function supports partial update or re-init
-                // Since this uses useAuthStore, we might need to manually trigger a re-hydration or state update
-                // The logical existing flow was reload, but now we want SPA feel.
-                // Assuming login() call might not be appropriate here as it might require full object.
-                // Ideally, AuthService.storeUserData updates localStorage, so a reload would fix it.
-                // To avoid reload, we must update the store state.
-                // Let's assume useAuthStore syncs with localStorage or we can just force update if possible.
-                // For now, removing reload and letting the user see the success message.
-                // If the store doesn't auto-update from localStorage, we might need to call login(updatedData.user, updatedData.token).
-                if (updatedData.user && updatedData.access_token) {
-                    // We need to fetch current tokens because updatedData (from localStorage) might not have them in the right structure
-                    // and login() expects (data, tokens)
-                    const currentTokens = AuthService.getTokens();
-                    if (currentTokens.access) {
-                        login(updatedData, {
-                            access: currentTokens.access,
-                            refresh: currentTokens.refresh || ''
-                        });
-                    }
-                }
-            }
+    //         // Update LocalStorage to ensure changes persist on reload
+    //         const currentData = AuthService.getUserData();
+    //         if (currentData) {
+    //             const updatedData = {
+    //                 ...currentData,
+    //                 // Merge fresh user details
+    //                 user: { ...currentData.user, ...freshUser },
+    //                 // Manually merge client profile preferences (optimistic update)
+    //                 // This ensures dietary restrictions show up immediately even if 
+    //                 // the user endpoint doesn't return the nested profile.
+    //                 client_profile: currentData.client_profile ? {
+    //                     ...currentData.client_profile,
+    //                     dietary_restrictions: profileFormData.dietary_restrictions.split(',').map((s: string) => s.trim()).filter(Boolean),
+    //                     culinary_preferences: profileFormData.culinary_preferences.split(',').map((s: string) => s.trim()).filter(Boolean),
+    //                 } : currentData.client_profile
+    //             };
+    //             AuthService.storeUserData(updatedData);
+    //             // Also update the store if login function supports partial update or re-init
+    //             // Since this uses useAuthStore, we might need to manually trigger a re-hydration or state update
+    //             // The logical existing flow was reload, but now we want SPA feel.
+    //             // Assuming login() call might not be appropriate here as it might require full object.
+    //             // Ideally, AuthService.storeUserData updates localStorage, so a reload would fix it.
+    //             // To avoid reload, we must update the store state.
+    //             // Let's assume useAuthStore syncs with localStorage or we can just force update if possible.
+    //             // For now, removing reload and letting the user see the success message.
+    //             // If the store doesn't auto-update from localStorage, we might need to call login(updatedData.user, updatedData.token).
+    //             if (updatedData.user && updatedData.access_token) {
+    //                 // We need to fetch current tokens because updatedData (from localStorage) might not have them in the right structure
+    //                 // and login() expects (data, tokens)
+    //                 const currentTokens = AuthService.getTokens();
+    //                 if (currentTokens.access) {
+    //                     login(updatedData, {
+    //                         access: currentTokens.access,
+    //                         refresh: currentTokens.refresh || ''
+    //                     });
+    //                 }
+    //             }
+    //         }
 
-            toast.success('Profile updated successfully!');
-            setIsProfileModalOpen(false); // Close modal on success
-        } catch (error: any) {
-            setProfileFormError(error.message || 'Failed to update profile');
-            toast.error(error.message || 'Failed to update profile');
-        } finally {
-            setProfileFormLoading(false);
-            stopLoading();
-        }
-    };
+    //         toast.success('Profile updated successfully!');
+    //         setIsProfileModalOpen(false); // Close modal on success
+    //     } catch (error: any) {
+    //         setProfileFormError(error.message || 'Failed to update profile');
+    //         toast.error(error.message || 'Failed to update profile');
+    //     } finally {
+    //         setProfileFormLoading(false);
+    //         stopLoading();
+    //     }
+    // };
 
     // --- Service Provider Handlers ---
+
+
+    const handleProfileSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setProfileFormLoading(true);
+  setProfileFormError("");
+  startLoading();
+
+  try {
+    const formData = new FormData();
+    formData.append("first_name", profileFormData.first_name);
+    formData.append("last_name", profileFormData.last_name);
+    formData.append("email", profileFormData.email);
+    formData.append("dietary_restrictions", profileFormData.dietary_restrictions);
+    formData.append("culinary_preferences", profileFormData.culinary_preferences);
+
+    if (profileImage) {
+      formData.append("profile_picture", profileImage);
+    }
+
+    // ✅ 1. Update profile
+    await AuthService.updateUserProfile(formData);
+
+    // ✅ 2. Fetch fresh user details
+    await fetchUserDetails();
+
+    toast.success("Profile updated successfully!");
+    setIsProfileModalOpen(false);
+  } catch (error: any) {
+    setProfileFormError(error.message || "Failed to update profile");
+    toast.error(error.message || "Failed to update profile");
+  } finally {
+    setProfileFormLoading(false);
+    stopLoading();
+  }
+};
 
     const fetchProviderData = async () => {
         try {
@@ -492,7 +530,7 @@ export default function ProfilePage() {
                             {/* Avatar */}
                             <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary-100 shadow-sm">
                                 {user?.profile_picture ? (
-                                    <img src={user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                                    <img src={`${process.env.NEXT_PUBLIC_API_URL}${user.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-primary-400 to-warm-400 flex items-center justify-center text-white text-3xl font-bold">
                                         {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
