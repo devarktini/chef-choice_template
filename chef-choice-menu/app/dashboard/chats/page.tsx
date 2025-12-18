@@ -485,7 +485,7 @@ export default function ChatsPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-2">
+                  {/* <div className="flex items-center justify-between mt-2">
                     <p className="text-xs text-gray-400">
                       Messages sync automatically every 3 seconds
                     </p>
@@ -494,7 +494,7 @@ export default function ChatsPage() {
                         Conversation ID: {conversationId.slice(0, 12)}...
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </>
             ) : (
