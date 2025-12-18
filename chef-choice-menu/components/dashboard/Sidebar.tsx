@@ -500,7 +500,7 @@ export default function Sidebar() {
                   <ChefHat className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-white">Chef's Choice</h1>
+                  <h1 className="text-xl font-bold text-white">Chefs Choice</h1>
                   <p className="text-xs text-blue-100">Mobile Menu</p>
                 </div>
               </div>
