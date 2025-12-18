@@ -222,7 +222,7 @@ export default function BookingsPage() {
                                     key={booking.id}
                                     className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
                                 >
-                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between overflow-hidden space-y-4 lg:space-y-0">
                                         {/* Left Section */}
                                         <div className="space-y-3 flex-1">
                                             <div className="flex items-center space-x-3">
@@ -272,7 +272,7 @@ export default function BookingsPage() {
                                             <span className={`px-4 py-2 rounded-full text-sm font-medium capitalize ${getStatusColor(booking.request_status)}`}>
                                                 {booking.request_status}
                                             </span>
-                                            <div className="flex space-x-2">
+                                            <div className="flex flex-row items-center w-full   overflow-x-auto  space-x-2">
                                                 {showTokenPay && (
                                                     <button
                                                         onClick={() => handlePayment(booking, 'token')}
@@ -292,7 +292,7 @@ export default function BookingsPage() {
                                                     <button
                                                         onClick={() => handlePayment(booking, 'final')}
                                                         disabled={isProcessingPaymentId === booking.id}
-                                                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
+                                                        className="px-4 whitespace-nowrap py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all text-sm font-medium flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
                                                     >
                                                         {isProcessingPaymentId === booking.id ? (
                                                             <Loader2 className="w-4 h-4 animate-spin mr-2" />

@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </header>
 
         {/* Content - Scrollable */}
-        <main className="pt-16 lg:pt-0 h-full">
+        <main className="pt-0 pb-20 lg:pt-0 h-full">
           <div className="p-4 lg:p-6 min-h-full">
             {children}
           </div>

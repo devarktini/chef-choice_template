@@ -539,11 +539,11 @@ export default function Sidebar() {
               >
                 <div className="relative">
                   <Icon className="w-5 h-5" />
-                  {item.badge && (
+                  {/* {item.badge && (
                     <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                       {item.badge}
                     </span>
-                  )}
+                  )} */}
                 </div>
                 <span className="text-[10px] mt-1.5 font-medium">
                   {item.name}

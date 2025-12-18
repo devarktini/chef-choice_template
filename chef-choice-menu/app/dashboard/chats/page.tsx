@@ -15,6 +15,7 @@ interface ChatMessage {
   time: string;
   conversation_id: string;
   sender_name?: string;
+  isOptimistic?: boolean;
 }
 
 interface Conversation {
@@ -36,9 +37,12 @@ export default function ChatsPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [lastSyncTime, setLastSyncTime] = useState<string>('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const syncIntervalRef = useRef<NodeJS.Timeout>();
+  const initialLoadRef = useRef<boolean>(true);
 
   const selectedBooking = bookings.find(b => b.id === selectedBookingId);
   const conversationId = selectedBooking?.conversation?.id || '';
@@ -51,7 +55,9 @@ export default function ChatsPage() {
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   useEffect(() => {
@@ -64,9 +70,13 @@ export default function ChatsPage() {
       try {
         setLoading(true);
         const response = await BookingService.getBookings();
-        setBookings(response.results as BookingWithConversation[]);
-        if (response.results.length > 0) {
-          setSelectedBookingId(response.results[0].id);
+        const bookingsWithConversations = response.results.map((booking: any) => ({
+          ...booking,
+          conversation: booking.conversation || undefined
+        }));
+        setBookings(bookingsWithConversations);
+        if (bookingsWithConversations.length > 0 && !selectedBookingId) {
+          setSelectedBookingId(bookingsWithConversations[0].id);
         }
       } catch (error) {
         console.error('Failed to fetch bookings', error);
@@ -84,13 +94,14 @@ export default function ChatsPage() {
   const isMessageFromCurrentUser = useCallback((msg: any): boolean => {
     if (!user) return false;
 
-    if (msg.sender === user.id) {
-      return true;
-    }
+    // Handle optimistic messages
+    if (msg.sender === 'user') return true;
 
-    if (user.role === 'client' && msg.sender_role === 'client') {
-      return msg.sender === user.id;
-    }
+    // Handle server messages - check by user ID
+    if (msg.sender === user.id || msg.sender_id === user.id) return true;
+
+    // Check if message has sender_name indicating it's from current user
+    if (msg.sender_name === 'You' || msg.sender === user.id) return true;
 
     return false;
   }, [user]);
@@ -105,76 +116,106 @@ export default function ChatsPage() {
     if (isFromCurrentUser) {
       sender = 'user';
       sender_name = 'You';
-    } else if (msg.is_admin_message) {
+    } else if (msg.is_admin_message || msg.sender_role === 'admin') {
       sender = 'chef';
       sender_name = 'Support';
+    } else if (msg.sender_role === 'chef') {
+      sender = 'chef';
+      sender_name = 'Chef';
     } else if (msg.sender_role === 'client') {
       sender = 'chef';
       sender_name = 'Client';
     } else {
+      // Default fallback
       sender = 'chef';
-      sender_name = 'Chef';
+      sender_name = msg.sender_name || 'User';
     }
 
+    // Ensure we have a valid timestamp
+    const timestamp = msg.created_at || msg.time || new Date().toISOString();
+
     return {
-      id: msg.id,
+      id: msg.id || `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       text: msg.message || msg.text || '',
       sender: sender,
-      time: msg.created_at || new Date().toISOString(),
-      conversation_id: msg.conversation,
-      sender_name: sender_name
+      time: timestamp,
+      conversation_id: msg.conversation || msg.conversation_id || '',
+      sender_name: sender_name,
+      isOptimistic: msg.isOptimistic || false
     };
   }, [isMessageFromCurrentUser]);
 
   // Load initial messages
   const loadInitialMessages = useCallback(async (convId: string) => {
-    try {
-      const data = await ChatService.syncMessages(convId, '');
-      console.log('Loaded messages data:', data);
-      
-      if (data && Array.isArray(data)) {
-        const transformedMessages = data.map(transformMessage);
-        setMessages(transformedMessages);
-      }
-    } catch (error) {
-      console.error('Failed to load messages', error);
-    }
-  }, [transformMessage]);
-
-  // Sync new messages - FIXED VERSION
-  const syncMessages = useCallback(async (convId: string) => {
     if (!convId) return;
 
     try {
-      // Get the last message ID from current messages
-      const lastMessageId = messages.length > 0 ? messages[messages.length - 1]?.id : '';
-      console.log('Syncing messages with lastMessageId:', lastMessageId);
+      console.log('Loading initial messages for conversation:', convId);
+      const data = await ChatService.syncMessages(convId, '');
+      console.log('Loaded messages:', data);
+      
+      if (data && Array.isArray(data)) {
+        const transformedMessages = data.map(transformMessage);
+        // Sort by time ascending
+        transformedMessages.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        setMessages(transformedMessages);
+        setLastSyncTime(new Date().toISOString());
+      } else if (data && data.messages && Array.isArray(data.messages)) {
+        // Handle case where messages are nested in a messages property
+        const transformedMessages = data.messages.map(transformMessage);
+        transformedMessages.sort((a: any, b: any) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        setMessages(transformedMessages);
+        setLastSyncTime(new Date().toISOString());
+      }
+    } catch (error) {
+      console.error('Failed to load messages', error);
+      setMessages([]);
+    } finally {
+      initialLoadRef.current = false;
+    }
+  }, [transformMessage]);
+
+  // Sync new messages
+  const syncMessages = useCallback(async (convId: string) => {
+    if (!convId) return;
+
+    console.log("111111", messages[messages.length - 1].id)
+    try {
+      // Get the most recent message timestamp
+      const lastMessageId = messages.length > 0 
+        ? messages[messages.length - 1].id
+        : '';
+      
+    //   console.log('Syncing messages since:', lastMessageTime);
       
       const data = await ChatService.syncMessages(convId, lastMessageId);
-      console.log('Sync response data:', data);
       
       if (data && Array.isArray(data) && data.length > 0) {
         console.log('Found', data.length, 'new messages');
         
-        // Transform and add new messages
-        const newMessages = data.map(transformMessage);
+        // Filter out optimistic messages that might have been sent
+        const newMessages = data
+          .map(transformMessage)
+          // Filter out messages that might already exist
+          .filter(newMsg => {
+            const existing = messages.find(msg => 
+              msg.id === newMsg.id || 
+              (msg.text === newMsg.text && Math.abs(new Date(msg.time).getTime() - new Date(newMsg.time).getTime()) < 60000)
+            );
+            return !existing;
+          });
         
-        setMessages(prev => {
-          // Create a set of existing message IDs for quick lookup
-          const existingIds = new Set(prev.map(msg => msg.id));
-          
-          // Filter out messages that already exist
-          const uniqueNewMessages = newMessages.filter(msg => !existingIds.has(msg.id));
-          
-          if (uniqueNewMessages.length === 0) {
-            console.log('No new unique messages to add');
-            return prev;
-          }
-          
-          console.log('Adding', uniqueNewMessages.length, 'new unique messages');
-          return [...prev, ...uniqueNewMessages];
-        });
+        if (newMessages.length > 0) {
+          setMessages(prev => {
+            const combined = [...prev, ...newMessages];
+            // Sort by time ascending
+            combined.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+            return combined;
+          });
+        }
       }
+      
+      setLastSyncTime(new Date().toISOString());
     } catch (error) {
       console.error('Failed to sync messages', error);
     }
@@ -182,94 +223,133 @@ export default function ChatsPage() {
 
   // Load initial messages when booking is selected
   useEffect(() => {
-    if (conversationId) {
-      console.log('Loading initial messages for conversation:', conversationId);
+    if (conversationId && initialLoadRef.current) {
+      console.log('Initial load for conversation:', conversationId);
       loadInitialMessages(conversationId);
-    } else {
-      setMessages([]);
     }
   }, [conversationId, loadInitialMessages]);
 
   // Set up auto-sync interval
   useEffect(() => {
-    if (conversationId) {
+    if (conversationId && !initialLoadRef.current) {
       console.log('Setting up auto-sync for conversation:', conversationId);
       
-      const interval = setInterval(() => {
-        console.log('Auto-sync triggered');
+      // Clear any existing interval
+      if (syncIntervalRef.current) {
+        clearInterval(syncIntervalRef.current);
+      }
+      
+      // Set up new sync interval
+      syncIntervalRef.current = setInterval(() => {
+        console.log('Auto-sync triggered at:', new Date().toISOString());
         syncMessages(conversationId);
-      }, 3000);
+      }, 3000); // Sync every 3 seconds
 
-      // Clean up interval on unmount or when conversation changes
+      // Clean up on unmount or conversation change
       return () => {
-        console.log('Clearing auto-sync interval');
-        clearInterval(interval);
+        console.log('Clearing sync interval');
+        if (syncIntervalRef.current) {
+          clearInterval(syncIntervalRef.current);
+        }
       };
     }
   }, [conversationId, syncMessages]);
 
+  // Reset initial load flag when conversation changes
+  useEffect(() => {
+    if (conversationId) {
+      initialLoadRef.current = true;
+      setMessages([]); // Clear messages when conversation changes
+    }
+  }, [conversationId]);
+
   // Send message
   const handleSendMessage = async () => {
-    if (!message.trim() || !conversationId || !user) return;
+    if (!message.trim() || !conversationId || !user || sending) return;
 
-    const tempId = `temp-${Date.now()}`;
-    const newMessage: ChatMessage = {
+    const tempId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const optimisticMessage: ChatMessage = {
       id: tempId,
       text: message,
       sender: 'user',
-      time: new Date().toISOString(),
+      time: new Date().toISOString(), // Store in ISO format
       conversation_id: conversationId,
-      sender_name: 'You'
+      sender_name: 'You',
+      isOptimistic: true
     };
 
     // Optimistic update
-    setMessages(prev => [...prev, newMessage]);
+    setMessages(prev => {
+      const updated = [...prev, optimisticMessage];
+      // Sort to maintain order
+      updated.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+      return updated;
+    });
+    
+    const messageToSend = message;
     setMessage('');
     setSending(true);
 
     try {
-      console.log('Sending message:', message);
+      console.log('Sending message to conversation:', conversationId);
       const response = await ChatService.sendMessage({
         conversation_id: conversationId,
-        message: message,
+        message: messageToSend,
       });
 
       console.log('Send message response:', response);
 
-      // If server returns the created message, update with server data
-      if (response && response.message) {
-        const serverMessage = {
-          ...response.message,
-          sender: user.id,
-          sender_role: user.role === 'client' ? 'client' : null,
-          is_admin_message: user.role !== 'client'
-        };
-
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === tempId
-              ? transformMessage(serverMessage)
-              : msg
-          )
-        );
+      // Update the optimistic message with server response
+      if (response && (response.id || response.message)) {
+        const serverMessageData = response.id ? response : response.message;
+        
+        setMessages(prev => {
+          // Remove the optimistic message
+          const filtered = prev.filter(msg => msg.id !== tempId);
+          
+          // Add the server message
+          const transformed = transformMessage({
+            ...serverMessageData,
+            sender: user.id,
+            sender_role: user.role === 'client' ? 'client' : 'admin',
+            is_admin_message: user.role !== 'client'
+          });
+          
+          const updated = [...filtered, transformed];
+          updated.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+          return updated;
+        });
+        
+        // Trigger immediate sync to ensure we have all messages
+        setTimeout(() => {
+          syncMessages(conversationId);
+        }, 500);
       } else {
-        // If response doesn't have message, sync to get the latest
-        console.log('No message in response, syncing...');
+        // If response structure is different, just sync
+        console.log('Unexpected response format, syncing...');
         setTimeout(() => {
           syncMessages(conversationId);
         }, 1000);
       }
     } catch (error) {
       console.error('Failed to send message', error);
+      
+      // Update optimistic message to show error
       setMessages(prev =>
         prev.map(msg =>
           msg.id === tempId
-            ? { ...msg, sender: 'system', text: 'Failed to send message' }
+            ? { 
+                ...msg, 
+                sender: 'system', 
+                text: 'Failed to send message. Please try again.',
+                isOptimistic: false 
+              }
             : msg
         )
       );
     } finally {
       setSending(false);
+      scrollToBottom();
     }
   };
 
@@ -280,15 +360,41 @@ export default function ChatsPage() {
     }
   };
 
-  // Format message time
+  // Format message time (shows local time)
   const formatMessageTime = (time: string) => {
+    console.log("time", time)
     try {
       const date = new Date(time);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch {
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Invalid time';
+      }
+      
+      // Convert to local time string
+      return date.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      });
+    } catch (error) {
+      console.error('Error formatting time:', error, time);
       return time;
     }
   };
+// const formatMessageTime = (time: string) => {
+//   try {
+//     const date = new Date(time); // treat as local time
+//     return date.toLocaleTimeString("en-IN", {
+//       hour: "numeric",
+//       minute: "2-digit",
+//       hour12: true,
+//     });
+//   } catch {
+//     return "";
+//   }
+// };
+
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -325,6 +431,23 @@ export default function ChatsPage() {
     }
   };
 
+  // Get relative time for last sync
+  const getLastSyncText = () => {
+    if (!lastSyncTime) return 'Never synced';
+    
+    const now = new Date();
+    const lastSync = new Date(lastSyncTime);
+    const diffMinutes = Math.floor((now.getTime() - lastSync.getTime()) / (1000 * 60));
+    
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes === 1) return '1 minute ago';
+    if (diffMinutes < 60) return `${diffMinutes} minutes ago`;
+    
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours === 1) return '1 hour ago';
+    return `${diffHours} hours ago`;
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)] flex flex-col bg-gray-50">
@@ -346,7 +469,7 @@ export default function ChatsPage() {
             <div className="hidden lg:block">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Clock className="w-4 h-4" />
-                <span>Auto-sync enabled</span>
+                <span>Last sync: {getLastSyncText()}</span>
               </div>
             </div>
           </div>
@@ -536,7 +659,7 @@ export default function ChatsPage() {
                                 )}
                                 <div
                                   className={`px-4 py-3 rounded-2xl ${msg.sender === 'user'
-                                    ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-br-md'
+                                    ? 'bg-gradient-to-br from-[#d98723] to-[#d86d0a] text-white rounded-br-md'
                                     : msg.sender === 'chef'
                                     ? 'bg-white border border-gray-200 shadow-sm rounded-bl-md'
                                     : 'bg-gray-100 border border-gray-200 text-gray-700'
@@ -545,7 +668,7 @@ export default function ChatsPage() {
                                   <p className="text-sm leading-relaxed">{msg.text}</p>
                                   <p className={`text-xs mt-1.5 ${msg.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
                                     {formatMessageTime(msg.time)}
-                                    {msg.id.startsWith('temp-') && ' • Sending...'}
+                                    {msg.isOptimistic && ' • Sending...'}
                                   </p>
                                 </div>
                               </div>
@@ -588,9 +711,6 @@ export default function ChatsPage() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-400 text-center mt-2">
-                      Press Enter to send • Auto-sync every 3 seconds
-                    </p>
                   </div>
                 </div>
               </>

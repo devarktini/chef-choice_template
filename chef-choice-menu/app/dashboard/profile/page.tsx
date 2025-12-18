@@ -508,7 +508,7 @@ export default function ProfilePage() {
                         className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg shadow-sm hover:bg-primary-600 transition-colors"
                     >
                         <Edit2 className="w-4 h-4" />
-                        <span className="text-sm font-medium">Edit Profile</span>
+                        <span className="text-sm xl:block hidden lg:block font-medium">Edit Profile</span>
                     </button>
 
                     {/* Profile Header */}
@@ -762,8 +762,8 @@ export default function ProfilePage() {
 
                 {/* Address Modal */}
                 {isAddressModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleCloseAddressModal}></div>
+                    <div className="fixed inset-0 top-0 z-50 flex items-center justify-center p-4">
+                        <div className="absolute inset-0   bg-black/50 backdrop-blur-sm" onClick={handleCloseAddressModal}></div>
                         <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xl font-bold text-gray-800">

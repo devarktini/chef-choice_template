@@ -199,7 +199,7 @@ export default function BankAccountsPage() {
                 )}
 
                 {/* Floating Action Button (FAB) */}
-                <div className="fixed bottom-8 right-8 z-30">
+                <div className="fixed xl:bottom-8 bottom-28 right-8 z-30">
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-primary-600 to-warm-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
