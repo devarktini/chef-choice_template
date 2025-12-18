@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { useAuthStore } from '@/stores/authStore';
 import { AuthService } from '@/services/authService';
@@ -68,15 +68,7 @@ export default function ProfilePage() {
     const [servicePincodeLoading, setServicePincodeLoading] = useState(false);
     const [serviceLocationData, setServiceLocationData] = useState({ area: '', city: '', state: '', pincode: '' });
 
-    useEffect(() => {
-        fetchAddresses();
-        fetchUserDetails();
-        if (user?.role === 'service_provider') {
-            fetchProviderData();
-        }
-    }, []);
-
-    const fetchUserDetails = async () => {
+    const fetchUserDetails = useCallback(async () => {
         if (!user?.id) return;
         try {
             const freshUser = await AuthService.getUser1();
@@ -87,24 +79,9 @@ export default function ProfilePage() {
         } catch (error) {
             console.error('Failed to fetch user details', error);
         }
-    };
-    console.log("ssssssssssssssssssssss",user)
+    }, [user?.id, updateUser]);
 
-    // Initialize profile form data when modal opens
-    useEffect(() => {
-        if (isProfileModalOpen && user) {
-            setProfileFormData({
-                first_name: user.first_name || '',
-                last_name: user.last_name || '',
-                email: user.email || '',
-                dietary_restrictions: clientProfile?.dietary_restrictions?.join(', ') || '',
-                culinary_preferences: clientProfile?.culinary_preferences?.join(', ') || ''
-            });
-            setProfileImage(null);
-        }
-    }, [isProfileModalOpen, user, clientProfile]);
-
-    const fetchAddresses = async () => {
+    const fetchAddresses = useCallback(async () => {
         try {
             startLoading();
             const data = await AddressApiService.getAddresses();
@@ -116,7 +93,27 @@ export default function ProfilePage() {
             setLoading(false);
             stopLoading();
         }
-    };
+    }, [startLoading, stopLoading]);
+
+    const fetchProviderData = useCallback(async () => {
+        try {
+            startLoading();
+            const data = await ProviderService.getProvider();
+            setProviderData(data);
+        } catch (error) {
+            console.error('Failed to fetch provider data', error);
+        } finally {
+            stopLoading();
+        }
+    }, [startLoading, stopLoading]);
+
+    useEffect(() => {
+        fetchAddresses();
+        fetchUserDetails();
+        if (user?.role === 'service_provider') {
+            fetchProviderData();
+        }
+    }, [fetchAddresses, fetchUserDetails, fetchProviderData, user?.role]);
 
     // --- Address Handlers ---
 
@@ -336,51 +333,41 @@ export default function ProfilePage() {
 
 
     const handleProfileSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setProfileFormLoading(true);
-  setProfileFormError("");
-  startLoading();
+        e.preventDefault();
+        setProfileFormLoading(true);
+        setProfileFormError("");
+        startLoading();
 
-  try {
-    const formData = new FormData();
-    formData.append("first_name", profileFormData.first_name);
-    formData.append("last_name", profileFormData.last_name);
-    formData.append("email", profileFormData.email);
-    formData.append("dietary_restrictions", profileFormData.dietary_restrictions);
-    formData.append("culinary_preferences", profileFormData.culinary_preferences);
-
-    if (profileImage) {
-      formData.append("profile_picture", profileImage);
-    }
-
-    // ✅ 1. Update profile
-    await AuthService.updateUserProfile(formData);
-
-    // ✅ 2. Fetch fresh user details
-    await fetchUserDetails();
-
-    toast.success("Profile updated successfully!");
-    setIsProfileModalOpen(false);
-  } catch (error: any) {
-    setProfileFormError(error.message || "Failed to update profile");
-    toast.error(error.message || "Failed to update profile");
-  } finally {
-    setProfileFormLoading(false);
-    stopLoading();
-  }
-};
-
-    const fetchProviderData = async () => {
         try {
-            startLoading();
-            const data = await ProviderService.getProvider();
-            setProviderData(data);
-        } catch (error) {
-            console.error('Failed to fetch provider data', error);
+            const formData = new FormData();
+            formData.append("first_name", profileFormData.first_name);
+            formData.append("last_name", profileFormData.last_name);
+            formData.append("email", profileFormData.email);
+            formData.append("dietary_restrictions", profileFormData.dietary_restrictions);
+            formData.append("culinary_preferences", profileFormData.culinary_preferences);
+
+            if (profileImage) {
+                formData.append("profile_picture", profileImage);
+            }
+
+            // ✅ 1. Update profile
+            await AuthService.updateUserProfile(formData);
+
+            // ✅ 2. Fetch fresh user details
+            await fetchUserDetails();
+
+            toast.success("Profile updated successfully!");
+            setIsProfileModalOpen(false);
+        } catch (error: any) {
+            setProfileFormError(error.message || "Failed to update profile");
+            toast.error(error.message || "Failed to update profile");
         } finally {
+            setProfileFormLoading(false);
             stopLoading();
         }
     };
+
+
 
     const handleOpenProviderModal = () => {
         if (providerData) {

@@ -668,9 +668,8 @@ export default function BookingFlowModal({
                   <Sparkles className="w-3 h-3 text-amber-500" />
                   {step === 8
                     ? "Final Step!"
-                    : `Step ${step} of ${totalSteps} - ${
-                        selectedEvent?.label || "Plan Your Event"
-                      }`}
+                    : `Step ${step} of ${totalSteps} - ${selectedEvent?.label || "Plan Your Event"
+                    }`}
                 </p>
               </div>
             </div>
@@ -790,23 +789,21 @@ export default function BookingFlowModal({
                   <button
                     key={s.id}
                     onClick={() => setStep(s.id)}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      step === s.id
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${step === s.id
                         ? "bg-amber-50 border border-amber-200"
                         : completedSteps.includes(s.id)
-                        ? "bg-green-50 border border-green-200"
-                        : "border border-gray-100 hover:bg-gray-50"
-                    }`}
+                          ? "bg-green-50 border border-green-200"
+                          : "border border-gray-100 hover:bg-gray-50"
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-8 h-8 rounded-md flex items-center justify-center ${
-                          step === s.id
+                        className={`w-8 h-8 rounded-md flex items-center justify-center ${step === s.id
                             ? "bg-amber-500 text-white"
                             : completedSteps.includes(s.id)
-                            ? "bg-green-500 text-white"
-                            : "bg-gray-100 text-gray-500"
-                        }`}
+                              ? "bg-green-500 text-white"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
                       >
                         {completedSteps.includes(s.id) ? (
                           <Check className="w-4 h-4" />
@@ -816,9 +813,8 @@ export default function BookingFlowModal({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`font-medium text-sm ${
-                            step === s.id ? "text-amber-700" : "text-gray-800"
-                          }`}
+                          className={`font-medium text-sm ${step === s.id ? "text-amber-700" : "text-gray-800"
+                            }`}
                         >
                           {s.label}
                         </p>
@@ -878,7 +874,7 @@ export default function BookingFlowModal({
                       <div className="max-w-6xl mx-auto">
                         <div className="mb-8 text-center">
                           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                            Let's Plan Your Special Day! 🎉
+                            Let&apos;s Plan Your Special Day! 🎉
                           </h2>
                           <p className="text-gray-600">
                             Choose your event type and select dates for a
@@ -896,7 +892,7 @@ export default function BookingFlowModal({
                             <div className="flex items-center justify-between">
                               <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                                 <PartyPopper className="w-5 h-5 text-amber-500" />
-                                What's the Occasion?
+                                What&apos;s the Occasion?
                               </h3>
                               <span className="text-sm text-gray-500">
                                 {data.eventType ? "Selected ✓" : "Pick one"}
@@ -917,25 +913,21 @@ export default function BookingFlowModal({
                                     updateData({ eventType: type.value })
                                   }
                                   disabled={isRestricted}
-                                  className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${
-                                    data.eventType === type.value
-                                      ? `${type.color.split(" ")[0]} ${
-                                          type.color.split(" ")[1]
-                                        } border-orange-500 text-white shadow-2xl`
+                                  className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${data.eventType === type.value
+                                      ? `${type.color.split(" ")[0]} ${type.color.split(" ")[1]
+                                      } border-orange-500 text-white shadow-2xl`
                                       : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
-                                  } ${
-                                    isRestricted
+                                    } ${isRestricted
                                       ? "opacity-70 cursor-not-allowed"
                                       : "cursor-pointer"
-                                  }`}
+                                    }`}
                                 >
                                   {/* Background Gradient */}
                                   <div
-                                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                                      type.color.includes("from")
+                                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${type.color.includes("from")
                                         ? type.color
                                         : "from-amber-500 to-orange-500"
-                                    }`}
+                                      }`}
                                   />
 
                                   <span className="text-3xl md:text-4xl relative z-10">
@@ -979,11 +971,10 @@ export default function BookingFlowModal({
                             </div>
 
                             <div
-                              className={`bg-white w-1/2 border-2 ${
-                                data.dates.length > 0
+                              className={`bg-white w-1/2 border-2 ${data.dates.length > 0
                                   ? "border-amber-200"
                                   : "border-gray-200"
-                              } rounded-2xl p-4 shadow-lg`}
+                                } rounded-2xl p-4 shadow-lg`}
                             >
                               <DatePicker
                                 selected={data.dates[selectedDateIndex] || null}
@@ -1017,13 +1008,12 @@ export default function BookingFlowModal({
                                   const isToday =
                                     date.toDateString() ===
                                     new Date().toDateString();
-                                  return `!rounded-xl !transition-all ${
-                                    isSelected
+                                  return `!rounded-xl !transition-all ${isSelected
                                       ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
                                       : isToday
-                                      ? "!bg-amber-100 !text-amber-700"
-                                      : "hover:!bg-amber-50"
-                                  }`;
+                                        ? "!bg-amber-100 !text-amber-700"
+                                        : "hover:!bg-amber-50"
+                                    }`;
                                 }}
                               />
 
@@ -1098,7 +1088,7 @@ export default function BookingFlowModal({
                       <div className="max-w-4xl mx-auto">
                         <div className="mb-8 text-center">
                           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                            Let's Talk Food! 🍽️
+                            Let&apos;s Talk Food! 🍽️
                           </h2>
                           <p className="text-gray-600">
                             Choose your menu type and favorite cuisines
@@ -1145,11 +1135,10 @@ export default function BookingFlowModal({
                                   onClick={() =>
                                     updateData({ menuType: type.value as any })
                                   }
-                                  className={`relative group p-6 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
-                                    data.menuType === type.value
+                                  className={`relative group p-6 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${data.menuType === type.value
                                       ? `${type.color} border-orange-500 text-white shadow-xl`
                                       : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
-                                  }`}
+                                    }`}
                                 >
                                   <div className="flex flex-col items-center gap-3">
                                     <span className="text-4xl">
@@ -1200,7 +1189,7 @@ export default function BookingFlowModal({
                                   updateData({ cuisines: vals })
                                 }
                                 placeholder="Search and select cuisines..."
-                                // className="min-h-[200px]"
+                              // className="min-h-[200px]"
                               />
                             </div>
 
@@ -1266,11 +1255,10 @@ export default function BookingFlowModal({
                                 />
                                 <div className="relative w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                   <div
-                                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                                      data.isMealConfigSkipped
+                                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${data.isMealConfigSkipped
                                         ? "left-7"
                                         : "left-1"
-                                    }`}
+                                      }`}
                                   ></div>
                                 </div>
                               </label>
@@ -1321,11 +1309,10 @@ export default function BookingFlowModal({
                                       return (
                                         <label
                                           key={meal.value}
-                                          className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                                            isSelected
+                                          className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected
                                               ? "border-amber-500 bg-amber-50"
                                               : "border-gray-200 hover:border-gray-300"
-                                          }`}
+                                            }`}
                                         >
                                           <div className="flex items-center justify-center w-8 h-8 mb-2">
                                             <span className="text-lg">
@@ -1344,8 +1331,8 @@ export default function BookingFlowModal({
                                               ] || { meals: [], time: "" };
                                               const newMeals = isSelected
                                                 ? config.meals.filter(
-                                                    (m) => m !== meal.value
-                                                  )
+                                                  (m) => m !== meal.value
+                                                )
                                                 : [...config.meals, meal.value];
                                               updateData({
                                                 mealConfig: {
@@ -1476,7 +1463,7 @@ export default function BookingFlowModal({
                                 updateData({ selectedMenu: vals })
                               }
                               placeholder="Search and select dishes..."
-                              //   className="min-h-[300px]"
+                            //   className="min-h-[300px]"
                             />
                           </div>
 
@@ -1575,7 +1562,7 @@ export default function BookingFlowModal({
                                             [item.key]: Math.max(
                                               0,
                                               data.guests[
-                                                item.key as keyof typeof data.guests
+                                              item.key as keyof typeof data.guests
                                               ] - 1
                                             ),
                                           },
@@ -1592,7 +1579,7 @@ export default function BookingFlowModal({
                                         min="0"
                                         value={
                                           data.guests[
-                                            item.key as keyof typeof data.guests
+                                          item.key as keyof typeof data.guests
                                           ]
                                         }
                                         onChange={(e) =>
@@ -1617,7 +1604,7 @@ export default function BookingFlowModal({
                                             ...data.guests,
                                             [item.key]:
                                               data.guests[
-                                                item.key as keyof typeof data.guests
+                                              item.key as keyof typeof data.guests
                                               ] + 1,
                                           },
                                         })
@@ -1707,206 +1694,204 @@ export default function BookingFlowModal({
 
                     {/* Step 6: Service Provider */}
                     {step === 6 && (
-  <div className="max-w-6xl mx-auto">
-    <div className="mb-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">
-        Choose Service Providerggg
-      </h2>
-      <p className="text-gray-600">
-        Select from verified chefs and catering services
-      </p>
-    </div>
+                      <div className="max-w-6xl mx-auto">
+                        <div className="mb-6">
+                          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                            Choose Service Providerggg
+                          </h2>
+                          <p className="text-gray-600">
+                            Select from verified chefs and catering services
+                          </p>
+                        </div>
 
-    {/* Search Filter */}
-    <div className="mb-6">
-      <div className="bg-white border border-gray-200 rounded-xl p-3">
-        <MultiSelect
-          options={SERVICE_PROVIDERS.map((p) => ({
-            value: p.value,
-            label: p.label,
-            description: p.title,
-            image: p.image,
-          }))}
-          value={data.serviceProviders}
-          onChange={(vals) => updateData({ serviceProviders: vals })}
-          placeholder="Search chefs or catering services..."
-          disabled={isRestricted}
-        />
-      </div>
-    </div>
+                        {/* Search Filter */}
+                        <div className="mb-6">
+                          <div className="bg-white border border-gray-200 rounded-xl p-3">
+                            <MultiSelect
+                              options={SERVICE_PROVIDERS.map((p) => ({
+                                value: p.value,
+                                label: p.label,
+                                description: p.title,
+                                image: p.image,
+                              }))}
+                              value={data.serviceProviders}
+                              onChange={(vals) => updateData({ serviceProviders: vals })}
+                              placeholder="Search chefs or catering services..."
+                              disabled={isRestricted}
+                            />
+                          </div>
+                        </div>
 
-    {/* Selected Providers Summary */}
-    {data.serviceProviders.length > 0 && (
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-800">
-            Selected ({data.serviceProviders.length})
-          </h3>
-          <span className="text-sm text-gray-500">
-            {data.serviceProviders.length} of {SERVICE_PROVIDERS.length} selected
-          </span>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-          {SERVICE_PROVIDERS.filter((p) =>
-            data.serviceProviders.includes(p.value)
-          ).map((provider) => (
-            <div key={provider.value} className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <div className="flex items-start gap-3">
-                <img
-                  src={provider.image}
-                  alt={provider.label}
-                  className="w-12 h-12 rounded-lg object-cover"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
-                        {provider.label}
-                      </h4>
-                      <p className="text-sm text-gray-600">{provider.title}</p>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      provider.badge === "Top Rated" ? "bg-amber-100 text-amber-800" :
-                      provider.badge === "Popular" ? "bg-pink-100 text-pink-800" :
-                      provider.badge === "Budget Friendly" ? "bg-green-100 text-green-800" :
-                      "bg-purple-100 text-purple-800"
-                    }`}>
-                      {provider.badge}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-amber-500 fill-current" />
-                      <span className="font-medium text-gray-900">
-                        {provider.rating}
-                      </span>
-                      <span className="text-xs text-gray-500 ml-1">
-                        ({provider.reviews})
-                      </span>
-                    </div>
-                    <span className="font-semibold text-gray-900">
-                      {provider.price}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
+                        {/* Selected Providers Summary */}
+                        {data.serviceProviders.length > 0 && (
+                          <div className="mb-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="font-semibold text-gray-800">
+                                Selected ({data.serviceProviders.length})
+                              </h3>
+                              <span className="text-sm text-gray-500">
+                                {data.serviceProviders.length} of {SERVICE_PROVIDERS.length} selected
+                              </span>
+                            </div>
 
-    {/* Available Providers */}
-    <div>
-      <h3 className="font-semibold text-gray-800 mb-4">
-        Available Providers
-      </h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {SERVICE_PROVIDERS.filter(
-          (p) => !data.serviceProviders.includes(p.value)
-        ).map((provider) => (
-          <button
-            key={provider.value}
-            onClick={() => {
-              if (!isRestricted) {
-                updateData({
-                  serviceProviders: [
-                    ...data.serviceProviders,
-                    provider.value,
-                  ],
-                });
-              }
-            }}
-            className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:border-gray-300 hover:shadow-sm transition-all group"
-            disabled={isRestricted}
-          >
-            <div className="space-y-3">
-              {/* Provider Header */}
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={provider.image}
-                    alt={provider.label}
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      {provider.label}
-                    </h4>
-                    <p className="text-sm text-gray-500">{provider.title}</p>
-                  </div>
-                </div>
-                <span className="text-sm font-semibold text-gray-900">
-                  {provider.price}
-                </span>
-              </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                              {SERVICE_PROVIDERS.filter((p) =>
+                                data.serviceProviders.includes(p.value)
+                              ).map((provider) => (
+                                <div key={provider.value} className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                  <div className="flex items-start gap-3">
+                                    <img
+                                      src={provider.image}
+                                      alt={provider.label}
+                                      className="w-12 h-12 rounded-lg object-cover"
+                                    />
+                                    <div className="flex-1">
+                                      <div className="flex justify-between items-start">
+                                        <div>
+                                          <h4 className="font-semibold text-gray-900">
+                                            {provider.label}
+                                          </h4>
+                                          <p className="text-sm text-gray-600">{provider.title}</p>
+                                        </div>
+                                        <span className={`text-xs px-2 py-1 rounded-full ${provider.badge === "Top Rated" ? "bg-amber-100 text-amber-800" :
+                                            provider.badge === "Popular" ? "bg-pink-100 text-pink-800" :
+                                              provider.badge === "Budget Friendly" ? "bg-green-100 text-green-800" :
+                                                "bg-purple-100 text-purple-800"
+                                          }`}>
+                                          {provider.badge}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center justify-between mt-2">
+                                        <div className="flex items-center gap-1">
+                                          <Star className="w-4 h-4 text-amber-500 fill-current" />
+                                          <span className="font-medium text-gray-900">
+                                            {provider.rating}
+                                          </span>
+                                          <span className="text-xs text-gray-500 ml-1">
+                                            ({provider.reviews})
+                                          </span>
+                                        </div>
+                                        <span className="font-semibold text-gray-900">
+                                          {provider.price}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
-              {/* Rating and Badge */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 text-amber-500 fill-current" />
-                  <span className="font-medium text-gray-900">
-                    {provider.rating}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">
-                    ({provider.reviews})
-                  </span>
-                </div>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  provider.badge === "Top Rated" ? "bg-amber-100 text-amber-800" :
-                  provider.badge === "Popular" ? "bg-pink-100 text-pink-800" :
-                  "bg-gray-100 text-gray-800"
-                }`}>
-                  {provider.badge}
-                </span>
-              </div>
+                        {/* Available Providers */}
+                        <div>
+                          <h3 className="font-semibold text-gray-800 mb-4">
+                            Available Providers
+                          </h3>
 
-              {/* Specialties */}
-              <div className="flex flex-wrap gap-2">
-                {provider.specialties.slice(0, 3).map((spec, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                  >
-                    {spec}
-                  </span>
-                ))}
-              </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {SERVICE_PROVIDERS.filter(
+                              (p) => !data.serviceProviders.includes(p.value)
+                            ).map((provider) => (
+                              <button
+                                key={provider.value}
+                                onClick={() => {
+                                  if (!isRestricted) {
+                                    updateData({
+                                      serviceProviders: [
+                                        ...data.serviceProviders,
+                                        provider.value,
+                                      ],
+                                    });
+                                  }
+                                }}
+                                className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:border-gray-300 hover:shadow-sm transition-all group"
+                                disabled={isRestricted}
+                              >
+                                <div className="space-y-3">
+                                  {/* Provider Header */}
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-3">
+                                      <img
+                                        src={provider.image}
+                                        alt={provider.label}
+                                        className="w-10 h-10 rounded-lg object-cover"
+                                      />
+                                      <div>
+                                        <h4 className="font-semibold text-gray-900">
+                                          {provider.label}
+                                        </h4>
+                                        <p className="text-sm text-gray-500">{provider.title}</p>
+                                      </div>
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-900">
+                                      {provider.price}
+                                    </span>
+                                  </div>
 
-              {/* Verification */}
-              {provider.verified && (
-                <div className="flex items-center gap-2 text-sm text-green-600">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Verified chef
-                </div>
-              )}
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
+                                  {/* Rating and Badge */}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1">
+                                      <Star className="w-4 h-4 text-amber-500 fill-current" />
+                                      <span className="font-medium text-gray-900">
+                                        {provider.rating}
+                                      </span>
+                                      <span className="text-sm text-gray-500 ml-1">
+                                        ({provider.reviews})
+                                      </span>
+                                    </div>
+                                    <span className={`text-xs px-2 py-1 rounded ${provider.badge === "Top Rated" ? "bg-amber-100 text-amber-800" :
+                                        provider.badge === "Popular" ? "bg-pink-100 text-pink-800" :
+                                          "bg-gray-100 text-gray-800"
+                                      }`}>
+                                      {provider.badge}
+                                    </span>
+                                  </div>
 
-    {/* Selection Status */}
-    <div className="mt-6 pt-6 border-t border-gray-200">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600">
-            {data.serviceProviders.length} provider(s) selected
-          </p>
-        </div>
-        <button
-          onClick={() => updateData({ serviceProviders: [] })}
-          className="text-sm text-gray-500 hover:text-gray-700"
-          disabled={data.serviceProviders.length === 0 || isRestricted}
-        >
-          Clear selection
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                                  {/* Specialties */}
+                                  <div className="flex flex-wrap gap-2">
+                                    {provider.specialties.slice(0, 3).map((spec, i) => (
+                                      <span
+                                        key={i}
+                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                                      >
+                                        {spec}
+                                      </span>
+                                    ))}
+                                  </div>
+
+                                  {/* Verification */}
+                                  {provider.verified && (
+                                    <div className="flex items-center gap-2 text-sm text-green-600">
+                                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                      Verified chef
+                                    </div>
+                                  )}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Selection Status */}
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-gray-600">
+                                {data.serviceProviders.length} provider(s) selected
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => updateData({ serviceProviders: [] })}
+                              className="text-sm text-gray-500 hover:text-gray-700"
+                              disabled={data.serviceProviders.length === 0 || isRestricted}
+                            >
+                              Clear selection
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     {/* Step 7: Setup & Requirements */}
                     {step === 7 && (
                       <div className="max-w-6xl mx-auto">
@@ -1956,26 +1941,24 @@ export default function BookingFlowModal({
                                   ].map((option) => (
                                     <label
                                       key={option.value}
-                                      className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                        data.clientMaterials.kitchenType ===
-                                        option.value
+                                      className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${data.clientMaterials.kitchenType ===
+                                          option.value
                                           ? `border-${option.color}-500 bg-gradient-to-r from-${option.color}-50 to-${option.color}-100 ring-2 ring-${option.color}-200`
                                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-center gap-3">
                                         <div
-                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                            data.clientMaterials.kitchenType ===
-                                            option.value
+                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.clientMaterials.kitchenType ===
+                                              option.value
                                               ? `border-${option.color}-500 bg-${option.color}-500`
                                               : "border-gray-300"
-                                          }`}
+                                            }`}
                                         >
                                           {data.clientMaterials.kitchenType ===
                                             option.value && (
-                                            <Check className="w-3 h-3 text-white" />
-                                          )}
+                                              <Check className="w-3 h-3 text-white" />
+                                            )}
                                         </div>
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2">
@@ -2036,11 +2019,10 @@ export default function BookingFlowModal({
                                     return (
                                       <label
                                         key={appliance.value}
-                                        className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
-                                          isSelected
+                                        className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${isSelected
                                             ? "border-green-500 bg-green-50 text-green-700"
                                             : "border-gray-200 hover:border-gray-300 text-gray-600"
-                                        }`}
+                                          }`}
                                       >
                                         <input
                                           type="checkbox"
@@ -2052,8 +2034,8 @@ export default function BookingFlowModal({
                                             const updated = e.target.checked
                                               ? [...current, appliance.value]
                                               : current.filter(
-                                                  (a) => a !== appliance.value
-                                                );
+                                                (a) => a !== appliance.value
+                                              );
                                             updateData({
                                               clientMaterials: {
                                                 ...data.clientMaterials,
@@ -2098,18 +2080,16 @@ export default function BookingFlowModal({
                                     return (
                                       <label
                                         key={item.value}
-                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${
-                                          isSelected
+                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${isSelected
                                             ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
                                             : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                        }`}
+                                          }`}
                                       >
                                         <Icon
-                                          className={`w-6 h-6 mb-2 ${
-                                            isSelected
+                                          className={`w-6 h-6 mb-2 ${isSelected
                                               ? "text-amber-600"
                                               : "text-gray-500"
-                                          }`}
+                                            }`}
                                         />
                                         <span className="text-sm font-medium text-center">
                                           {item.label}
@@ -2123,8 +2103,8 @@ export default function BookingFlowModal({
                                             const updated = e.target.checked
                                               ? [...current, item.value]
                                               : current.filter(
-                                                  (i) => i !== item.value
-                                                );
+                                                (i) => i !== item.value
+                                              );
                                             updateData({
                                               clientMaterials: {
                                                 ...data.clientMaterials,
@@ -2165,20 +2145,18 @@ export default function BookingFlowModal({
                                 return (
                                   <label
                                     key={service.value}
-                                    className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                      isSelected
+                                    className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected
                                         ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
                                         : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
-                                    }`}
+                                      }`}
                                   >
                                     <div className="flex items-start justify-between">
                                       <div className="flex items-center gap-3">
                                         <div
-                                          className={`p-2 rounded-lg ${
-                                            isSelected
+                                          className={`p-2 rounded-lg ${isSelected
                                               ? "bg-purple-100 text-purple-600"
                                               : "bg-gray-100 text-gray-500"
-                                          }`}
+                                            }`}
                                         >
                                           <Icon className="w-4 h-4" />
                                         </div>
@@ -2205,8 +2183,8 @@ export default function BookingFlowModal({
                                             const updated = e.target.checked
                                               ? [...current, service.value]
                                               : current.filter(
-                                                  (s) => s !== service.value
-                                                );
+                                                (s) => s !== service.value
+                                              );
                                             updateData({
                                               otherRequirements: {
                                                 ...data.otherRequirements,
@@ -2380,7 +2358,7 @@ export default function BookingFlowModal({
                                     </span>
                                     <span className="font-medium text-gray-800 ml-2">
                                       {data.clientMaterials.kitchenType ===
-                                      "own_kitchen"
+                                        "own_kitchen"
                                         ? "Chef Provides"
                                         : "Client Provides"}
                                     </span>
@@ -2442,11 +2420,10 @@ export default function BookingFlowModal({
                                     onClick={() =>
                                       updateData({ eventAddressId: addr.id })
                                     }
-                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                      data.eventAddressId === addr.id
+                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${data.eventAddressId === addr.id
                                         ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
                                         : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                    }`}
+                                      }`}
                                   >
                                     <div className="flex items-start justify-between">
                                       <div className="flex-1">
@@ -2551,11 +2528,10 @@ export default function BookingFlowModal({
                       whileTap={{ scale: 0.95 }}
                       onClick={handleBack}
                       disabled={step === 1}
-                      className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                        step === 1
+                      className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${step === 1
                           ? "opacity-0 pointer-events-none"
                           : "text-gray-600 hover:bg-gray-100 border border-gray-200"
-                      }`}
+                        }`}
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Back
@@ -2566,13 +2542,11 @@ export default function BookingFlowModal({
                       whileTap={{ scale: canProceed() ? 0.95 : 1 }}
                       onClick={step === totalSteps ? handleSubmit : handleNext}
                       disabled={!canProceed()}
-                      className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${
-                        step === totalSteps
+                      className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${step === totalSteps
                           ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
                           : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                      } ${
-                        !canProceed() ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                        } ${!canProceed() ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
                       {isSubmitting ? (
                         <>

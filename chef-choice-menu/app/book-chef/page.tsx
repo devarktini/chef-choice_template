@@ -12,7 +12,7 @@ export default function BookChefPage() {
 
   useEffect(() => {
     clearUserInputData();
-  }, []);
+  }, [clearUserInputData]);
 
   const [cardActiv, setCardActiv] = useState([
     { id: 'service-opt-1', state: false },
@@ -31,8 +31,8 @@ export default function BookChefPage() {
             serviceData.data === 'Single Services' && card.id === 'service-opt-1'
               ? true
               : serviceData.data === 'Multiple Services' && card.id === 'service-opt-2'
-              ? true
-              : false,
+                ? true
+                : false,
         }))
       );
     }
@@ -116,11 +116,10 @@ export default function BookChefPage() {
                 <div
                   key={item.id}
                   onClick={() => handleOptionClicked(item.id)}
-                  className={`cursor-pointer p-10 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 ${
-                    isActive(item.id)
+                  className={`cursor-pointer p-10 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 ${isActive(item.id)
                       ? 'bg-gradient-to-r from-primary-500 to-warm-500 text-white scale-105'
                       : 'bg-white text-gray-900 border border-gray-200'
-                  }`}
+                    }`}
                   style={{ animationDelay: `${i * 0.1}s` }}
                 >
                   <div className="text-center">
@@ -166,7 +165,7 @@ export default function BookChefPage() {
                 <span className="text-white">Next</span>
               </FormNavigate>
             </div>
-            
+
             <ToastContainer />
           </Container>
         </section>

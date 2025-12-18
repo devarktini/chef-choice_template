@@ -2,7 +2,7 @@
 
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Send, Search, ChevronRight, MessageSquare } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { BookingService, Booking } from '@/services/bookingService';
 import { ChatService } from '@/services/chatService';
@@ -28,14 +28,14 @@ type BookingWithConversation = Booking & {
 
 export default function ChatsPage() {
   const { user } = useAuthStore();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingWithConversation[]>([]);
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [sending, setSending] = useState(false);
-  const [syncInterval, setSyncInterval] = useState<NodeJS.Timeout | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const selectedBooking = bookings.find(b => b.id === selectedBookingId) as BookingWithConversation | undefined;
@@ -56,7 +56,7 @@ export default function ChatsPage() {
       try {
         setLoading(true);
         const response = await BookingService.getBookings();
-        setBookings(response.results);
+        setBookings(response.results as BookingWithConversation[]);
         if (response.results.length > 0) {
           setSelectedBookingId(response.results[0].id);
         }
@@ -72,102 +72,68 @@ export default function ChatsPage() {
     }
   }, [user]);
 
-  // Load initial messages when booking is selected
-  useEffect(() => {
-    if (conversationId) {
-      loadInitialMessages(conversationId);
-    } else {
-      setMessages([]);
-    }
-  }, [conversationId]);
-
-  // Set up auto-sync interval
-  useEffect(() => {
-    if (conversationId) {
-      // Clear existing interval
-      if (syncInterval) {
-        clearInterval(syncInterval);
-      }
-
-      // Set up new interval
-      const interval = setInterval(() => {
-        syncMessages(conversationId);
-      }, 3000);
-
-      setSyncInterval(interval);
-
-      // Clean up interval on unmount or when conversation changes
-      return () => {
-        if (interval) clearInterval(interval);
-      };
-    }
-  }, [conversationId]);
-
   // Determine if message is from current user
-// Determine if message is from current user - FIXED
-const isMessageFromCurrentUser = (msg: any): boolean => {
-  if (!user) return false;
-  
-  // Check if sender ID matches current user ID
-  if (msg.sender === user.id) {
-    return true;
-  }
-  
-  // For client role, check if it's a client message from current user
-  if (user.role === 'client' && msg.sender_role === 'client') {
-    // Additional check: compare with current user's client ID
-    return msg.sender === user.id;
-  }
-  
-  // For service provider, check if it's from this service provider
-  if (user.role === 'service_provider' && !msg.is_admin_message && msg.sender_role !== 'client') {
-    // Assuming service provider messages don't have is_admin_message
-    return msg.sender === user.id;
-  }
-  
-  return false;
-};
+  const isMessageFromCurrentUser = useCallback((msg: any): boolean => {
+    if (!user) return false;
 
-// Transform API message to ChatMessage - UPDATED
-const transformMessage = (msg: any): ChatMessage => {
-  const isFromCurrentUser = isMessageFromCurrentUser(msg);
-  
-  // Determine sender type more accurately
-  let sender: 'user' | 'chef' | 'system' = 'system';
-  let sender_name = 'System';
-  
-  if (isFromCurrentUser) {
-    sender = 'user';
-    sender_name = 'You';
-  } else if (msg.is_admin_message) {
-    sender = 'chef';
-    sender_name = 'Admin';
-  } else if (msg.sender_role === 'client') {
-    sender = 'chef'; // Another client's message shows as chef
-    sender_name = 'Client';
-  } else {
-    sender = 'chef';
-    sender_name = 'Chef';
-  }
-  
-  return {
-    id: msg.id,
-    text: msg.message || msg.text || '',
-    sender: sender,
-    time: msg.created_at || new Date().toISOString(),
-    conversation_id: msg.conversation,
-    sender_name: sender_name
-  };
-};
+    // Check if sender ID matches current user ID
+    if (msg.sender === user.id) {
+      return true;
+    }
 
+    // For client role, check if it's a client message from current user
+    if (user.role === 'client' && msg.sender_role === 'client') {
+      // Additional check: compare with current user's client ID
+      return msg.sender === user.id;
+    }
 
+    // For service provider, check if it's from this service provider
+    if (user.role === 'service_provider' && !msg.is_admin_message && msg.sender_role !== 'client') {
+      // Assuming service provider messages don't have is_admin_message
+      return msg.sender === user.id;
+    }
+
+    return false;
+  }, [user]);
+
+  // Transform API message to ChatMessage
+  const transformMessage = useCallback((msg: any): ChatMessage => {
+    const isFromCurrentUser = isMessageFromCurrentUser(msg);
+
+    // Determine sender type more accurately
+    let sender: 'user' | 'chef' | 'system' = 'system';
+    let sender_name = 'System';
+
+    if (isFromCurrentUser) {
+      sender = 'user';
+      sender_name = 'You';
+    } else if (msg.is_admin_message) {
+      sender = 'chef';
+      sender_name = 'Admin';
+    } else if (msg.sender_role === 'client') {
+      sender = 'chef'; // Another client's message shows as chef
+      sender_name = 'Client';
+    } else {
+      sender = 'chef';
+      sender_name = 'Chef';
+    }
+
+    return {
+      id: msg.id,
+      text: msg.message || msg.text || '',
+      sender: sender,
+      time: msg.created_at || new Date().toISOString(),
+      conversation_id: msg.conversation,
+      sender_name: sender_name
+    };
+  }, [isMessageFromCurrentUser]);
 
   // Load initial messages
-  const loadInitialMessages = async (convId: string) => {
+  const loadInitialMessages = useCallback(async (convId: string) => {
     try {
       const data = await ChatService.syncMessages(convId, '');
       console.log('Loaded messages data:', data);
-      
+
       if (data) {
         const transformedMessages = data.map(transformMessage);
         console.log("sssssss111111", transformedMessages)
@@ -176,116 +142,136 @@ const transformMessage = (msg: any): ChatMessage => {
     } catch (error) {
       console.error('Failed to load messages', error);
     }
-  };
+  }, [transformMessage]);
 
   // Sync new messages
-// Sync new messages with user info correction
-const syncMessages = async (convId: string) => {
-  if (!convId) return;
+  const syncMessages = useCallback(async (convId: string) => {
+    if (!convId) return;
 
-  try {
-    const lastMessageId = messages.length > 0 ? messages[messages.length - 1]?.id : '';
-    const data = await ChatService.syncMessages(convId, lastMessageId);
-    
-    if (data && Array.isArray(data) && data.length > 0) {
-      const transformedMessages = data.map(msg => {
-        // Correct the sender info for messages from current user
-        if (msg.sender === user?.id) {
-          return {
-            id: msg.id,
-            text: msg.message || '',
-            sender: 'user' as const,
-            time: msg.created_at,
-            conversation_id: msg.conversation,
-            sender_name: 'You'
-          };
-        } else {
-          return transformMessage(msg);
-        }
-      });
-      
-      setMessages(prev => {
-        // Filter out any temporary messages that might have been replaced
-        const newMessages = transformedMessages.filter(newMsg => 
-          !prev.some(prevMsg => prevMsg.id === newMsg.id)
-        );
-        return [...prev, ...newMessages];
-      });
+    try {
+      const lastMessageId = messages.length > 0 ? messages[messages.length - 1]?.id : '';
+      const data = await ChatService.syncMessages(convId, lastMessageId);
+
+      if (data && Array.isArray(data) && data.length > 0) {
+        const transformedMessages = data.map(msg => {
+          // Correct the sender info for messages from current user
+          if (msg.sender === user?.id) {
+            return {
+              id: msg.id,
+              text: msg.message || '',
+              sender: 'user' as const,
+              time: msg.created_at,
+              conversation_id: msg.conversation,
+              sender_name: 'You'
+            };
+          } else {
+            return transformMessage(msg);
+          }
+        });
+
+        setMessages(prev => {
+          // Filter out any temporary messages that might have been replaced
+          const newMessages = transformedMessages.filter(newMsg =>
+            !prev.some(prevMsg => prevMsg.id === newMsg.id)
+          );
+          return [...prev, ...newMessages];
+        });
+      }
+    } catch (error) {
+      console.error('Failed to sync messages', error);
     }
-  } catch (error) {
-    console.error('Failed to sync messages', error);
-  }
-};
+  }, [messages, transformMessage, user?.id]);
 
-  {console.log("1111111111111", messages)}
+  // Load initial messages when booking is selected
+  useEffect(() => {
+    if (conversationId) {
+      loadInitialMessages(conversationId);
+    } else {
+      setMessages([]);
+    }
+  }, [conversationId, loadInitialMessages]);
+
+  // Set up auto-sync interval
+  useEffect(() => {
+    if (conversationId) {
+      const interval = setInterval(() => {
+        syncMessages(conversationId);
+      }, 3000);
+
+      // Clean up interval on unmount or when conversation changes
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [conversationId, syncMessages]);
 
   // Send message
- // Send message - IMPROVED
-const handleSendMessage = async () => {
-  if (!message.trim() || !conversationId || !user) return;
+  const handleSendMessage = async () => {
+    if (!message.trim() || !conversationId || !user) return;
 
-  const tempId = `temp-${Date.now()}`;
-  const newMessage: ChatMessage = {
-    id: tempId,
-    text: message,
-    sender: 'user',
-    time: new Date().toISOString(),
-    conversation_id: conversationId,
-    sender_name: 'You'
-  };
-
-  // Optimistic update
-  setMessages(prev => [...prev, newMessage]);
-  setMessage('');
-  setSending(true);
-
-  try {
-    // Send to server
-    const response = await ChatService.sendMessage({
+    const tempId = `temp-${Date.now()}`;
+    const newMessage: ChatMessage = {
+      id: tempId,
+      text: message,
+      sender: 'user',
+      time: new Date().toISOString(),
       conversation_id: conversationId,
-      message: message,
-    });
+      sender_name: 'You'
+    };
 
-    console.log('Send message response:', response);
+    // Optimistic update
+    setMessages(prev => [...prev, newMessage]);
+    setMessage('');
+    setSending(true);
 
-    // If server returns the created message, update with server data
-    if (response && response.message) {
-      // Ensure the message has the correct sender info
-      const serverMessage = {
-        ...response.message,
-        // Make sure the sender info matches current user
-        sender: user.id,
-        sender_role: user.role === 'client' ? 'client' : null,
-        is_admin_message: user.role !== 'client'
-      };
-      
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === tempId 
-            ? transformMessage(serverMessage)
+    try {
+      // Send to server
+      const response = await ChatService.sendMessage({
+        conversation_id: conversationId,
+        message: message,
+      });
+
+      console.log('Send message response:', response);
+
+      // If server returns the created message, update with server data
+      if (response && response.message) {
+        // Ensure the message has the correct sender info
+        const serverMessage = {
+          ...response.message,
+          // Make sure the sender info matches current user
+          sender: user.id,
+          sender_role: user.role === 'client' ? 'client' : null,
+          is_admin_message: user.role !== 'client'
+        };
+
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === tempId
+              ? transformMessage(serverMessage)
+              : msg
+          )
+        );
+      } else {
+        // If response doesn't have message, we need to sync
+        setTimeout(() => {
+          syncMessages(conversationId);
+        }, 500);
+      }
+    } catch (error) {
+      console.error('Failed to send message', error);
+      // Mark the message as failed
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === tempId
+            ? { ...msg, sender: 'system', text: 'Failed to send message' }
             : msg
         )
       );
-    } else {
-      // If response doesn't have message, we need to sync
-      setTimeout(() => {
-        syncMessages(conversationId);
-      }, 500);
+    } finally {
+      setSending(false);
     }
-  } catch (error) {
-    console.error('Failed to send message', error);
-    // Mark the message as failed
-    setMessages(prev => 
-      prev.map(msg => 
-        msg.id === tempId 
-          ? { ...msg, sender: 'system', text: 'Failed to send message' } 
-          : msg
-      )
-    );
-  } finally {
-    setSending(false);
-  }
-};
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -341,27 +327,26 @@ const handleSendMessage = async () => {
                 bookings.map((booking) => {
                   const unreadCount = getUnreadCount(booking);
                   const firstDate = Object.keys(booking.dates || {})[0] || '';
-                  const formattedDate = firstDate ? new Date(firstDate).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric' 
+                  const formattedDate = firstDate ? new Date(firstDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
                   }) : 'No Date';
 
                   return (
                     <div
                       key={booking.id}
                       onClick={() => setSelectedBookingId(booking.id)}
-                      className={`p-3 rounded-xl cursor-pointer transition-all border relative ${
-                        selectedBookingId === booking.id
-                          ? 'bg-white border-primary-100 shadow-sm ring-1 ring-primary-50'
-                          : 'border-transparent hover:bg-white hover:border-gray-200'
-                      }`}
+                      className={`p-3 rounded-xl cursor-pointer transition-all border relative ${selectedBookingId === booking.id
+                        ? 'bg-white border-primary-100 shadow-sm ring-1 ring-primary-50'
+                        : 'border-transparent hover:bg-white hover:border-gray-200'
+                        }`}
                     >
                       {unreadCount > 0 && (
                         <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                           {unreadCount}
                         </div>
                       )}
-                      
+
                       <div className="flex justify-between items-start mb-1">
                         <span className="font-semibold text-gray-800 text-sm truncate pr-2">
                           {booking.event_type || 'Event'}
@@ -372,12 +357,11 @@ const handleSendMessage = async () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <div 
-                            className={`w-2 h-2 rounded-full ${
-                              booking.request_status === 'approved' ? 'bg-green-500' : 
-                              booking.request_status === 'rejected' ? 'bg-red-500' : 
-                              'bg-orange-500'
-                            }`} 
+                          <div
+                            className={`w-2 h-2 rounded-full ${booking.request_status === 'approved' ? 'bg-green-500' :
+                              booking.request_status === 'rejected' ? 'bg-red-500' :
+                                'bg-orange-500'
+                              }`}
                           />
                           <span className="text-xs text-gray-500 capitalize">
                             {booking.request_status?.replace('_', ' ') || 'Pending'}
@@ -385,9 +369,9 @@ const handleSendMessage = async () => {
                         </div>
                         <ChevronRight className="w-4 h-4 text-gray-300" />
                       </div>
-                      
+
                       {/* Show conversation status */}
-                      {booking?.conversation && (
+                      {(booking as any).conversation && (
                         <div className="mt-2 text-xs text-gray-400">
                           Chat available
                         </div>
@@ -452,15 +436,14 @@ const handleSendMessage = async () => {
                         key={msg.id}
                         className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
-                        
+
                         <div
-                          className={`max-w-[80%] md:max-w-md px-5 py-3 rounded-2xl shadow-sm ${
-                            msg.sender === 'user'
-                              ? 'bg-gradient-to-br from-primary-500 to-warm-500 text-white rounded-tr-sm'
-                              : msg.sender === 'chef'
+                          className={`max-w-[80%] md:max-w-md px-5 py-3 rounded-2xl shadow-sm ${msg.sender === 'user'
+                            ? 'bg-gradient-to-br from-primary-500 to-warm-500 text-white rounded-tr-sm'
+                            : msg.sender === 'chef'
                               ? 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
                               : 'bg-gray-100 border border-gray-200 text-gray-600 rounded-tl-sm'
-                          }`}
+                            }`}
                         >
                           {msg.sender_name && (
                             <p className="text-xs font-semibold mb-1 text-gray-500">
@@ -468,11 +451,10 @@ const handleSendMessage = async () => {
                             </p>
                           )}
                           <p className="text-sm leading-relaxed">{msg.text}</p>
-                          <p className={`text-[10px] mt-1.5 ${
-                            msg.sender === 'user' ? 'text-white/70' : 'text-gray-400'
-                          }`}>
+                          <p className={`text-[10px] mt-1.5 ${msg.sender === 'user' ? 'text-white/70' : 'text-gray-400'
+                            }`}>
                             {formatMessageTime(msg.time)}
-                            
+
                           </p>
                         </div>
                       </div>

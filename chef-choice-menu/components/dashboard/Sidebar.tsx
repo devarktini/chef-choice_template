@@ -53,43 +53,43 @@ export default function Sidebar() {
   }, [isMobileMenuOpen]);
 
   const clientMenuItems = [
-    { 
-      name: "Dashboard", 
-      href: "/dashboard", 
+    {
+      name: "Dashboard",
+      href: "/dashboard",
       icon: LayoutDashboard,
     },
-    { 
-      name: "Profile", 
-      href: "/dashboard/profile", 
+    {
+      name: "Profile",
+      href: "/dashboard/profile",
       icon: User,
       submenu: [
         { name: "Personal Info", href: "/dashboard/profile" },
       ]
     },
-    { 
-      name: "Bookings", 
-      href: "/dashboard/bookings", 
+    {
+      name: "Bookings",
+      href: "/dashboard/bookings",
       icon: Calendar,
       submenu: [
         { name: "All Bookings", href: "/dashboard/bookings" },
       ]
     },
-    { 
-      name: "Messages", 
-      href: "/dashboard/chats", 
+    {
+      name: "Messages",
+      href: "/dashboard/chats",
       icon: MessageSquare,
     },
   ];
 
   const serviceProviderMenuItems = [
-    { 
-      name: "Dashboard", 
-      href: "/dashboard", 
+    {
+      name: "Dashboard",
+      href: "/dashboard",
       icon: LayoutDashboard,
     },
-    { 
-      name: "Profile", 
-      href: "/dashboard/profile", 
+    {
+      name: "Profile",
+      href: "/dashboard/profile",
       icon: User,
       submenu: [
         { name: "Chef Profile", href: "/dashboard/profile" },
@@ -97,9 +97,9 @@ export default function Sidebar() {
         { name: "Gallery", href: "/dashboard/profile/gallery" },
       ]
     },
-    { 
-      name: "Bookings", 
-      href: "/dashboard/bookings", 
+    {
+      name: "Bookings",
+      href: "/dashboard/bookings",
       icon: Calendar,
       submenu: [
         { name: "All Bookings", href: "/dashboard/bookings" },
@@ -108,14 +108,14 @@ export default function Sidebar() {
         { name: "Calendar View", href: "/dashboard/bookings/calendar" },
       ]
     },
-    { 
-      name: "Orders", 
-      href: "/dashboard/orders", 
+    {
+      name: "Orders",
+      href: "/dashboard/orders",
       icon: Package,
     },
-    { 
-      name: "Earnings", 
-      href: "/dashboard/earnings", 
+    {
+      name: "Earnings",
+      href: "/dashboard/earnings",
       icon: Landmark,
       submenu: [
         { name: "Overview", href: "/dashboard/earnings" },
@@ -123,14 +123,14 @@ export default function Sidebar() {
         { name: "Withdraw", href: "/dashboard/earnings/withdraw" },
       ]
     },
-    { 
-      name: "Clients", 
-      href: "/dashboard/clients", 
+    {
+      name: "Clients",
+      href: "/dashboard/clients",
       icon: Users
     },
-    { 
-      name: "Services", 
-      href: "/dashboard/services", 
+    {
+      name: "Services",
+      href: "/dashboard/services",
       icon: Briefcase,
       submenu: [
         { name: "All Services", href: "/dashboard/services" },
@@ -138,24 +138,24 @@ export default function Sidebar() {
         { name: "Packages", href: "/dashboard/services/packages" },
       ]
     },
-    { 
-      name: "Reviews", 
-      href: "/dashboard/reviews", 
+    {
+      name: "Reviews",
+      href: "/dashboard/reviews",
       icon: Star,
     },
-    { 
-      name: "Analytics", 
-      href: "/dashboard/analytics", 
+    {
+      name: "Analytics",
+      href: "/dashboard/analytics",
       icon: TrendingUp
     },
-    { 
-      name: "Documents", 
-      href: "/dashboard/documents", 
+    {
+      name: "Documents",
+      href: "/dashboard/documents",
       icon: FileText
     },
   ];
 
-  const menuItems = user?.role === "service_provider" 
+  const menuItems = user?.role === "service_provider"
     ? [...serviceProviderMenuItems]
     : [...clientMenuItems];
 
@@ -178,7 +178,7 @@ export default function Sidebar() {
               {user?.first_name?.[0]}{user?.last_name?.[0]}
             </span>
           </div>
-          
+
           <div className="flex-1 overflow-hidden">
             <p className="font-medium text-gray-900 truncate">
               {user?.first_name} {user?.last_name}
@@ -194,9 +194,9 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-3 space-y-1 overflow-y-auto bg-white">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || 
+          const isActive = pathname === item.href ||
             (item.submenu && item.submenu.some(sub => pathname === sub.href));
-          
+
           const hasSubmenu = item.submenu;
 
           return (
@@ -215,10 +215,10 @@ export default function Sidebar() {
                       <Icon className="w-4 h-4" />
                       <span className="font-medium">{item.name}</span>
                     </div>
-                    
+
                     <ChevronDown className={`w-4 h-4 transition-transform ${activeSubmenu === item.name ? 'rotate-180' : ''}`} />
                   </button>
-                  
+
                   {/* Submenu */}
                   {activeSubmenu === item.name && (
                     <div className="ml-7 mt-1 mb-2 space-y-1">
@@ -226,11 +226,10 @@ export default function Sidebar() {
                         <Link
                           key={subItem.name}
                           href={subItem.href}
-                          className={`block py-1.5 px-3 rounded text-sm transition-colors ${
-                            pathname === subItem.href
+                          className={`block py-1.5 px-3 rounded text-sm transition-colors ${pathname === subItem.href
                               ? "text-blue-600 bg-blue-50 font-medium"
                               : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                          }`}
+                            }`}
                         >
                           {subItem.name}
                         </Link>
@@ -296,7 +295,7 @@ export default function Sidebar() {
       {/* Mobile Sidebar */}
       <aside className={`lg:hidden fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-50 transition-transform
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        
+
         <div className="flex flex-col h-full">
           {/* Mobile Header */}
           <div className="p-4 border-b border-gray-200">
@@ -306,7 +305,7 @@ export default function Sidebar() {
                   <ChefHat className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-bold text-gray-900">Chef's Choice</h1>
+                  <h1 className="font-bold text-gray-900">Chef&apos;s Choice</h1>
                   <p className="text-xs text-gray-500">Dashboard</p>
                 </div>
               </div>
@@ -337,18 +336,17 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors ${
-                  isActive
+                className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors ${isActive
                     ? "text-blue-600 bg-blue-50"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="text-xs mt-1">{item.name}</span>
               </Link>
             );
           })}
-          
+
           <button
             onClick={() => setIsMobileMenuOpen(true)}
             className="flex flex-col items-center justify-center py-2 px-3 rounded-lg text-gray-600 hover:text-gray-900"

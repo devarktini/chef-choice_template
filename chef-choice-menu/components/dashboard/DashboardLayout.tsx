@@ -29,7 +29,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex min-h-screen pt-20 bg-gray-50">
       {/* Sidebar - Fixed on left for desktop */}
       <Sidebar />
-      
+
       {/* Main Content Area - Scrollable on right */}
       <div className="flex-1 lg:ml-64 min-h-screen overflow-y-auto">
         {/* Mobile Header */}
@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span className="text-white font-semibold">CC</span>
               </div>
               <div>
-                <h1 className="font-bold text-gray-900">Chef's Choice</h1>
+                <h1 className="font-bold text-gray-900">Chef&apos;s Choice</h1>
                 <p className="text-xs text-gray-500">Dashboard</p>
               </div>
             </div>

@@ -22,7 +22,7 @@ function Location() {
   };
 
   useEffect(() => {
-    const savedLocation = userInputData.find((item :any) => item.id === "location");
+    const savedLocation = userInputData.find((item: any) => item.id === "location");
     if (savedLocation) {
       setUserLocation((prev) => ({ ...prev, addr: savedLocation.data }));
     }
@@ -58,7 +58,7 @@ function Location() {
       }
     }
     fetchData();
-  }, [userLocation.lat, userLocation.long, url]);
+  }, [userLocation.lat, userLocation.long, url, addUserInputData]);
 
   function getUserCurrentLocation() {
     if (!navigator.geolocation) {
@@ -128,7 +128,7 @@ function Location() {
             value={userLocation.addr}
           />
         </div>
-        
+
         {userLocation.addr && (
           <div className="mt-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 animate-fade-in">
             <div className="flex items-start gap-3">
@@ -150,8 +150,8 @@ function Location() {
           className={`
             group relative overflow-hidden px-8 py-4 rounded-2xl font-semibold
             transition-all duration-300 transform hover:scale-105
-            ${isLoading 
-              ? 'bg-gray-600 cursor-not-allowed' 
+            ${isLoading
+              ? 'bg-gray-600 cursor-not-allowed'
               : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 cursor-pointer'
             }
           `}
@@ -167,7 +167,7 @@ function Location() {
               <span className="text-white">Use My Current Location</span>
             </div>
           )}
-          
+
           {/* Shine effect */}
           <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
         </button>
@@ -204,7 +204,7 @@ function Location() {
       {/* Alternative Option */}
       <div className="text-center mt-8 animate-fade-in" style={{ animationDelay: "0.6s" }}>
         <p className="text-gray-800/60 mb-4">or</p>
-        <Link 
+        <Link
           href="/place"
           className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl text-gray-800 hover:bg-white/15 hover:border-white/30 transition-all duration-300 group"
         >
@@ -216,7 +216,7 @@ function Location() {
         </p>
       </div>
 
-      <ToastContainer 
+      <ToastContainer
         position="top-center"
         autoClose={3000}
         hideProgressBar={false}

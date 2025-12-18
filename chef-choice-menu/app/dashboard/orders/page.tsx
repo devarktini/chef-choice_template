@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { BookingService, Booking } from '@/services/bookingService';
@@ -21,11 +21,7 @@ export default function OrdersPage() {
     const [selectedOrder, setSelectedOrder] = useState<Booking | undefined>(undefined);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             startLoading();
             const response = await BookingService.getBookings();
@@ -37,7 +33,11 @@ export default function OrdersPage() {
             setLoading(false);
             stopLoading();
         }
-    };
+    }, [startLoading, stopLoading]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
 
     const handleViewDetails = (order: Booking) => {
         setSelectedOrder(order);
