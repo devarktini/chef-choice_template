@@ -3,6 +3,7 @@ import { AuthService } from './authService';
 import { Address } from '@/types/auth';
 
 export interface Booking {
+    conversation: any;
     id: string;
     client: {
         id: string;
