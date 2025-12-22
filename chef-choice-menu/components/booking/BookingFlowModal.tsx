@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DatePicker from "react-datepicker";
+import { AddressService as AddressApiService } from '@/services/addressService';
 import "react-datepicker/dist/react-datepicker.css";
 import {
   X,
@@ -72,6 +73,14 @@ import {
   Compass,
   Navigation,
   User,
+  ExternalLink,
+  Heart as HeartIcon,
+  Phone,
+  Mail,
+  Map,
+  Award as AwardIcon,
+  Clock as ClockIcon,
+  DollarSign,
 } from "lucide-react";
 import MultiSelect from "@/components/ui/MultiSelect";
 import { BookingService, Booking } from "@/services/bookingService";
@@ -265,22 +274,6 @@ const ADDITIONAL_SERVICES = [
   },
 ];
 
-const AMBIENCE_OPTIONS = [
-  { value: "indoor", label: "Indoor", icon: Home },
-  { value: "outdoor", label: "Outdoor/Garden", icon: TreePine },
-  { value: "poolside", label: "Poolside", icon: Droplets },
-  { value: "rooftop", label: "Rooftop", icon: Sun },
-  { value: "banquet_hall", label: "Banquet Hall", icon: Crown },
-  { value: "tent", label: "Tented Area", icon: Tent },
-];
-
-const TRANSPORTATION_OPTIONS = [
-  { value: "car_parking", label: "Car Parking", icon: Car },
-  { value: "valet", label: "Valet Service", icon: Car },
-  { value: "shuttle", label: "Shuttle Service", icon: Bus },
-  { value: "taxi_arrangements", label: "Taxi Arrangements", icon: Bus },
-];
-
 // Enhanced service providers
 const SERVICE_PROVIDERS = [
   {
@@ -290,10 +283,17 @@ const SERVICE_PROVIDERS = [
     image: "https://i.pravatar.cc/150?u=chef_raj",
     rating: 4.9,
     reviews: 245,
-    specialties: ["North Indian", "Mughlai", "Tandoor"],
+    specialties: ["North Indian", "Mughlai", "Tandoor", "Street Food"],
     price: "₹8,500/day",
     badge: "Top Rated",
     verified: true,
+    experience: "20+ years",
+    location: "Delhi",
+    contact: "+91 9876543210",
+    email: "chef.raj@example.com",
+    description: "Award-winning chef specializing in North Indian and Mughlai cuisine with 20+ years of experience in 5-star hotels.",
+    awards: ["Best Chef 2022", "Golden Spoon Award"],
+    languages: ["Hindi", "English", "Punjabi"]
   },
   {
     value: "chef_anita",
@@ -302,10 +302,17 @@ const SERVICE_PROVIDERS = [
     image: "https://i.pravatar.cc/150?u=chef_anita",
     rating: 4.8,
     reviews: 189,
-    specialties: ["Desserts", "Baking", "Continental"],
+    specialties: ["Desserts", "Baking", "Continental", "Fusion"],
     price: "₹6,500/day",
     badge: "Popular",
     verified: true,
+    experience: "12 years",
+    location: "Mumbai",
+    contact: "+91 9876543211",
+    email: "chef.anita@example.com",
+    description: "Specialized in European desserts and fusion cuisine. Trained in France and Italy.",
+    awards: ["Pastry Chef of the Year", "Culinary Excellence"],
+    languages: ["Hindi", "English", "French"]
   },
   {
     value: "catering_delight",
@@ -314,10 +321,17 @@ const SERVICE_PROVIDERS = [
     image: "https://i.pravatar.cc/150?u=catering",
     rating: 4.7,
     reviews: 356,
-    specialties: ["Bulk Orders", "Weddings", "Corporate"],
+    specialties: ["Bulk Orders", "Weddings", "Corporate", "Beverages"],
     price: "₹350/person",
     badge: "Budget Friendly",
     verified: true,
+    experience: "15 years",
+    location: "Bangalore",
+    contact: "+91 9876543212",
+    email: "info@delightcatering.com",
+    description: "Full-service catering company specializing in weddings and corporate events.",
+    awards: ["Best Catering Service", "Customer Choice"],
+    languages: ["Hindi", "English", "Kannada"]
   },
   {
     value: "royal_venue",
@@ -326,10 +340,17 @@ const SERVICE_PROVIDERS = [
     image: "https://i.pravatar.cc/150?u=venue1",
     rating: 4.6,
     reviews: 123,
-    specialties: ["Weddings", "Grand Events"],
+    specialties: ["Weddings", "Grand Events", "Banquets"],
     price: "₹50,000/day",
     badge: "Luxury",
     verified: true,
+    experience: "8 years",
+    location: "Jaipur",
+    contact: "+91 9876543213",
+    email: "royalpalace@example.com",
+    description: "Historic palace converted into luxury event venue with royal ambiance.",
+    awards: ["Best Venue", "Heritage Award"],
+    languages: ["Hindi", "English", "Rajasthani"]
   },
   {
     value: "event_planners",
@@ -338,10 +359,17 @@ const SERVICE_PROVIDERS = [
     image: "https://i.pravatar.cc/150?u=planner",
     rating: 4.9,
     reviews: 289,
-    specialties: ["Complete Planning", "Decoration", "Coordination"],
+    specialties: ["Complete Planning", "Decoration", "Coordination", "Logistics"],
     price: "₹25,000+",
     badge: "All-in-One",
     verified: true,
+    experience: "10 years",
+    location: "Chennai",
+    contact: "+91 9876543214",
+    email: "dream@eventplanners.com",
+    description: "End-to-end event management service with in-house chefs and decorators.",
+    awards: ["Best Event Planner", "Excellence in Service"],
+    languages: ["Hindi", "English", "Tamil"]
   },
 ];
 
@@ -353,6 +381,7 @@ interface BookingData {
   cuisines: string[];
   mealConfig: Record<string, { meals: string[]; time: string }>;
   isMealConfigSkipped: boolean;
+  isServiceProviderSkipped: boolean;
   selectedMenu: string[];
   guests: { adults: number; children: number; babies: number };
   serviceProviders: string[];
@@ -380,6 +409,7 @@ const INITIAL_DATA: BookingData = {
   cuisines: [],
   mealConfig: {},
   isMealConfigSkipped: false,
+  isServiceProviderSkipped: false,
   selectedMenu: [],
   guests: { adults: 0, children: 0, babies: 0 },
   serviceProviders: [],
@@ -398,6 +428,349 @@ const INITIAL_DATA: BookingData = {
     dietaryRestrictions: [],
     entertainment: [],
   },
+};
+
+// Address Form Component
+const AddAddressForm = ({ onSave, onCancel }: { onSave: (address: any) => void; onCancel: () => void }) => {
+  const [formData, setFormData] = useState({
+    label: "",
+    address_line1: "",
+    address_line2: "",
+    city: "",
+    state: "",
+    zip_code: "",
+    country: "India",
+    phone: "",
+    type: "home"
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Generate a temporary ID for the address
+    const newAddress = {
+      id: `temp-${Date.now()}`,
+      ...formData,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    onSave(newAddress);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden"
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900">Add New Address</h3>
+            <button
+              onClick={onCancel}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address Label *
+              </label>
+              <select
+                name="label"
+                value={formData.label}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                required
+              >
+                <option value="">Select label</option>
+                <option value="Home">Home</option>
+                <option value="Work">Work</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address Line 1 *
+              </label>
+              <input
+                type="text"
+                name="address_line1"
+                value={formData.address_line1}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                placeholder="Street address, P.O. box, company name"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address Line 2
+              </label>
+              <input
+                type="text"
+                name="address_line2"
+                value={formData.address_line2}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                placeholder="Apartment, suite, unit, building, floor, etc."
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City *
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State *
+                </label>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ZIP Code *
+                </label>
+                <input
+                  type="text"
+                  name="zip_code"
+                  value={formData.zip_code}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone *
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  placeholder="+91"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                >
+                  Save Address
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Provider Detail Modal Component
+const ProviderDetailModal = ({ 
+  provider, 
+  onClose, 
+  onSelect 
+}: { 
+  provider: any; 
+  onClose: () => void; 
+  onSelect: () => void;
+}) => {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+      >
+        {/* Header */}
+        <div className="relative">
+          <div className="h-48 bg-gradient-to-r from-amber-500 to-orange-500" />
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          >
+            <X className="w-5 h-5 text-white" />
+          </button>
+          
+          <div className="absolute -bottom-12 left-6">
+            <img
+              src={provider.image}
+              alt={provider.label}
+              className="w-24 h-24 rounded-xl border-4 border-white shadow-lg object-cover"
+            />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="pt-16 p-6">
+          <div className="mb-6">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">{provider.label}</h2>
+                <p className="text-gray-600">{provider.title}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  provider.badge === "Top Rated"
+                    ? "bg-amber-100 text-amber-800"
+                    : provider.badge === "Popular"
+                    ? "bg-pink-100 text-pink-800"
+                    : provider.badge === "Budget Friendly"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-purple-100 text-purple-800"
+                }`}>
+                  {provider.badge}
+                </span>
+                {provider.verified && (
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    Verified
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                <span>{provider.location}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <ClockIcon className="w-4 h-4" />
+                <span>{provider.experience} experience</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 text-amber-500 fill-current" />
+                <span className="font-medium">{provider.rating}</span>
+                <span>({provider.reviews} reviews)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <h3 className="font-bold text-gray-800 mb-2">About</h3>
+            <p className="text-gray-600">{provider.description}</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Specialties */}
+            <div>
+              <h3 className="font-bold text-gray-800 mb-3">Specialties</h3>
+              <div className="flex flex-wrap gap-2">
+                {provider.specialties.map((spec: string, i: number) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm"
+                  >
+                    {spec}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h3 className="font-bold text-gray-800 mb-3">Contact Information</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Phone className="w-4 h-4" />
+                  <span>{provider.contact}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Mail className="w-4 h-4" />
+                  <span>{provider.email}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Globe className="w-4 h-4" />
+                  <span>{provider.languages.join(", ")}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Awards */}
+          {provider.awards && provider.awards.length > 0 && (
+            <div className="mt-6">
+              <h3 className="font-bold text-gray-800 mb-3">Awards & Recognition</h3>
+              <div className="flex flex-wrap gap-2">
+                {provider.awards.map((award: string, i: number) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                    <AwardIcon className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm text-amber-800">{award}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pricing */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-gray-900">Starting Price</p>
+                <p className="text-2xl font-bold text-gray-900">{provider.price}</p>
+              </div>
+              <button
+                onClick={onSelect}
+                className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+              >
+                Select Provider
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
 };
 
 export default function BookingFlowModal({
@@ -419,6 +792,9 @@ export default function BookingFlowModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<any>(null);
+  const [showProviderModal, setShowProviderModal] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
   const router = useRouter();
 
   const totalSteps = 8;
@@ -436,6 +812,7 @@ export default function BookingFlowModal({
         cuisines: existingBooking.food_cuisines_preferences?.cuisines || [],
         mealConfig: existingBooking.meal_timings || {},
         isMealConfigSkipped: false,
+        isServiceProviderSkipped: false,
         selectedMenu: existingBooking.menu_items_details?.items || [],
         guests: existingBooking.guests || { adults: 0, children: 0, babies: 0 },
         serviceProviders: existingBooking.services_selections?.providers || [],
@@ -468,8 +845,11 @@ export default function BookingFlowModal({
         setCompletedSteps((prev) => [...prev, step]);
       }
 
+      // Handle skipping logic
       if (step === 3 && data.isMealConfigSkipped) {
         setStep(5);
+      } else if (step === 6 && data.isServiceProviderSkipped) {
+        setStep(7);
       } else {
         setStep((prev) => Math.min(prev + 1, totalSteps));
       }
@@ -485,6 +865,8 @@ export default function BookingFlowModal({
   const handleBack = () => {
     if (step === 5 && data.isMealConfigSkipped) {
       setStep(3);
+    } else if (step === 7 && data.isServiceProviderSkipped) {
+      setStep(6);
     } else {
       setStep((prev) => Math.max(prev - 1, 1));
     }
@@ -534,6 +916,9 @@ export default function BookingFlowModal({
         toast.success("Booking updated successfully!");
       } else {
         await BookingService.createBooking(payload);
+         setData(INITIAL_DATA);
+        setStep(1);
+        setCompletedSteps([]);
         toast.success("Booking request submitted successfully!");
         router.push("/dashboard/bookings");
       }
@@ -578,7 +963,8 @@ export default function BookingFlowModal({
       case 5:
         return data.guests.adults + data.guests.children > 0;
       case 6:
-        return data.serviceProviders.length > 0;
+        // Allow proceeding if service providers are selected OR if user has skipped
+        return data.serviceProviders.length > 0 || data.isServiceProviderSkipped;
       case 7:
         return !!data.clientMaterials.kitchenType;
       case 8:
@@ -592,10 +978,57 @@ export default function BookingFlowModal({
     data.guests.adults + data.guests.children + data.guests.babies;
   const selectedEvent = EVENT_TYPES.find((e) => e.value === data.eventType);
 
+  const handleProviderClick = (provider: any) => {
+    setSelectedProvider(provider);
+    setShowProviderModal(true);
+  };
+
+  const handleSelectProvider = (providerValue: string) => {
+    if (!data.serviceProviders.includes(providerValue)) {
+      updateData({
+        serviceProviders: [...data.serviceProviders, providerValue],
+      });
+    }
+    setShowProviderModal(false);
+  };
+
+  const handleAddAddress = async(newAddress: any) => {
+    try {
+     const response =   await AddressApiService.createAddress(newAddress);
+     console.log("response", response)
+       setAddresses(prev => [...prev, response]);
+    updateData({ eventAddressId: response.id });
+    setShowAddressForm(false);
+    toast.success("Address added successfully!");
+      
+    } catch (error) {
+       console.error("Create address error:", error);
+    toast.error("Failed to add address");
+    }
+   
+  };
+
   if (!isOpen) return null;
 
   return (
     <>
+      {/* Provider Detail Modal */}
+      {showProviderModal && selectedProvider && (
+        <ProviderDetailModal
+          provider={selectedProvider}
+          onClose={() => setShowProviderModal(false)}
+          onSelect={() => handleSelectProvider(selectedProvider.value)}
+        />
+      )}
+
+      {/* Add Address Form Modal */}
+      {showAddressForm && (
+        <AddAddressForm
+          onSave={handleAddAddress}
+          onCancel={() => setShowAddressForm(false)}
+        />
+      )}
+
       {/* Confetti Effect */}
       {showConfetti && (
         <div className="fixed inset-0 z-[120] pointer-events-none">
@@ -686,54 +1119,10 @@ export default function BookingFlowModal({
             </div>
           </div>
 
-          {/* Progress Bar */}
-          {/* <div className="px-4 md:px-6 py-3 bg-gradient-to-r from-amber-50/50 to-orange-50/50 border-b border-amber-100">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                {[...Array(totalSteps)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: i * 0.1 }}
-                    className={`flex items-center ${i < totalSteps - 1 ? 'flex-1' : ''}`}
-                  >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                      step > i + 1 
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg'
-                        : step === i + 1
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg ring-2 ring-amber-200'
-                        : 'bg-gray-200 text-gray-500'
-                    }`}>
-                      {step > i + 1 ? <Check className="w-4 h-4" /> : i + 1}
-                    </div>
-                    {i < totalSteps - 1 && (
-                      <div className={`flex-1 h-1 mx-2 rounded-full transition-all duration-300 ${
-                        step > i + 1 
-                          ? 'bg-gradient-to-r from-green-400 to-emerald-400'
-                          : 'bg-gray-200'
-                      }`} />
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-              <div className="text-sm font-semibold text-gray-700 hidden md:block">
-                {Math.round((step / totalSteps) * 100)}% Complete
-              </div>
-            </div>
-            <div className="flex justify-between text-xs text-gray-500 px-2">
-              {['Event', 'Menu', 'Schedule', 'Dishes', 'Guests', 'Chef', 'Setup', 'Review'].map((label, i) => (
-                <span key={i} className={`${step === i + 1 ? 'font-bold text-amber-600' : ''}`}>
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div> */}
-
           {/* Main Content */}
           <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
             {/* Sidebar - Progress Steps (Desktop) */}
-            <div className=" overflow-y-auto md:flex md:w-1/4 lg:w-1/5 bg-white border-r border-gray-200 p-4 flex-col">
+            <div className="overflow-y-auto md:flex md:w-1/4 lg:w-1/5 bg-white border-r border-gray-200 p-4 flex-col">
               {/* Steps Section - Simplified */}
               <div className="space-y-2 mb-6">
                 {[
@@ -790,19 +1179,19 @@ export default function BookingFlowModal({
                     key={s.id}
                     onClick={() => setStep(s.id)}
                     className={`w-full text-left p-3 rounded-lg transition-colors ${step === s.id
-                        ? "bg-amber-50 border border-amber-200"
-                        : completedSteps.includes(s.id)
-                          ? "bg-green-50 border border-green-200"
-                          : "border border-gray-100 hover:bg-gray-50"
+                      ? "bg-amber-50 border border-amber-200"
+                      : completedSteps.includes(s.id)
+                        ? "bg-green-50 border border-green-200"
+                        : "border border-gray-100 hover:bg-gray-50"
                       }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-8 h-8 rounded-md flex items-center justify-center ${step === s.id
-                            ? "bg-amber-500 text-white"
-                            : completedSteps.includes(s.id)
-                              ? "bg-green-500 text-white"
-                              : "bg-gray-100 text-gray-500"
+                          ? "bg-amber-500 text-white"
+                          : completedSteps.includes(s.id)
+                            ? "bg-green-500 text-white"
+                            : "bg-gray-100 text-gray-500"
                           }`}
                       >
                         {completedSteps.includes(s.id) ? (
@@ -848,10 +1237,6 @@ export default function BookingFlowModal({
                       {data.selectedMenu.length}
                     </p>
                   </div>
-                  {/* <div className="text-center p-2 bg-amber-50 rounded-lg">
-        <p className="text-xs text-gray-600">Step</p>
-        <p className="font-bold text-gray-800 text-lg">{step}/8</p>
-      </div> */}
                 </div>
               </div>
             </div>
@@ -914,9 +1299,9 @@ export default function BookingFlowModal({
                                   }
                                   disabled={isRestricted}
                                   className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${data.eventType === type.value
-                                      ? `${type.color.split(" ")[0]} ${type.color.split(" ")[1]
-                                      } border-orange-500 text-white shadow-2xl`
-                                      : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
+                                    ? `${type.color.split(" ")[0]} ${type.color.split(" ")[1]
+                                    } border-orange-500 text-white shadow-2xl`
+                                    : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
                                     } ${isRestricted
                                       ? "opacity-70 cursor-not-allowed"
                                       : "cursor-pointer"
@@ -972,8 +1357,8 @@ export default function BookingFlowModal({
 
                             <div
                               className={`bg-white w-1/2 border-2 ${data.dates.length > 0
-                                  ? "border-amber-200"
-                                  : "border-gray-200"
+                                ? "border-amber-200"
+                                : "border-gray-200"
                                 } rounded-2xl p-4 shadow-lg`}
                             >
                               <DatePicker
@@ -1009,10 +1394,10 @@ export default function BookingFlowModal({
                                     date.toDateString() ===
                                     new Date().toDateString();
                                   return `!rounded-xl !transition-all ${isSelected
-                                      ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
-                                      : isToday
-                                        ? "!bg-amber-100 !text-amber-700"
-                                        : "hover:!bg-amber-50"
+                                    ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
+                                    : isToday
+                                      ? "!bg-amber-100 !text-amber-700"
+                                      : "hover:!bg-amber-50"
                                     }`;
                                 }}
                               />
@@ -1065,19 +1450,6 @@ export default function BookingFlowModal({
                                 </motion.div>
                               )}
                             </div>
-
-                            {/* Quick Tips */}
-                            {/* <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
-                              <div className="flex items-start gap-3">
-                                <Sparkles className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                                <div>
-                                  <p className="font-semibold text-blue-800 text-sm">Pro Tip</p>
-                                  <p className="text-blue-600 text-sm">
-                                    Select multiple dates for multi-day events like weddings. Most chefs offer discounts for longer bookings!
-                                  </p>
-                                </div>
-                              </div>
-                            </div> */}
                           </motion.div>
                         </div>
                       </div>
@@ -1086,8 +1458,8 @@ export default function BookingFlowModal({
                     {/* Step 2: Menu Type & Cuisine */}
                     {step === 2 && (
                       <div className="max-w-4xl mx-auto">
-                        <div className="mb-8 text-center">
-                          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        <div className="mb-3 text-center">
+                          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
                             Let&apos;s Talk Food! 🍽️
                           </h2>
                           <p className="text-gray-600">
@@ -1095,7 +1467,7 @@ export default function BookingFlowModal({
                           </p>
                         </div>
 
-                        <div className="space-y-8">
+                        <div className="space-y-2">
                           {/* Menu Type */}
                           <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -1135,9 +1507,9 @@ export default function BookingFlowModal({
                                   onClick={() =>
                                     updateData({ menuType: type.value as any })
                                   }
-                                  className={`relative group p-6 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${data.menuType === type.value
-                                      ? `${type.color} border-orange-500 text-white shadow-xl`
-                                      : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                                  className={`relative group p-2 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${data.menuType === type.value
+                                    ? `${type.color} border-orange-500 text-white shadow-xl`
+                                    : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
                                     }`}
                                 >
                                   <div className="flex flex-col items-center gap-3">
@@ -1189,30 +1561,8 @@ export default function BookingFlowModal({
                                   updateData({ cuisines: vals })
                                 }
                                 placeholder="Search and select cuisines..."
-                              // className="min-h-[200px]"
                               />
                             </div>
-
-                            {/* Popular Combinations */}
-                            {/* <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
-                              <p className="font-semibold text-amber-800 text-sm mb-2">Popular Combinations:</p>
-                              <div className="flex flex-wrap gap-2">
-                                {['North Indian + Chinese', 'Italian + Continental', 'South Indian + Chinese', 'Mexican + American'].map((combo) => (
-                                  <button
-                                    key={combo}
-                                    onClick={() => {
-                                      const cuisines = combo.split(' + ').map(c => 
-                                        CUISINES.find(cuisine => cuisine.label === c)?.value
-                                      ).filter(Boolean) as string[];
-                                      updateData({ cuisines });
-                                    }}
-                                    className="px-3 py-1.5 bg-white border border-amber-200 text-amber-700 rounded-lg text-sm hover:bg-amber-50 transition-colors"
-                                  >
-                                    {combo}
-                                  </button>
-                                ))}
-                              </div>
-                            </div> */}
                           </motion.div>
                         </div>
                       </div>
@@ -1256,8 +1606,8 @@ export default function BookingFlowModal({
                                 <div className="relative w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                   <div
                                     className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${data.isMealConfigSkipped
-                                        ? "left-7"
-                                        : "left-1"
+                                      ? "left-7"
+                                      : "left-1"
                                       }`}
                                   ></div>
                                 </div>
@@ -1310,8 +1660,8 @@ export default function BookingFlowModal({
                                         <label
                                           key={meal.value}
                                           className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected
-                                              ? "border-amber-500 bg-amber-50"
-                                              : "border-gray-200 hover:border-gray-300"
+                                            ? "border-amber-500 bg-amber-50"
+                                            : "border-gray-200 hover:border-gray-300"
                                             }`}
                                         >
                                           <div className="flex items-center justify-center w-8 h-8 mb-2">
@@ -1405,8 +1755,8 @@ export default function BookingFlowModal({
                     {/* Step 4: Menu Selection */}
                     {step === 4 && (
                       <div className="max-w-6xl mx-auto">
-                        <div className="mb-8 text-center">
-                          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        <div className="mb-4 text-center">
+                          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
                             Curate Your Menu 🍴
                           </h2>
                           <p className="text-gray-600">
@@ -1463,43 +1813,8 @@ export default function BookingFlowModal({
                                 updateData({ selectedMenu: vals })
                               }
                               placeholder="Search and select dishes..."
-                            //   className="min-h-[300px]"
                             />
                           </div>
-
-                          {/* Popular Dishes */}
-                          {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                            {[
-                              { name: 'Butter Chicken', cuisine: 'North Indian', icon: '🍛', popular: true },
-                              { name: 'Paneer Tikka', cuisine: 'North Indian', icon: '🧀', popular: true },
-                              { name: 'Hyderabadi Biryani', cuisine: 'South Indian', icon: '🍚', popular: true },
-                              { name: 'Margherita Pizza', cuisine: 'Italian', icon: '🍕', popular: true },
-                            ].map((dish) => (
-                              <button
-                                key={dish.name}
-                                onClick={() => {
-                                  const dishValue = `${dish.cuisine.toLowerCase().replace(' ', '_')}_${dish.name.toLowerCase().replace(' ', '_')}`;
-                                  if (!data.selectedMenu.includes(dishValue)) {
-                                    updateData({ selectedMenu: [...data.selectedMenu, dishValue] });
-                                  }
-                                }}
-                                className="p-3 bg-white border border-gray-200 rounded-xl hover:border-amber-300 hover:bg-amber-50 transition-colors text-left"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <span className="text-2xl">{dish.icon}</span>
-                                  <div>
-                                    <p className="font-semibold text-gray-800">{dish.name}</p>
-                                    <p className="text-xs text-gray-500">{dish.cuisine}</p>
-                                  </div>
-                                  {dish.popular && (
-                                    <span className="ml-auto text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-full">
-                                      Popular
-                                    </span>
-                                  )}
-                                </div>
-                              </button>
-                            ))}
-                          </div> */}
                         </motion.div>
                       </div>
                     )}
@@ -1672,20 +1987,6 @@ export default function BookingFlowModal({
                                   </span>
                                 </div>
                               </div>
-
-                              {/* Tips */}
-                              {/* <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
-                                <p className="font-medium text-blue-800 text-sm mb-2">
-                                  Recommendations
-                                </p>
-                                <ul className="text-xs text-blue-700 space-y-1">
-                                  <li>
-                                    • Add 10% buffer for unexpected guests
-                                  </li>
-                                  <li>• Children: 60-70% of adult portions</li>
-                                  <li>• Consider dietary restrictions</li>
-                                </ul>
-                              </div> */}
                             </div>
                           </div>
                         </div>
@@ -1694,204 +1995,288 @@ export default function BookingFlowModal({
 
                     {/* Step 6: Service Provider */}
                     {step === 6 && (
-                      <div className="max-w-6xl mx-auto">
-                        <div className="mb-6">
-                          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                            Choose Service Providerggg
+                      <div className="max-w-4xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-4">
+                          <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
+                            Choose Service Provider
                           </h2>
-                          <p className="text-gray-600">
+                          <p className="text-sm text-gray-600">
                             Select from verified chefs and catering services
                           </p>
                         </div>
 
-                        {/* Search Filter */}
-                        <div className="mb-6">
-                          <div className="bg-white border border-gray-200 rounded-xl p-3">
-                            <MultiSelect
-                              options={SERVICE_PROVIDERS.map((p) => ({
-                                value: p.value,
-                                label: p.label,
-                                description: p.title,
-                                image: p.image,
-                              }))}
-                              value={data.serviceProviders}
-                              onChange={(vals) => updateData({ serviceProviders: vals })}
-                              placeholder="Search chefs or catering services..."
-                              disabled={isRestricted}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Selected Providers Summary */}
-                        {data.serviceProviders.length > 0 && (
-                          <div className="mb-6">
-                            <div className="flex items-center justify-between mb-4">
-                              <h3 className="font-semibold text-gray-800">
-                                Selected ({data.serviceProviders.length})
-                              </h3>
-                              <span className="text-sm text-gray-500">
-                                {data.serviceProviders.length} of {SERVICE_PROVIDERS.length} selected
-                              </span>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                              {SERVICE_PROVIDERS.filter((p) =>
-                                data.serviceProviders.includes(p.value)
-                              ).map((provider) => (
-                                <div key={provider.value} className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                                  <div className="flex items-start gap-3">
-                                    <img
-                                      src={provider.image}
-                                      alt={provider.label}
-                                      className="w-12 h-12 rounded-lg object-cover"
-                                    />
-                                    <div className="flex-1">
-                                      <div className="flex justify-between items-start">
-                                        <div>
-                                          <h4 className="font-semibold text-gray-900">
-                                            {provider.label}
-                                          </h4>
-                                          <p className="text-sm text-gray-600">{provider.title}</p>
-                                        </div>
-                                        <span className={`text-xs px-2 py-1 rounded-full ${provider.badge === "Top Rated" ? "bg-amber-100 text-amber-800" :
-                                            provider.badge === "Popular" ? "bg-pink-100 text-pink-800" :
-                                              provider.badge === "Budget Friendly" ? "bg-green-100 text-green-800" :
-                                                "bg-purple-100 text-purple-800"
-                                          }`}>
-                                          {provider.badge}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center justify-between mt-2">
-                                        <div className="flex items-center gap-1">
-                                          <Star className="w-4 h-4 text-amber-500 fill-current" />
-                                          <span className="font-medium text-gray-900">
-                                            {provider.rating}
-                                          </span>
-                                          <span className="text-xs text-gray-500 ml-1">
-                                            ({provider.reviews})
-                                          </span>
-                                        </div>
-                                        <span className="font-semibold text-gray-900">
-                                          {provider.price}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Available Providers */}
-                        <div>
-                          <h3 className="font-semibold text-gray-800 mb-4">
-                            Available Providers
-                          </h3>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {SERVICE_PROVIDERS.filter(
-                              (p) => !data.serviceProviders.includes(p.value)
-                            ).map((provider) => (
-                              <button
-                                key={provider.value}
-                                onClick={() => {
-                                  if (!isRestricted) {
+                        {/* Skip Option */}
+                        <div className="mb-4">
+                          <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                            <div className="flex items-center justify-between gap-2">
+                              <div>
+                                <p className="text-sm font-medium text-blue-800">
+                                  Skip and discuss with chef later?
+                                </p>
+                                <p className="text-xs text-blue-600">
+                                  You can select service providers later
+                                </p>
+                              </div>
+                              <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={data.isServiceProviderSkipped}
+                                  onChange={(e) =>
                                     updateData({
-                                      serviceProviders: [
-                                        ...data.serviceProviders,
-                                        provider.value,
-                                      ],
-                                    });
+                                      isServiceProviderSkipped: e.target.checked,
+                                      ...(e.target.checked && { serviceProviders: [] }) // Clear selection when skipping
+                                    })
                                   }
-                                }}
-                                className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:border-gray-300 hover:shadow-sm transition-all group"
-                                disabled={isRestricted}
-                              >
-                                <div className="space-y-3">
-                                  {/* Provider Header */}
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <img
-                                        src={provider.image}
-                                        alt={provider.label}
-                                        className="w-10 h-10 rounded-lg object-cover"
-                                      />
-                                      <div>
-                                        <h4 className="font-semibold text-gray-900">
-                                          {provider.label}
-                                        </h4>
-                                        <p className="text-sm text-gray-500">{provider.title}</p>
+                                  className="sr-only peer"
+                                />
+                                <div className="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
+                                  <div
+                                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${data.isServiceProviderSkipped
+                                      ? "translate-x-5"
+                                      : "translate-x-0.5"
+                                      }`}
+                                  ></div>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Skip Message */}
+                        {data.isServiceProviderSkipped ? (
+                          <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+                            <ChefHat className="w-10 h-10 text-gray-400 mx-auto mb-3" />
+                            <p className="text-gray-700 font-medium mb-2">
+                              Service provider selection skipped
+                            </p>
+                            <p className="text-sm text-gray-600 max-w-md mx-auto">
+                              You can discuss service provider options with your event manager later
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            {/* Search Filter */}
+                            <div className="mb-4">
+                              <div className="bg-white border border-gray-300 rounded-lg p-2">
+                                <MultiSelect
+                                  options={SERVICE_PROVIDERS.map((p) => ({
+                                    value: p.value,
+                                    label: p.label,
+                                    description: p.title,
+                                    image: p.image,
+                                  }))}
+                                  value={data.serviceProviders}
+                                  onChange={(vals) => updateData({ serviceProviders: vals })}
+                                  placeholder="Search chefs or catering services..."
+                                  disabled={isRestricted}
+                                  // className="text-sm"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Selected Providers Summary */}
+                            {data.serviceProviders.length > 0 && (
+                              <div className="mb-4">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h3 className="text-sm font-semibold text-gray-800">
+                                    Selected ({data.serviceProviders.length})
+                                  </h3>
+                                  <button
+                                    onClick={() => updateData({ serviceProviders: [] })}
+                                    className="text-xs text-red-600 hover:text-red-800 font-medium px-2 py-1 bg-red-50 rounded"
+                                  >
+                                    Clear all
+                                  </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-2">
+                                  {SERVICE_PROVIDERS.filter((p) =>
+                                    data.serviceProviders.includes(p.value)
+                                  ).map((provider) => (
+                                    <div
+                                      key={provider.value}
+                                      className="bg-blue-50 border border-blue-200 rounded-lg p-3"
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <img
+                                          src={provider.image}
+                                          alt={provider.label}
+                                          className="w-10 h-10 rounded-lg object-cover"
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-start justify-between gap-2">
+                                            <div className="min-w-0">
+                                              <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                                {provider.label}
+                                              </h4>
+                                              <p className="text-xs text-gray-600 truncate">
+                                                {provider.title}
+                                              </p>
+                                            </div>
+                                            <div className="flex flex-col items-end gap-1">
+                                              <span
+                                                className={`text-[10px] px-1.5 py-0.5 rounded-full ${provider.badge === "Top Rated"
+                                                  ? "bg-amber-100 text-amber-800"
+                                                  : provider.badge === "Popular"
+                                                    ? "bg-pink-100 text-pink-800"
+                                                    : provider.badge === "Budget Friendly"
+                                                      ? "bg-green-100 text-green-800"
+                                                      : "bg-purple-100 text-purple-800"
+                                                  }`}
+                                              >
+                                                {provider.badge}
+                                              </span>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center justify-between mt-2">
+                                            <div className="flex flex-wrap gap-1">
+                                              {provider.specialties.slice(0, 2).map((spec, i) => (
+                                                <span
+                                                  key={i}
+                                                  className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
+                                                >
+                                                  {spec}
+                                                </span>
+                                              ))}
+                                              {provider.specialties.length > 2 && (
+                                                <span className="text-[10px] text-gray-500">
+                                                  +{provider.specialties.length - 2} more
+                                                </span>
+                                              )}
+                                            </div>
+                                            <button
+                                              onClick={() =>
+                                                updateData({
+                                                  serviceProviders: data.serviceProviders.filter(
+                                                    (sp: string) => sp !== provider.value
+                                                  ),
+                                                })
+                                              }
+                                              className="text-xs text-red-600 hover:text-red-800"
+                                            >
+                                              Remove
+                                            </button>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                    <span className="text-sm font-semibold text-gray-900">
-                                      {provider.price}
-                                    </span>
-                                  </div>
-
-                                  {/* Rating and Badge */}
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1">
-                                      <Star className="w-4 h-4 text-amber-500 fill-current" />
-                                      <span className="font-medium text-gray-900">
-                                        {provider.rating}
-                                      </span>
-                                      <span className="text-sm text-gray-500 ml-1">
-                                        ({provider.reviews})
-                                      </span>
-                                    </div>
-                                    <span className={`text-xs px-2 py-1 rounded ${provider.badge === "Top Rated" ? "bg-amber-100 text-amber-800" :
-                                        provider.badge === "Popular" ? "bg-pink-100 text-pink-800" :
-                                          "bg-gray-100 text-gray-800"
-                                      }`}>
-                                      {provider.badge}
-                                    </span>
-                                  </div>
-
-                                  {/* Specialties */}
-                                  <div className="flex flex-wrap gap-2">
-                                    {provider.specialties.slice(0, 3).map((spec, i) => (
-                                      <span
-                                        key={i}
-                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                                      >
-                                        {spec}
-                                      </span>
-                                    ))}
-                                  </div>
-
-                                  {/* Verification */}
-                                  {provider.verified && (
-                                    <div className="flex items-center gap-2 text-sm text-green-600">
-                                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                      Verified chef
-                                    </div>
-                                  )}
+                                  ))}
                                 </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+                              </div>
+                            )}
 
-                        {/* Selection Status */}
-                        <div className="mt-6 pt-6 border-t border-gray-200">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm text-gray-600">
-                                {data.serviceProviders.length} provider(s) selected
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => updateData({ serviceProviders: [] })}
-                              className="text-sm text-gray-500 hover:text-gray-700"
-                              disabled={data.serviceProviders.length === 0 || isRestricted}
-                            >
-                              Clear selection
-                            </button>
-                          </div>
-                        </div>
+                            {/* Available Providers Grid */}
+                            {data.serviceProviders.length < SERVICE_PROVIDERS.length && (
+                              <div>
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                                  Available Providers
+                                </h3>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  {SERVICE_PROVIDERS.filter(
+                                    (p) => !data.serviceProviders.includes(p.value)
+                                  ).map((provider) => (
+                                    <div
+                                      key={provider.value}
+                                      className="bg-white border border-gray-200 rounded-lg p-3 hover:border-gray-300 hover:shadow-xs transition-all group"
+                                    >
+                                      <div className="space-y-2">
+                                        {/* Header */}
+                                        <div className="flex items-start justify-between gap-2">
+                                          <div className="flex items-center gap-2">
+                                            <img
+                                              src={provider.image}
+                                              alt={provider.label}
+                                              className="w-8 h-8 rounded-md object-cover"
+                                            />
+                                            <div className="min-w-0">
+                                              <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                                {provider.label}
+                                              </h4>
+                                              <p className="text-xs text-gray-500 truncate">
+                                                {provider.title}
+                                              </p>
+                                            </div>
+                                          </div>
+                                          <span
+                                            className={`text-[10px] px-1.5 py-0.5 rounded ${provider.badge === "Top Rated"
+                                              ? "bg-amber-100 text-amber-800"
+                                              : provider.badge === "Popular"
+                                                ? "bg-pink-100 text-pink-800"
+                                                : "bg-gray-100 text-gray-800"
+                                              }`}
+                                          >
+                                            {provider.badge}
+                                          </span>
+                                        </div>
+
+                                        {/* Specialties */}
+                                        <div className="flex flex-wrap gap-1">
+                                          {provider.specialties.slice(0, 2).map((spec, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
+                                            >
+                                              {spec}
+                                            </span>
+                                          ))}
+                                          {provider.specialties.length > 2 && (
+                                            <span className="text-[10px] text-gray-500">
+                                              +{provider.specialties.length - 2} more
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        {/* Action Buttons */}
+                                        <div className="flex items-center gap-2 pt-2">
+                                          <button
+                                            onClick={() => handleProviderClick(provider)}
+                                            className="flex-1 text-xs font-medium text-blue-600 hover:text-blue-800 px-2 py-1.5 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+                                          >
+                                            View Details
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              updateData({
+                                                serviceProviders: [
+                                                  ...data.serviceProviders,
+                                                  provider.value,
+                                                ],
+                                              });
+                                            }}
+                                            disabled={isRestricted || data.serviceProviders.includes(provider.value)}
+                                            className={`flex-1 text-xs font-medium px-2 py-1.5 rounded transition-colors ${data.serviceProviders.includes(provider.value)
+                                              ? "bg-green-100 text-green-700 cursor-not-allowed"
+                                              : "bg-amber-500 text-white hover:bg-amber-600"
+                                              }`}
+                                          >
+                                            {data.serviceProviders.includes(provider.value) ? "Selected" : "Select"}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Selection Status */}
+                            {data.serviceProviders.length > 0 && (
+                              <div className="mt-4 pt-4 border-t border-gray-200">
+                                <div className="flex items-center justify-center">
+                                  <span className="text-xs font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+                                    {data.serviceProviders.length} provider
+                                    {data.serviceProviders.length !== 1 ? "s" : ""} selected
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     )}
+
                     {/* Step 7: Setup & Requirements */}
                     {step === 7 && (
                       <div className="max-w-6xl mx-auto">
@@ -1942,17 +2327,17 @@ export default function BookingFlowModal({
                                     <label
                                       key={option.value}
                                       className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${data.clientMaterials.kitchenType ===
-                                          option.value
-                                          ? `border-${option.color}-500 bg-gradient-to-r from-${option.color}-50 to-${option.color}-100 ring-2 ring-${option.color}-200`
-                                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                                        option.value
+                                        ? "border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 ring-2 ring-blue-200"
+                                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                                         }`}
                                     >
                                       <div className="flex items-center gap-3">
                                         <div
                                           className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.clientMaterials.kitchenType ===
-                                              option.value
-                                              ? `border-${option.color}-500 bg-${option.color}-500`
-                                              : "border-gray-300"
+                                            option.value
+                                            ? "border-blue-500 bg-blue-500"
+                                            : "border-gray-300"
                                             }`}
                                         >
                                           {data.clientMaterials.kitchenType ===
@@ -1962,7 +2347,7 @@ export default function BookingFlowModal({
                                         </div>
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2">
-                                            {/* <option.icon className={`w-5 h-5 text-${option.color}-500`} /> */}
+                                            <option.icon className="w-5 h-5 text-blue-500" />
                                             <span className="font-semibold text-gray-800">
                                               {option.label}
                                             </span>
@@ -1996,65 +2381,62 @@ export default function BookingFlowModal({
                                 </div>
                               </div>
 
-                              {/* Kitchen Appliances */}
-                              <div className="space-y-4">
-                                <label className="block text-sm font-semibold text-gray-700">
-                                  Available Appliances
-                                  <span className="text-gray-500 text-sm font-normal ml-2">
-                                    (
-                                    {
-                                      data.clientMaterials.kitchenAppliances
-                                        .length
-                                    }{" "}
-                                    selected)
-                                  </span>
-                                </label>
-                                <div className="grid grid-cols-2 gap-3">
-                                  {KITCHEN_APPLIANCES.map((appliance) => {
-                                    const Icon = appliance.icon;
-                                    const isSelected =
-                                      data.clientMaterials.kitchenAppliances.includes(
-                                        appliance.value
-                                      );
-                                    return (
-                                      <label
-                                        key={appliance.value}
-                                        className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${isSelected
+                              {/* Kitchen Appliances - Only show when "I Provide Kitchen" */}
+                              {data.clientMaterials.kitchenType === "provided_kitchen" && (
+                                <div className="space-y-4">
+                                  <label className="block text-sm font-semibold text-gray-700">
+                                    Available Appliances
+                                    <span className="text-gray-500 text-sm font-normal ml-2">
+                                      ({data.clientMaterials.kitchenAppliances.length} selected)
+                                    </span>
+                                  </label>
+                                  <div className="grid grid-cols-2 gap-3">
+                                    {KITCHEN_APPLIANCES.map((appliance) => {
+                                      const Icon = appliance.icon;
+                                      const isSelected =
+                                        data.clientMaterials.kitchenAppliances.includes(
+                                          appliance.value
+                                        );
+                                      return (
+                                        <label
+                                          key={appliance.value}
+                                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${isSelected
                                             ? "border-green-500 bg-green-50 text-green-700"
                                             : "border-gray-200 hover:border-gray-300 text-gray-600"
-                                          }`}
-                                      >
-                                        <input
-                                          type="checkbox"
-                                          checked={isSelected}
-                                          onChange={(e) => {
-                                            const current =
-                                              data.clientMaterials
-                                                .kitchenAppliances;
-                                            const updated = e.target.checked
-                                              ? [...current, appliance.value]
-                                              : current.filter(
-                                                (a) => a !== appliance.value
-                                              );
-                                            updateData({
-                                              clientMaterials: {
-                                                ...data.clientMaterials,
-                                                kitchenAppliances: updated,
-                                              },
-                                            });
-                                          }}
-                                          className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                                          disabled={isRestricted}
-                                        />
-                                        <Icon className="w-4 h-4" />
-                                        <span className="text-sm font-medium">
-                                          {appliance.label}
-                                        </span>
-                                      </label>
-                                    );
-                                  })}
+                                            }`}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={(e) => {
+                                              const current =
+                                                data.clientMaterials
+                                                  .kitchenAppliances;
+                                              const updated = e.target.checked
+                                                ? [...current, appliance.value]
+                                                : current.filter(
+                                                  (a) => a !== appliance.value
+                                                );
+                                              updateData({
+                                                clientMaterials: {
+                                                  ...data.clientMaterials,
+                                                  kitchenAppliances: updated,
+                                                },
+                                              });
+                                            }}
+                                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                                            disabled={isRestricted}
+                                          />
+                                          <Icon className="w-4 h-4" />
+                                          <span className="text-sm font-medium">
+                                            {appliance.label}
+                                          </span>
+                                        </label>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
+                              )}
                             </div>
                           </div>
 
@@ -2081,14 +2463,14 @@ export default function BookingFlowModal({
                                       <label
                                         key={item.value}
                                         className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${isSelected
-                                            ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
-                                            : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
+                                          ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
+                                          : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
                                           }`}
                                       >
                                         <Icon
                                           className={`w-6 h-6 mb-2 ${isSelected
-                                              ? "text-amber-600"
-                                              : "text-gray-500"
+                                            ? "text-amber-600"
+                                            : "text-gray-500"
                                             }`}
                                         />
                                         <span className="text-sm font-medium text-center">
@@ -2146,16 +2528,16 @@ export default function BookingFlowModal({
                                   <label
                                     key={service.value}
                                     className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected
-                                        ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
-                                        : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
+                                      ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
+                                      : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
                                       }`}
                                   >
                                     <div className="flex items-start justify-between">
                                       <div className="flex items-center gap-3">
                                         <div
                                           className={`p-2 rounded-lg ${isSelected
-                                              ? "bg-purple-100 text-purple-600"
-                                              : "bg-gray-100 text-gray-500"
+                                            ? "bg-purple-100 text-purple-600"
+                                            : "bg-gray-100 text-gray-500"
                                             }`}
                                         >
                                           <Icon className="w-4 h-4" />
@@ -2170,9 +2552,9 @@ export default function BookingFlowModal({
                                         </div>
                                       </div>
                                       <div className="text-right">
-                                        <p className="font-bold text-gray-900">
+                                        {/* <p className="font-bold text-gray-900">
                                           {service.price}
-                                        </p>
+                                        </p> */}
                                         <input
                                           type="checkbox"
                                           checked={isSelected}
@@ -2379,10 +2761,19 @@ export default function BookingFlowModal({
 
                           {/* Address Selection */}
                           <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-lg">
-                            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                              <MapPin className="w-5 h-5 text-amber-500" />
-                              Select Event Address
-                            </h3>
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                <MapPin className="w-5 h-5 text-amber-500" />
+                                Select Event Address
+                              </h3>
+                              <button
+                                onClick={() => setShowAddressForm(true)}
+                                className="text-sm font-medium text-amber-600 hover:text-amber-800 flex items-center gap-1"
+                              >
+                                <Plus className="w-4 h-4" />
+                                Add New Address
+                              </button>
+                            </div>
 
                             {loadingAddresses ? (
                               <div className="text-center py-8">
@@ -2391,69 +2782,87 @@ export default function BookingFlowModal({
                                   Loading addresses...
                                 </p>
                               </div>
-                            ) : addresses.length === 0 ? (
-                              <div className="text-center py-8">
-                                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 text-red-500 mb-3">
-                                  <AlertCircle className="w-6 h-6" />
-                                </div>
-                                <p className="text-gray-700 font-medium">
-                                  No addresses found
-                                </p>
-                                <p className="text-gray-500 text-sm mt-1">
-                                  Please add an address in your profile first
-                                </p>
-                                <button
-                                  onClick={() =>
-                                    router.push("/dashboard/profile")
-                                  }
-                                  className="mt-4 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
-                                >
-                                  Add Address
-                                </button>
-                              </div>
                             ) : (
-                              <div className="grid gap-3">
-                                {addresses.map((addr) => (
-                                  <motion.div
-                                    key={addr.id}
-                                    whileHover={{ scale: 1.01 }}
-                                    onClick={() =>
-                                      updateData({ eventAddressId: addr.id })
-                                    }
-                                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${data.eventAddressId === addr.id
-                                        ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
-                                        : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                      }`}
-                                  >
-                                    <div className="flex items-start justify-between">
-                                      <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-1">
-                                          <span className="font-bold text-gray-900">
-                                            {addr.label}
-                                          </span>
+                              <div>
+                                {addresses.length === 0 ? (
+                                  <div className="text-center py-8">
+                                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 text-amber-500 mb-3">
+                                      <MapPin className="w-6 h-6" />
+                                    </div>
+                                    <p className="text-gray-700 font-medium">
+                                      No addresses found
+                                    </p>
+                                    <p className="text-gray-500 text-sm mt-1">
+                                      Please add an address to continue with booking
+                                    </p>
+                                    <button
+                                      onClick={() => setShowAddressForm(true)}
+                                      className="mt-4 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+                                    >
+                                      Add New Address
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="grid gap-3">
+                                    {addresses.map((addr) => (
+                                      <motion.div
+                                        key={addr.id}
+                                        whileHover={{ scale: 1.01 }}
+                                        onClick={() =>
+                                          updateData({ eventAddressId: addr.id })
+                                        }
+                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${data.eventAddressId === addr.id
+                                          ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
+                                          : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
+                                          }`}
+                                      >
+                                        <div className="flex items-start justify-between">
+                                          <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                              <span className="font-bold text-gray-900">
+                                                {addr.label}
+                                              </span>
+                                              {data.eventAddressId === addr.id && (
+                                                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                                                  Selected
+                                                </span>
+                                              )}
+                                            </div>
+                                            <p className="text-sm text-gray-600">
+                                              {addr.address_line1},{" "}
+                                              {addr.address_line2
+                                                ? `${addr.address_line2}, `
+                                                : ""}
+                                              {addr.city}, {addr.state} -{" "}
+                                              {addr.zip_code}
+                                            </p>
+                                            {/* {addr.phone && (
+                                              <p className="text-sm text-gray-500 mt-1">
+                                                📞 {addr.phone}
+                                              </p>
+                                            )} */}
+                                          </div>
                                           {data.eventAddressId === addr.id && (
-                                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                                              Selected
-                                            </span>
+                                            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
+                                              <Check className="w-3 h-3 text-white" />
+                                            </div>
                                           )}
                                         </div>
-                                        <p className="text-sm text-gray-600">
-                                          {addr.address_line1},{" "}
-                                          {addr.address_line2
-                                            ? `${addr.address_line2}, `
-                                            : ""}
-                                          {addr.city}, {addr.state} -{" "}
-                                          {addr.zip_code}
-                                        </p>
-                                      </div>
-                                      {data.eventAddressId === addr.id && (
-                                        <div className="w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
-                                          <Check className="w-3 h-3 text-white" />
-                                        </div>
-                                      )}
-                                    </div>
-                                  </motion.div>
-                                ))}
+                                      </motion.div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Always show Add Address option */}
+                                <div className="mt-6">
+                                  <button
+                                    onClick={() => setShowAddressForm(true)}
+                                    className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors flex items-center justify-center gap-2"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                    Add New Address
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -2529,8 +2938,8 @@ export default function BookingFlowModal({
                       onClick={handleBack}
                       disabled={step === 1}
                       className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${step === 1
-                          ? "opacity-0 pointer-events-none"
-                          : "text-gray-600 hover:bg-gray-100 border border-gray-200"
+                        ? "opacity-0 pointer-events-none"
+                        : "text-gray-600 hover:bg-gray-100 border border-gray-200"
                         }`}
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -2543,8 +2952,8 @@ export default function BookingFlowModal({
                       onClick={step === totalSteps ? handleSubmit : handleNext}
                       disabled={!canProceed()}
                       className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${step === totalSteps
-                          ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                          : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                        ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                        : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                         } ${!canProceed() ? "opacity-50 cursor-not-allowed" : ""
                         }`}
                     >

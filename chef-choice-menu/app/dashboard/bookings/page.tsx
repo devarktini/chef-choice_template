@@ -18,6 +18,7 @@ export default function BookingsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -181,9 +182,9 @@ export default function BookingsPage() {
                         <h1 className="text-3xl font-bold text-gray-800">My Bookings</h1>
                         <p className="text-gray-600 mt-1">View and manage your chef bookings</p>
                     </div>
-                    <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
+                    {/* <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
                         New Booking
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* Bookings List */}
@@ -374,7 +375,7 @@ export default function BookingsPage() {
                         <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-800 mb-2">No bookings yet</h3>
                         <p className="text-gray-600 mb-6">Start by booking your first chef experience!</p>
-                        <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
+                        <button onClick={()=> setIsEditModalOpen(true)} className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
                             Book a Chef
                         </button>
                     </div>

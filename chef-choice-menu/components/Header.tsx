@@ -89,12 +89,15 @@ export default function Header() {
           )}
 
           <div className="hidden md:flex items-center space-x-4 animate-slide-left">
-            <button
+            {user?.role === 'service_provider' ? null : (
+               <button
               onClick={() => setIsBookingModalOpen(true)}
               className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
             >
               Book Now
             </button>
+            )}
+           
 
             {isAuthenticated && user ? (
               <div className="relative">

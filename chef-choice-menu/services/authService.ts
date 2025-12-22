@@ -197,4 +197,35 @@ export class AuthService {
             throw error;
         }
     }
+
+    /**
+     * Update user role
+     */
+    static async updateUserRole(userId: string, role: string, tokens: any): Promise<any> {
+        console.log("ssss", userId, role)
+        try {
+            // const tokens = this.getTokens();
+            // console.log("ssss", tokens)
+            const response = await fetch(`${API_BASE_URL}/api/users/${userId}/update-role/`, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${tokens.access}`,
+                },
+                body: JSON.stringify({ role }),
+            });
+            console.log("Ssss", response)
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to update user role');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Update User Role error:', error);
+            throw error;
+        }
+    }
 }
