@@ -87,7 +87,9 @@ import { BookingService, Booking } from "@/services/bookingService";
 import { AddressService } from "@/services/addressService";
 import { Address } from "@/types/auth";
 import { toast } from "react-hot-toast";
+import { mapProviders } from "@/utils/mapProviders";
 import { useRouter } from "next/navigation";
+import { ProviderService } from "@/services/providerService";
 
 // Enhanced Dummy Data
 const EVENT_TYPES = [
@@ -795,6 +797,9 @@ export default function BookingFlowModal({
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  
+const [providers, setProviders] = useState<any[]>([]);
+const [loadingProviders, setLoadingProviders] = useState(false);
   const router = useRouter();
 
   const totalSteps = 8;
@@ -834,6 +839,23 @@ export default function BookingFlowModal({
       });
     }
   }, [existingBooking]);
+
+
+  useEffect(() => {
+  if (step === 6) {
+    // setLoadingProviders(true);
+    ProviderService.getAllProviders()
+      .then((res) => {
+        const providerData = Array.isArray(res) ? res : res.results || res;
+        setProviders(mapProviders(providerData));
+      })
+      .catch((err) => {
+        console.error("Failed to load providers", err);
+        toast.error("Failed to load service providers");
+      })
+      // .finally(() => setLoadingProviders(false));
+  }
+}, [step]);
 
   const updateData = (updates: Partial<BookingData>) => {
     setData((prev) => ({ ...prev, ...updates }));
@@ -2060,7 +2082,7 @@ export default function BookingFlowModal({
                             <div className="mb-4">
                               <div className="bg-white border border-gray-300 rounded-lg p-2">
                                 <MultiSelect
-                                  options={SERVICE_PROVIDERS.map((p) => ({
+                                  options={providers.map((p) => ({
                                     value: p.value,
                                     label: p.label,
                                     description: p.title,
@@ -2091,7 +2113,7 @@ export default function BookingFlowModal({
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-2">
-                                  {SERVICE_PROVIDERS.filter((p) =>
+                                  {providers.filter((p) =>
                                     data.serviceProviders.includes(p.value)
                                   ).map((provider) => (
                                     <div
@@ -2131,7 +2153,7 @@ export default function BookingFlowModal({
                                           </div>
                                           <div className="flex items-center justify-between mt-2">
                                             <div className="flex flex-wrap gap-1">
-                                              {provider.specialties.slice(0, 2).map((spec, i) => (
+                                              {provider.specialties.slice(0, 2).map((spec: any, i: any) => (
                                                 <span
                                                   key={i}
                                                   className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
@@ -2167,14 +2189,14 @@ export default function BookingFlowModal({
                             )}
 
                             {/* Available Providers Grid */}
-                            {data.serviceProviders.length < SERVICE_PROVIDERS.length && (
+                            {data.serviceProviders.length < providers.length && (
                               <div>
                                 <h3 className="text-sm font-semibold text-gray-800 mb-3">
                                   Available Providers
                                 </h3>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                  {SERVICE_PROVIDERS.filter(
+                                  {providers.filter(
                                     (p) => !data.serviceProviders.includes(p.value)
                                   ).map((provider) => (
                                     <div
@@ -2213,7 +2235,7 @@ export default function BookingFlowModal({
 
                                         {/* Specialties */}
                                         <div className="flex flex-wrap gap-1">
-                                          {provider.specialties.slice(0, 2).map((spec, i) => (
+                                          {provider.specialties.slice(0, 2).map((spec: any, i: any) => (
                                             <span
                                               key={i}
                                               className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
@@ -2700,7 +2722,7 @@ export default function BookingFlowModal({
                                   title: "Service Providers",
                                   items: data.serviceProviders.map(
                                     (p) =>
-                                      SERVICE_PROVIDERS.find(
+                                      providers.find(
                                         (sp) => sp.value === p
                                       )?.label
                                   ),

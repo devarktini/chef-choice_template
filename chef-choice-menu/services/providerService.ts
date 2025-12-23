@@ -1,4 +1,4 @@
-import { ServiceProviderProfile } from '@/types/auth';
+import { PaginatedResponse, ServiceProviderProfile, ServiceProviderProfile1 } from '@/types/auth';
 import { AuthService } from './authService';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000';
@@ -36,6 +36,28 @@ export class ProviderService {
             return await response.json();
         } catch (error) {
             console.error('Get Provider error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get all service providers (Admin/Authenticated)
+     */
+    static async getAllProviders(): Promise<PaginatedResponse<ServiceProviderProfile1>> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/service-providers/`, {
+                method: 'GET',
+                headers: this.getHeaders(),
+                cache: 'no-store',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch providers');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Get All Providers error:', error);
             throw error;
         }
     }
