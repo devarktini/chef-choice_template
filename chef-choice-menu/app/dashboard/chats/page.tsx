@@ -362,7 +362,7 @@ export default function ChatsPage() {
 
   // Format message time (shows local time)
   const formatMessageTime = (time: string) => {
-    console.log("time", time)
+    console.log("timedddddd", time)
     try {
       const date = new Date(time);
       
@@ -452,26 +452,30 @@ export default function ChatsPage() {
     <DashboardLayout>
       <div className="min-h-[calc(100vh-4rem)] lg:h-[calc(100vh-4rem)] flex flex-col bg-gray-50">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl lg:text-2xl font-bold text-gray-800">Messages</h1>
-              <p className="text-gray-600 text-sm">Chat with chefs and support</p>
+        <div className="relative overflow-hidden bg-gradient-to-r from-orange-400 via-orange-500 to-red-600 px-4 lg:px-6 py-6 text-white border-b border-orange-300">
+          {/* Decorative Blur Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl -mr-48 -mt-48"></div>
+          <div className="absolute bottom-0 left-0 w-72 h-72 bg-white opacity-5 rounded-full blur-3xl -ml-36 -mb-36"></div>
+
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex-1">
+              <h1 className="text-xl lg:text-2xl font-bold mb-1 flex items-center">💬 Messages</h1>
+              <p className="text-orange-100 text-sm lg:text-base">Connect with chefs and get support in real-time</p>
             </div>
-            {selectedBookingId && (
+            {/* {selectedBookingId && (
               <button
                 onClick={() => setSelectedBookingId(null)}
-                className="lg:hidden p-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-lg"
+                className="lg:hidden p-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all"
               >
                 <ChevronRight className="w-5 h-5 rotate-180" />
               </button>
             )}
             <div className="hidden lg:block">
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Clock className="w-4 h-4" />
-                <span>Last sync: {getLastSyncText()}</span>
+              <div className="flex items-center gap-2 text-sm text-orange-100 bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm">
+                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                <span>Live • Last sync: {getLastSyncText()}</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -479,15 +483,15 @@ export default function ChatsPage() {
           {/* Left Panel: Booking List - Hidden on mobile when chat is open */}
           <div className={`lg:w-80 border-r border-gray-200 bg-white flex flex-col ${selectedBookingId ? 'hidden lg:flex' : 'flex'}`}>
             {/* Search */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200 bg-gradient-to-b from-orange-50 to-white">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-500 w-4 h-4" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search bookings..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all hover:border-orange-300"
                 />
               </div>
             </div>
@@ -500,13 +504,16 @@ export default function ChatsPage() {
                   <p className="text-gray-500 text-sm mt-2">Loading bookings...</p>
                 </div>
               ) : filteredBookings.length === 0 ? (
-                <div className="p-8 text-center">
-                  <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">No bookings found</p>
+                <div className="p-8 text-center flex flex-col items-center justify-center h-full">
+                  <div className="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center mb-4 shadow-md">
+                    <MessageSquare className="w-8 h-8 text-orange-600" />
+                  </div>
+                  <p className="text-gray-700 font-semibold mb-1">No bookings found</p>
+                  <p className="text-gray-500 text-sm mb-4">Try adjusting your search</p>
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="text-sm text-blue-600 hover:text-blue-800 mt-2"
+                      className="text-sm font-medium text-orange-600 hover:text-orange-700 bg-orange-50 px-4 py-2 rounded-lg hover:bg-orange-100 transition-all"
                     >
                       Clear search
                     </button>
@@ -574,42 +581,45 @@ export default function ChatsPage() {
             {selectedBooking ? (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white">
-                  <div className="flex items-center gap-3">
+                <div className="relative overflow-hidden p-4 border-b-2 border-orange-200 flex items-center justify-between bg-gradient-to-r from-orange-50 to-red-50">
+                  {/* Subtle background gradient */}
+                  <div className="absolute inset-0 opacity-30 pointer-events-none"></div>
+                  
+                  <div className="relative z-10 flex items-center gap-3 flex-1">
                     <button
                       onClick={() => setSelectedBookingId(null)}
-                      className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="lg:hidden p-2 hover:bg-white/60 rounded-lg transition-colors"
                     >
                       <ChevronRight className="w-5 h-5 rotate-180 text-gray-600" />
                     </button>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-md">
                       <span className="text-2xl">
                         {getEventIcon(selectedBooking.event_type)}
                       </span>
                     </div>
                     <div className="flex-1">
-                      <h2 className="font-bold text-gray-900">{selectedBooking.event_type}</h2>
+                      <h2 className="font-bold text-gray-900 capitalize">{selectedBooking.event_type}</h2>
                       <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <div className="flex items-center gap-1 text-xs text-gray-600">
-                          <Calendar className="w-3 h-3" />
-                          <span>
+                        <div className="flex items-center gap-1 text-xs text-gray-700 bg-white/60 px-2 py-1 rounded-full">
+                          <Calendar className="w-3 h-3 text-orange-600" />
+                          <span className="font-medium">
                             {(() => {
                               const dates = Object.keys(selectedBooking.dates || {});
                               return dates.length > 0 ? formatDate(dates[0]) : 'No date';
                             })()}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-green-600">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full">
                           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                          <span>Live • Auto-sync enabled</span>
+                          <span>Live</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="relative z-10 flex items-center gap-2">
                     <button
                       onClick={() => setIsDetailsModalOpen(true)}
-                      className="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all font-medium"
+                      className="px-4 py-2 bg-white border-2 border-orange-300 text-orange-700 text-sm rounded-lg hover:bg-orange-50 hover:border-orange-400 transition-all font-semibold shadow-sm"
                     >
                       Details
                     </button>
@@ -622,14 +632,22 @@ export default function ChatsPage() {
                   className="flex-1 overflow-y-auto bg-gradient-to-b from-gray-50/50 to-white p-4"
                 >
                   {messages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center p-8">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center mb-4">
-                        <MessageSquare className="w-10 h-10 text-blue-400" />
+                    <div className="h-full flex flex-col items-center justify-center p-8 bg-gradient-to-b from-orange-50/50 to-white">
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-200 to-red-300 flex items-center justify-center mb-6 shadow-lg">
+                        <MessageSquare className="w-12 h-12 text-white" />
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-700 mb-2">No messages yet</h3>
-                      <p className="text-gray-500 text-center max-w-md">
-                        Start the conversation by sending a message. You can ask about menu details, timing, or any special requests.
+                      <h3 className="text-2xl font-bold text-gray-800 mb-2">Start the conversation</h3>
+                      <p className="text-gray-600 text-center max-w-md mb-6 leading-relaxed">
+                        Send your first message! Ask about menu details, timing, special requests, or anything else you'd like to discuss.
                       </p>
+                      <div className="bg-white rounded-xl border-2 border-orange-200 p-4 max-w-sm">
+                        <p className="text-sm text-gray-700 font-semibold">💡 Tips for great conversations:</p>
+                        <ul className="text-xs text-gray-600 mt-2 space-y-1 list-disc list-inside">
+                          <li>Ask about menu preferences</li>
+                          <li>Discuss dietary requirements</li>
+                          <li>Confirm timing and logistics</li>
+                        </ul>
+                      </div>
                     </div>
                   ) : (
                     <div className="max-w-4xl mx-auto space-y-4 pb-4">
@@ -658,15 +676,18 @@ export default function ChatsPage() {
                                   </p>
                                 )}
                                 <div
-                                  className={`px-4 py-3 rounded-2xl ${msg.sender === 'user'
-                                    ? 'bg-gradient-to-br from-[#d98723] to-[#d86d0a] text-white rounded-br-md'
-                                    : msg.sender === 'chef'
-                                    ? 'bg-white border border-gray-200 shadow-sm rounded-bl-md'
-                                    : 'bg-gray-100 border border-gray-200 text-gray-700'
-                                    }`}
+                                  className={`px-4 py-3 rounded-2xl shadow-md transition-all ${
+                                    msg.sender === 'user'
+                                      ? 'bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-br-md hover:shadow-lg'
+                                      : msg.sender === 'chef'
+                                      ? 'bg-white border-2 border-gray-200 rounded-bl-md shadow-sm hover:border-orange-200'
+                                      : 'bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-gray-800 rounded-bl-md'
+                                  }`}
                                 >
-                                  <p className="text-sm leading-relaxed">{msg.text}</p>
-                                  <p className={`text-xs mt-1.5 ${msg.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
+                                  <p className="text-sm leading-relaxed font-medium">{msg.text}</p>
+                                  <p className={`text-xs mt-2 font-semibold ${
+                                    msg.sender === 'user' ? 'text-orange-200' : 'text-gray-600'
+                                  }`}>
                                     {formatMessageTime(msg.time)}
                                     {msg.isOptimistic && ' • Sending...'}
                                   </p>
@@ -689,7 +710,7 @@ export default function ChatsPage() {
                 </div>
 
                 {/* Input Area */}
-                <div className="p-4 border-t border-gray-200 bg-white">
+                <div className="p-4 border-t-2 border-orange-200 bg-gradient-to-r from-orange-50/50 to-white">
                   <div className="max-w-4xl mx-auto">
                     <div className="flex items-center gap-2">
                       <div className="flex-1 relative">
@@ -700,12 +721,12 @@ export default function ChatsPage() {
                           onKeyPress={handleKeyPress}
                           placeholder="Type your message here..."
                           disabled={sending}
-                          className="w-full pl-5 pr-12 py-3.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all disabled:opacity-50 placeholder:text-gray-400"
+                          className="w-full pl-5 pr-12 py-3.5 bg-white border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all disabled:opacity-50 placeholder:text-gray-400 hover:border-orange-300 font-medium"
                         />
                         <button
                           onClick={handleSendMessage}
                           disabled={!message.trim() || sending}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:hover:from-blue-600 disabled:hover:to-indigo-600 transition-all shadow-sm"
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:shadow-lg disabled:opacity-50 transition-all shadow-md"
                         >
                           <Send className="w-4 h-4" />
                         </button>
@@ -715,24 +736,28 @@ export default function ChatsPage() {
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center p-8">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center mb-6">
-                  <MessageSquare className="w-12 h-12 text-blue-400" />
+              <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gradient-to-b from-orange-50/50 to-white">
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-orange-300 to-red-400 flex items-center justify-center mb-6 shadow-lg">
+                  <MessageSquare className="w-14 h-14 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Select a conversation</h3>
-                <p className="text-gray-600 text-center max-w-md mb-6">
-                  Choose a booking from the list to start chatting with chefs or support team.
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">Select a conversation</h3>
+                <p className="text-gray-600 text-center max-w-md mb-8 leading-relaxed">
+                  Choose a booking from the list on the left to start chatting with chefs or get support.
                 </p>
-                <div className="grid grid-cols-2 gap-4 max-w-sm">
-                  <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                    <ChefHat className="w-8 h-8 text-blue-600 mb-2" />
-                    <p className="font-medium text-blue-800">Chat with chefs</p>
-                    <p className="text-sm text-blue-600">Discuss menu details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-sm w-full">
+                  <div className="p-5 bg-white rounded-xl border-2 border-orange-200 hover:border-orange-400 hover:shadow-lg transition-all">
+                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center mb-3">
+                      <ChefHat className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <p className="font-bold text-gray-800">Chat with chefs</p>
+                    <p className="text-sm text-gray-600 mt-1">Discuss menu & preferences</p>
                   </div>
-                  <div className="p-4 bg-green-50 rounded-xl border border-green-100">
-                    <MessageSquare className="w-8 h-8 text-green-600 mb-2" />
-                    <p className="font-medium text-green-800">Get support</p>
-                    <p className="text-sm text-green-600">Ask questions</p>
+                  <div className="p-5 bg-white rounded-xl border-2 border-green-200 hover:border-green-400 hover:shadow-lg transition-all">
+                    <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mb-3">
+                      <MessageSquare className="w-6 h-6 text-green-600" />
+                    </div>
+                    <p className="font-bold text-gray-800">Get support</p>
+                    <p className="text-sm text-gray-600 mt-1">Ask any questions</p>
                   </div>
                 </div>
               </div>

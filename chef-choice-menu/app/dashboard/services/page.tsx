@@ -205,55 +205,62 @@ export default function ServicesPage() {
     return (
         <DashboardLayout>
             <Toaster position="top-right" />
-            <div className="h-[calc(100vh-8rem)] flex flex-col">
-                <div className="mb-6 flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-800">My Services</h1>
-                        <p className="text-gray-600 mt-1">Manage your service offerings ({services.length})</p>
+            <div className="h-[calc(100vh-8rem)] flex flex-col space-y-4">
+                {/* Header */}
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 p-6 md:p-8 text-white shadow-md">
+                    {/* Decorative Blur Elements */}
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full blur-2xl -mr-20 -mt-20"></div>
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl -ml-16 -mb-16"></div>
+
+                    <div className="relative z-10 flex justify-between items-center">
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center">🍽️ My Services</h1>
+                            <p className="text-amber-100">Create and manage your service offerings ({services.length} services)</p>
+                        </div>
+                        <button
+                            onClick={handleAddNew}
+                            className="lg:hidden flex items-center space-x-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all backdrop-blur-sm"
+                        >
+                            <Plus className="w-5 h-5" />
+                            <span>Add</span>
+                        </button>
                     </div>
-                    <button
-                        onClick={handleAddNew}
-                        className="lg:hidden flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span>Add New</span>
-                    </button>
                 </div>
 
-                <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0">
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-0">
                     {/* Left Panel: Service List */}
                     <div className="lg:col-span-5 flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                            <h2 className="font-semibold text-gray-700 flex items-center gap-2">
-                                <Briefcase className="w-4 h-4 text-primary-500" />
-                                Custom Services
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-amber-50 to-orange-50">
+                            <h2 className="font-bold text-gray-800 flex items-center gap-2 text-sm md:text-base">
+                                <Briefcase className="w-4 h-4 text-orange-500" />
+                                Services List
                             </h2>
                             <button
                                 onClick={handleAddNew}
-                                className="hidden lg:flex items-center space-x-1 px-3 py-1.5 bg-white border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 text-sm font-medium transition-all shadow-sm"
+                                className="hidden lg:flex items-center space-x-1 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-md text-xs font-bold transition-all"
                             >
                                 <Plus className="w-4 h-4" />
                                 <span>New</span>
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
                             {services.length === 0 ? (
-                                <div className="text-center py-12 flex flex-col items-center">
-                                    <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mb-4">
-                                        <Briefcase className="w-10 h-10 text-primary-200" />
+                                <div className="text-center py-12 flex flex-col items-center justify-center h-full">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-orange-200 to-amber-300 rounded-full flex items-center justify-center mb-4 shadow-md">
+                                        <Briefcase className="w-8 h-8 text-white" />
                                     </div>
-                                    <p className="text-gray-500 font-medium text-lg">No services yet</p>
-                                    <p className="text-gray-400 text-sm mt-1 max-w-xs mx-auto">Start adding your services like Catering, Decoration, or Chefs to get booked.</p>
+                                    <p className="text-gray-700 font-bold text-base">No services yet</p>
+                                    <p className="text-gray-500 text-sm mt-2 max-w-xs mx-auto leading-relaxed">Start adding your services like Chef, Catering, or Hall rental to get booked.</p>
                                     <button
                                         onClick={handleAddNew}
-                                        className="mt-6 px-4 py-2 bg-white border border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 font-medium transition-colors shadow-sm"
+                                        className="mt-5 px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:shadow-md font-semibold transition-all text-sm"
                                     >
                                         Create First Service
                                     </button>
                                 </div>
                             ) : (
-                                services.map(service => {
+                                services.map((service, index) => {
                                     // Determine colors based on service type
                                     const getServiceColor = (type: string) => {
                                         switch (type) {
@@ -275,13 +282,29 @@ export default function ServicesPage() {
                                         <div
                                             key={service.id}
                                             onClick={() => handleEdit(service)}
-                                            className={`p-4 rounded-xl border transition-all cursor-pointer group relative overflow-hidden ${isSelected
-                                                    ? 'bg-white border-primary-500 shadow-md ring-1 ring-primary-500/20 z-10'
-                                                    : 'bg-white border-gray-100 hover:border-primary-200 hover:shadow-md'
-                                                }`}
+                                            className={`p-4 rounded-lg border transition-all cursor-pointer group relative overflow-hidden ${
+                                                isSelected
+                                                    ? 'bg-white border-orange-400 shadow-md ring-2 ring-orange-300/30 z-10'
+                                                    : 'bg-white border-gray-200 hover:border-orange-300 hover:shadow-md'
+                                            }`}
+                                            style={{
+                                                animation: `fadeInUp 0.5s ease-out ${index * 0.05}s backwards`
+                                            }}
                                         >
-                                            {/* Selection Indicator strip */}
-                                            {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-500"></div>}
+                                            <style jsx>{`
+                                                @keyframes fadeInUp {
+                                                    from {
+                                                        opacity: 0;
+                                                        transform: translateY(8px);
+                                                    }
+                                                    to {
+                                                        opacity: 1;
+                                                        transform: translateY(0);
+                                                    }
+                                                }
+                                            `}</style>
+                                            {/* Selection Indicator */}
+                                            {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500 to-amber-500"></div>}
 
                                             <div className="flex justify-between items-start pl-2">
                                                 <div className="flex-1 min-w-0 pr-8">
@@ -337,37 +360,36 @@ export default function ServicesPage() {
 
                     {/* Right Panel: Service Form */}
                     <div className="lg:col-span-7 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-                        <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                            <h2 className="font-semibold text-gray-700 flex items-center gap-2">
-                                {selectedServiceId ? <Edit2 className="w-4 h-4 text-primary-500" /> : <Plus className="w-4 h-4 text-primary-500" />}
-                                {selectedServiceId ? 'Edit Service' : 'Add New Service'}
+                        <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-orange-50 to-amber-50">
+                            <h2 className="font-bold text-gray-800 flex items-center gap-2 text-sm md:text-base">
+                                {selectedServiceId ? <Edit2 className="w-4 h-4 text-orange-500" /> : <Plus className="w-4 h-4 text-orange-500" />}
+                                {selectedServiceId ? 'Edit Service' : 'Create New Service'}
                             </h2>
                         </div>
 
                         <div className="p-6 flex-1 overflow-y-auto">
-                            <form onSubmit={handleSave} className="space-y-6 max-w-2xl mx-auto">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <form onSubmit={handleSave} className="space-y-5 max-w-2xl">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Service Title*</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">Service Title<span className="text-red-500 ml-1">*</span></label>
                                         <input
                                             type="text"
                                             name="title"
                                             value={formData.title}
                                             onChange={handleChange}
-                                            placeholder="e.g. Traditional Wedding Lunch"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                                            placeholder="e.g. Traditional Wedding Catering"
+                                            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all hover:border-gray-400"
                                             required
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Service Type</label>
                                         <select
                                             name="service_type"
                                             value={formData.service_type}
                                             onChange={(e) => {
                                                 const type = e.target.value;
-                                                // Auto-select convenient units based on type
                                                 let newUnit = formData.price_unit;
                                                 if (type === 'hall' || type === 'tent') newUnit = 'per day';
                                                 else if (type === 'chef' || type === 'catering') newUnit = 'per plate';
@@ -378,26 +400,26 @@ export default function ServicesPage() {
                                                     price_unit: newUnit
                                                 }));
                                             }}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                                            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all hover:border-gray-400"
                                         >
-                                            <option value="chef">Chef</option>
-                                            <option value="catering">Catering</option>
-                                            <option value="hall">Marriage/Party Hall</option>
-                                            <option value="tent">Tent House & Supplies</option>
-                                            <option value="decoration">Decoration</option>
-                                            <option value="bartender">Bartender</option>
-                                            <option value="waiter">Waiter</option>
-                                            <option value="photographer">Photographer</option>
+                                            <option value="chef">👨‍🍳 Chef</option>
+                                            <option value="catering">🍽️ Catering</option>
+                                            <option value="hall">🏛️ Marriage Hall</option>
+                                            <option value="tent">⛺ Tent House</option>
+                                            <option value="decoration">🎨 Decoration</option>
+                                            <option value="bartender">🍸 Bartender</option>
+                                            <option value="waiter">👨‍💼 Waiter</option>
+                                            <option value="photographer">📸 Photographer</option>
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Price Unit</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Price Unit</label>
                                         <select
                                             name="price_unit"
                                             value={formData.price_unit}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                                            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all hover:border-gray-400"
                                         >
                                             <option value="per plate">Per Plate</option>
                                             <option value="per hour">Per Hour</option>
@@ -408,79 +430,73 @@ export default function ServicesPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Price ({formData.price_unit})*</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center">Price ({formData.price_unit})<span className="text-red-500 ml-1">*</span></label>
                                         <div className="relative">
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">₹</span>
                                             <input
                                                 type="number"
                                                 name="price"
                                                 value={formData.price}
                                                 onChange={handleChange}
                                                 placeholder="0.00"
-                                                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                                                className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all hover:border-gray-400"
                                                 required
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                {formData.service_type === 'hall' ? 'Min Guest Capacity' : 'Min Capacity'}
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                                {formData.service_type === 'hall' ? 'Min Guests' : 'Min Capacity'}
                                             </label>
                                             <input
                                                 type="number"
                                                 name="min_capacity"
                                                 value={formData.min_capacity}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                                                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all hover:border-gray-400"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                {formData.service_type === 'hall' ? 'Max Guest Capacity' : 'Max Capacity'}
+                                            <label className="block text-sm font-bold text-gray-700 mb-2">
+                                                {formData.service_type === 'hall' ? 'Max Guests' : 'Max Capacity'}
                                             </label>
                                             <input
                                                 type="number"
                                                 name="max_capacity"
                                                 value={formData.max_capacity}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
+                                                className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all hover:border-gray-400"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
                                         <textarea
                                             name="description"
                                             value={formData.description}
                                             onChange={handleChange}
-                                            rows={4}
-                                            placeholder={
-                                                formData.service_type === 'hall'
-                                                    ? "Describe amenities (AC, Parking, Rooms)..."
-                                                    : formData.service_type === 'tent'
-                                                        ? "Describe available tent sizes, colors, chairs, tables..."
-                                                        : "Describe what's included in this service..."
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all resize-none"
+                                            rows={3}
+                                            placeholder={"Describe what's included in this service..."}  
+                                            className="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400/30 focus:border-orange-500 outline-none transition-all resize-none hover:border-gray-400"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                                <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
                                     <button
                                         type="button"
                                         onClick={handleAddNew}
-                                        className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                                        className="px-5 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold transition-all text-sm"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-lg font-medium hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                        className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
                                     >
                                         <Save className="w-4 h-4" />
                                         <span>{saving ? 'Saving...' : 'Save Service'}</span>

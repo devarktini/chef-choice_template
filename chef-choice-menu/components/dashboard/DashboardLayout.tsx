@@ -26,7 +26,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="flex min-h-screen pt-20 bg-gray-50">
+    <div className="flex min-h-screen pt-16 bg-gray-50">
       {/* Sidebar - Fixed on left for desktop */}
       <Sidebar />
 
@@ -48,7 +48,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </header>
 
         {/* Content - Scrollable */}
-        <main className="pt-0 pb-20 lg:pt-0 h-full">
+        <main className="pt-0 pb-20 lg:pb-0 lg:pt-0 h-full">
           <div className="p-4 lg:p-6 min-h-full">
             {children}
           </div>

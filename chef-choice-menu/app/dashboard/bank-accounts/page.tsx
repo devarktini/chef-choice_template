@@ -99,10 +99,14 @@ export default function BankAccountsPage() {
         <DashboardLayout>
             <div className="space-y-6 relative h-full min-h-[calc(100vh-8rem)]">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-800">Bank Accounts</h1>
-                        <p className="text-gray-500 mt-1">Manage your linked bank accounts</p>
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-400 to-indigo-500 p-6 md:p-8 text-white shadow-md">
+                    {/* Subtle Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full blur-2xl -mr-20 -mt-20"></div>
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl -ml-16 -mb-16"></div>
+
+                    <div className="relative z-10">
+                        <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center">🏦 Bank Accounts</h1>
+                        <p className="text-blue-100">Manage and link your bank accounts for seamless payments</p>
                     </div>
                 </div>
 
@@ -114,82 +118,102 @@ export default function BankAccountsPage() {
                         ))}
                     </div>
                 ) : accounts.length === 0 ? (
-                    <div className="bg-white rounded-2xl p-12 text-center border border-dashed border-gray-200">
-                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Landmark className="w-8 h-8 text-gray-400" />
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-10 text-center border-2 border-dashed border-blue-300">
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                            <Landmark className="w-8 h-8 text-white" />
                         </div>
-                        <h3 className="text-lg font-semibold text-gray-800">No Bank Accounts</h3>
-                        <p className="text-gray-500 mt-2 max-w-sm mx-auto">
-                            Link your bank account to receive payments directly to your account.
+                        <h3 className="text-xl font-bold text-gray-800 mb-1">No Bank Accounts Yet</h3>
+                        <p className="text-gray-600 mt-2 max-w-sm mx-auto leading-relaxed">
+                            Link your bank account to receive payments directly. Add your first account to get started.
                         </p>
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="mt-5 px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:shadow-md transition-all text-sm font-semibold"
+                        >
+                            <Plus className="w-4 h-4 inline mr-2" />
+                            Add Account
+                        </button>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {accounts.map((account) => (
+                        {accounts.map((account, index) => (
                             <div
                                 key={account.id}
-                                className="group relative bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden"
+                                className="group relative bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                                style={{
+                                    animation: `fadeInUp 0.5s ease-out ${index * 0.05}s backwards`
+                                }}
                             >
-                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <Landmark className="w-24 h-24 text-primary-500 transform rotate-12 translate-x-8 -translate-y-8" />
+                                <style jsx>{`
+                                    @keyframes fadeInUp {
+                                        from {
+                                            opacity: 0;
+                                            transform: translateY(10px);
+                                        }
+                                        to {
+                                            opacity: 1;
+                                            transform: translateY(0);
+                                        }
+                                    }
+                                `}</style>
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Landmark className="w-20 h-20 text-blue-500 transform rotate-12 translate-x-6 -translate-y-6" />
                                 </div>
 
                                 <div className="relative z-10">
                                     <div className="flex items-start justify-between mb-4">
-                                        <div className="p-3 bg-primary-50 rounded-xl text-primary-600">
-                                            <Landmark className="w-6 h-6" />
+                                        <div className="p-2.5 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg text-blue-600">
+                                            <Landmark className="w-5 h-5" />
                                         </div>
                                         {account.is_active && (
-                                            <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                                                Active
+                                            <span className="px-2.5 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 text-xs font-bold rounded-full border border-green-300">
+                                                ✓ Active
                                             </span>
                                         )}
                                     </div>
 
-                                    <h3 className="text-lg font-bold text-gray-800 mb-1">{account.bank_name}</h3>
-                                    <p className="text-gray-500 text-sm mb-4">{account.account_name}</p>
+                                    <h3 className="text-base font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors">{account.bank_name}</h3>
+                                    <p className="text-gray-500 text-sm mb-5">{account.account_name}</p>
 
-                                    <div className="space-y-2 mb-8">
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-400">Account No.</span>
-                                            <span className="font-mono font-medium text-gray-700">
-                                                •••• {account.account_number.slice(-4)}
-                                            </span>
+                                    <div className="space-y-2 mb-6">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-500 font-medium">Account No.</span>
+                                            <span className="font-mono font-semibold text-gray-700">•••• {account.account_number.slice(-4)}</span>
                                         </div>
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-400">IFSC Code</span>
-                                            <span className="font-mono font-medium text-gray-700">{account.ifsc_code}</span>
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-gray-500 font-medium">IFSC Code</span>
+                                            <span className="font-mono font-semibold text-gray-700">{account.ifsc_code}</span>
                                         </div>
                                     </div>
 
-                                    {/* Actions moved to bottom right */}
-                                    <div className="flex justify-end items-center gap-2 mt-4 pt-4 border-t border-gray-50">
+                                    {/* Actions */}
+                                    <div className="flex justify-between items-center gap-1 pt-4 border-t border-gray-100">
                                         <button
                                             onClick={() => openTransactions(account.id)}
-                                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            className="flex-1 p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-xs font-medium"
                                             title="View Transactions"
                                         >
-                                            <CreditCard className="w-5 h-5" />
+                                            <CreditCard className="w-4 h-4 mx-auto" />
                                         </button>
                                         <button
                                             onClick={() => {
                                                 setSelectedAccount(account);
                                                 setIsEditModalOpen(true);
                                             }}
-                                            className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                                            className="flex-1 p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-xs font-medium"
                                             title="Edit Account"
                                         >
-                                            <Pencil className="w-5 h-5" />
+                                            <Pencil className="w-4 h-4 mx-auto" />
                                         </button>
                                         <button
                                             onClick={() => {
                                                 setSelectedAccount(account);
                                                 setIsDeleteModalOpen(true);
                                             }}
-                                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            className="flex-1 p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors text-xs font-medium"
                                             title="Delete Account"
                                         >
-                                            <Trash2 className="w-5 h-5" />
+                                            <Trash2 className="w-4 h-4 mx-auto" />
                                         </button>
                                     </div>
                                 </div>

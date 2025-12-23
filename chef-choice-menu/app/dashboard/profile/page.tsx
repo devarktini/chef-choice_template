@@ -8,7 +8,7 @@ import { Address, ServiceProviderProfile } from '@/types/auth';
 import { AddressService as AddressApiService } from '@/services/addressService';
 import { ProviderService } from '@/services/providerService';
 import ConfirmationModal from '@/components/ConfirmationModal';
-import { Mail, Phone, MapPin, Calendar, Plus, Edit2, Trash2, X, Upload, Loader2, Search, Briefcase, Award } from 'lucide-react';
+import { Mail, Phone, MapPin, Calendar, Plus, Edit2, Trash2, X, Upload, Loader2, Search, Briefcase, Award, Star } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useProgressStore } from '@/stores/progressStore';
 
@@ -492,379 +492,471 @@ export default function ProfilePage() {
     return (
         <DashboardLayout>
             <div className="space-y-8 pb-20">
-                {/* Page Header */}
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800">Profile</h1>
-                        <p className="text-gray-600 mt-1">Manage your personal information</p>
+                {/* Page Header with Enhanced Design */}
+                <div className="relative rounded-2xl overflow-hidden shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#e59f4a] via-[#e68125] to-[#d46f1f]"></div>
+                    <div className="absolute inset-0 opacity-50">
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-40 -mt-40 blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl"></div>
+                    </div>
+                    <div className="relative z-10 p-8 md:p-12 text-white">
+                        <h1 className="text-4xl md:text-5xl font-bold mb-2">Profile</h1>
+                        <p className="text-orange-50 text-lg">Manage your personal information and preferences</p>
                     </div>
                 </div>
 
-                {/* Profile Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 relative">
+                {/* Profile Card with Enhanced Design */}
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 relative overflow-hidden">
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-orange-100/20 to-transparent rounded-full blur-2xl"></div>
+                    
                     {/* Edit Button - Top Right */}
                     <button
                         onClick={() => setIsProfileModalOpen(true)}
-                        className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg shadow-sm hover:bg-primary-600 transition-colors"
+                        className="absolute top-6 right-6 z-10 flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
                     >
                         <Edit2 className="w-4 h-4" />
-                        <span className="text-sm xl:block hidden lg:block font-medium">Edit Profile</span>
+                        <span className="text-sm hidden md:inline">Edit Profile</span>
                     </button>
 
                     {/* Profile Header */}
-                    <div className="p-8 border-b border-gray-100">
-                        <div className="flex items-start gap-6">
-                            {/* Avatar */}
-                            <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary-100 shadow-sm">
-                                {user?.profile_picture ? (
-                                    <img src={`${process.env.NEXT_PUBLIC_API_URL}${user.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-primary-400 to-warm-400 flex items-center justify-center text-white text-3xl font-bold">
-                                        {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                    <div className="p-8 md:p-12 border-b border-gray-200 relative z-5">
+                        <div className="flex flex-col md:flex-row items-start gap-8">
+                            {/* Avatar - Enhanced */}
+                            <div className="relative">
+                                <div className="w-32 h-32 rounded-2xl overflow-hidden border-4 border-white shadow-xl">
+                                    {user?.profile_picture ? (
+                                        <img src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${user.profile_picture}`} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-[#e59f4a] to-[#e68125] flex items-center justify-center text-white text-5xl font-bold">
+                                            {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                {user?.is_verified && (
+                                    <div className="absolute bottom-2 right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center text-white text-sm font-bold">
+                                        ✓
                                     </div>
                                 )}
                             </div>
 
-                            {/* User Info */}
+                            {/* User Info - Enhanced */}
                             <div className="flex-1">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                                    {user?.first_name} {user?.last_name}
-                                </h2>
-                                <p className="text-gray-600 capitalize mb-3">{user?.role?.replace('_', ' ')}</p>
-                                <div className="flex items-center gap-3">
-                                    <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${user?.is_verified
-                                        ? 'bg-green-50 text-green-700 border border-green-200'
-                                        : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                                <div className="mb-4">
+                                    <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                                        {user?.first_name} {user?.last_name}
+                                    </h2>
+                                    <p className="text-orange-600 text-lg font-semibold capitalize mb-4">{user?.role?.replace('_', ' ')}</p>
+                                </div>
+                                
+                                <div className="flex flex-wrap gap-3 items-center">
+                                    <span className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${user?.is_verified
+                                        ? 'bg-green-100 text-green-700 border border-green-300'
+                                        : 'bg-yellow-100 text-yellow-700 border border-yellow-300'
                                         }`}>
-                                        {user?.is_verified ? '✓ Verified' : 'Pending Verification'}
+                                        <div className={`w-2 h-2 rounded-full ${user?.is_verified ? 'bg-green-600' : 'bg-yellow-600'}`}></div>
+                                        {user?.is_verified ? '✓ Verified Account' : '⏳ Verification Pending'}
                                     </span>
+                                    
+                                    {user?.role === 'service_provider' && providerData && (
+                                        <span className="px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-orange-100 to-orange-50 text-orange-700 border border-orange-300 flex items-center gap-2">
+                                            <Award className="w-4 h-4" />
+                                            Rating: {providerData.avg_rating.toFixed(1)} ⭐
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Contact Info Grid */}
-                    <div className="p-8 grid md:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                            <div className="p-2 bg-primary-100 rounded-lg">
-                                <Mail className="w-5 h-5 text-primary-600" />
+                    {/* Contact Info Grid - Enhanced */}
+                    <div className="p-8 md:p-12 grid md:grid-cols-2 gap-6">
+                        <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl border border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl group-hover:scale-110 transition-transform">
+                                <Mail className="w-6 h-6 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium text-gray-500 mb-0.5">Email Address</p>
-                                <p className="font-semibold text-gray-900 truncate">{user?.email}</p>
+                                <p className="text-xs font-semibold text-blue-700 mb-1 uppercase tracking-wide">Email Address</p>
+                                <p className="font-semibold text-gray-900 truncate text-lg">{user?.email}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                            <div className="p-2 bg-primary-100 rounded-lg">
-                                <Phone className="w-5 h-5 text-primary-600" />
+                        <div className="flex items-center gap-4 p-6 bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl border border-green-200 hover:shadow-lg transition-all duration-300 group">
+                            <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl group-hover:scale-110 transition-transform">
+                                <Phone className="w-6 h-6 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs font-medium text-gray-500 mb-0.5">Phone Number</p>
-                                <p className="font-semibold text-gray-900">{user?.phone_number}</p>
+                                <p className="text-xs font-semibold text-green-700 mb-1 uppercase tracking-wide">Phone Number</p>
+                                <p className="font-semibold text-gray-900 text-lg">{user?.phone_number}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Addresses Section */}
+                {/* Addresses Section - Enhanced */}
                 <div>
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                            <MapPin className="w-5 h-5 mr-2 text-primary-600" />
-                            Addresses
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl">
+                                <MapPin className="w-6 h-6 text-orange-600" />
+                            </div>
+                            Saved Addresses
                         </h2>
                         <button
                             onClick={() => handleOpenAddressModal()}
-                            className="flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-sm shadow-md"
                         >
-                            <Plus className="w-4 h-4 mr-2" />
+                            <Plus className="w-5 h-5" />
                             Add Address
                         </button>
                     </div>
 
                     {loading ? (
-                        <div className="text-center py-10">Loading addresses...</div>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {[...Array(2)].map((_, i) => (
+                                <div key={i} className="h-48 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl animate-pulse"></div>
+                            ))}
+                        </div>
                     ) : addresses.length === 0 ? (
-                        <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                            <p className="text-gray-500">No addresses found. Add one to get started.</p>
+                        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border-2 border-dashed border-gray-300 hover:border-orange-300 transition-colors">
+                            <MapPin className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-600 text-lg font-medium mb-2">No addresses found</p>
+                            <p className="text-gray-500 mb-6">Add your addresses for faster booking experience</p>
+                            <button
+                                onClick={() => handleOpenAddressModal()}
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all"
+                            >
+                                <Plus className="w-5 h-5" />
+                                Add Your First Address
+                            </button>
                         </div>
                     ) : (
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {addresses.map((addr) => (
-                                <div key={addr.id} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative group">
-                                    <div className="absolute top-4 right-4 flex space-x-2">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {addresses.map((addr, idx) => (
+                                <div key={addr.id} className="group bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:border-orange-300 hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                                    style={{
+                                        animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`
+                                    }}>
+                                    {/* Decorative Element */}
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-100/30 to-transparent rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                                    
+                                    {/* Action Buttons */}
+                                    <div className="absolute top-4 right-4 flex gap-2 z-10">
                                         <button
                                             onClick={() => handleOpenAddressModal(addr)}
-                                            className="p-2 bg-gray-100 rounded-full hover:bg-primary-50 text-gray-600 hover:text-primary-600"
+                                            className="p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-300 text-gray-600 hover:text-orange-600 transition-all shadow-sm hover:shadow-md"
+                                            title="Edit"
                                         >
                                             <Edit2 className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={() => handleDeleteClick(addr.id)}
-                                            className="p-2 bg-gray-100 rounded-full hover:bg-red-50 text-gray-600 hover:text-red-600"
+                                            className="p-2.5 bg-white border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-300 text-gray-600 hover:text-red-600 transition-all shadow-sm hover:shadow-md"
+                                            title="Delete"
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
-                                    <h3 className="font-semibold text-gray-800 mb-2">{addr.label}</h3>
-                                    <p className="text-gray-600">{addr.address_line1}</p>
-                                    {addr.address_line2 && <p className="text-gray-600">{addr.address_line2}</p>}
-                                    <p className="text-gray-600">
-                                        {addr.city}, {addr.state} {addr.zip_code}
-                                    </p>
+
+                                    {/* Content */}
+                                    <div className="relative z-5">
+                                        <h3 className="font-bold text-gray-900 mb-3 text-lg flex items-center gap-2">
+                                            <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-[#e59f4a] to-[#e68125]"></span>
+                                            {addr.label}
+                                        </h3>
+                                        <div className="space-y-2 text-gray-700">
+                                            <p className="font-medium">{addr.address_line1}</p>
+                                            {addr.address_line2 && <p className="text-gray-600">{addr.address_line2}</p>}
+                                            <p className="text-sm text-gray-600">
+                                                {addr.city}, {addr.state}
+                                            </p>
+                                            <p className="text-sm font-semibold text-orange-600">📍 {addr.zip_code}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* Preferences (Client Only) - Read Only View */}
+                {/* Preferences (Client Only) - Enhanced */}
                 {clientProfile && (
-                    <div className="bg-white rounded-xl p-6 shadow-md">
-                        <div className="flex items-center space-x-2 mb-4">
-                            <Calendar className="w-6 h-6 text-primary-600" />
-                            <h3 className="text-xl font-bold text-gray-800">Preferences</h3>
+                    <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-200">
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl">
+                                <Calendar className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-900">Your Preferences</h3>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {/* Dietary Restrictions */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 mb-2">Dietary Restrictions</p>
+                                <h4 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">🥗 Dietary Restrictions</h4>
                                 {clientProfile.dietary_restrictions.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-3">
                                         {clientProfile.dietary_restrictions.map((restriction, index) => (
-                                            <span key={index} className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
+                                            <span key={index} className="px-4 py-2.5 bg-gradient-to-r from-red-100 to-red-50 text-red-700 rounded-full text-sm font-semibold border border-red-200">
                                                 {restriction}
                                             </span>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-gray-400">No dietary restrictions</p>
+                                    <div className="text-center py-8 bg-gray-100/50 rounded-lg border border-dashed border-gray-300">
+                                        <p className="text-gray-500">No dietary restrictions set yet</p>
+                                    </div>
                                 )}
                             </div>
 
+                            {/* Culinary Preferences */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 mb-2">Culinary Preferences</p>
+                                <h4 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">🍽️ Culinary Preferences</h4>
                                 {clientProfile?.culinary_preferences?.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-3">
                                         {clientProfile?.culinary_preferences?.map((preference, index) => (
-                                            <span key={index} className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
+                                            <span key={index} className="px-4 py-2.5 bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 rounded-full text-sm font-semibold border border-purple-200">
                                                 {preference}
                                             </span>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-gray-400">No culinary preferences set</p>
+                                    <div className="text-center py-8 bg-gray-100/50 rounded-lg border border-dashed border-gray-300">
+                                        <p className="text-gray-500">No preferences set yet</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
+
+                        {/* <button
+                            onClick={() => setIsProfileModalOpen(true)}
+                            className="mt-8 px-6 py-3 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all hover:scale-105"
+                        >
+                            Update Preferences
+                        </button> */}
                     </div>
                 )}
 
-                {/* Service Provider Details Section */}
+                {/* Service Provider Details Section - Enhanced */}
                 {user?.role === 'service_provider' && (
                     <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold text-gray-800 flex items-center">
-                                <Briefcase className="w-5 h-5 mr-2 text-primary-600" />
-                                Service Provider Details
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                                <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl">
+                                    <Briefcase className="w-6 h-6 text-blue-600" />
+                                </div>
+                                Professional Details
                             </h2>
                             {providerData && (
                                 <button
                                     onClick={handleOpenProviderModal}
-                                    className="flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-sm shadow-md"
                                 >
-                                    <Edit2 className="w-4 h-4 mr-2" />
+                                    <Edit2 className="w-4 h-4" />
                                     Edit Details
                                 </button>
                             )}
                         </div>
 
                         {!providerData ? (
-                            <div className="text-center py-12 bg-gradient-to-br from-primary-50 to-warm-50 rounded-xl border-2 border-dashed border-primary-200">
-                                <Briefcase className="w-16 h-16 mx-auto mb-4 text-primary-400" />
-                                <p className="text-gray-600 mb-4">Add your professional details to get started</p>
+                            <div className="text-center py-20 bg-gradient-to-br from-blue-50 via-white to-orange-50 rounded-2xl border-2 border-dashed border-blue-300 hover:border-orange-300 transition-colors">
+                                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-50 rounded-full mb-6">
+                                    <Briefcase className="w-10 h-10 text-blue-600" />
+                                </div>
+                                <p className="text-gray-700 text-lg font-semibold mb-3">Complete Your Professional Profile</p>
+                                <p className="text-gray-600 mb-8 px-4">Add your professional details to start accepting bookings and build your reputation</p>
                                 <button
                                     onClick={handleOpenProviderModal}
-                                    className="px-6 py-3 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all"
+                                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all hover:scale-105"
                                 >
-                                    <Plus className="w-4 h-4 inline mr-2" />
-                                    Add Provider Details
+                                    <Plus className="w-5 h-5" />
+                                    Add Professional Details
                                 </button>
                             </div>
                         ) : (
-                            <div className="bg-white rounded-xl shadow-md border border-gray-100">
+                            <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                                 {/* Header */}
-                                <div className="border-b border-gray-100 p-6">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <div className="p-2 bg-primary-50 rounded-lg">
-                                                    <Briefcase className="w-5 h-5 text-primary-600" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-xl font-bold text-gray-900">
-                                                        {providerData.company_name || `${user.first_name} ${user.last_name}`}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-600 capitalize">
-                                                        {providerData.provider_type} • {providerData.service_type}
-                                                    </p>
-                                                </div>
+                                <div className="border-b border-gray-200 p-8 md:p-10 bg-gradient-to-r from-blue-50/50 to-orange-50/30 relative">
+                                    <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-blue-100/20 to-transparent rounded-full -mr-24 -mt-24 blur-3xl"></div>
+                                    
+                                    <div className="relative z-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+                                                <Briefcase className="w-6 h-6 text-white" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-2xl font-bold text-gray-900">
+                                                    {providerData.company_name || `${user.first_name} ${user.last_name}`}
+                                                </h3>
+                                                <p className="text-gray-700 capitalize font-medium mt-1">
+                                                    {providerData.provider_type} • {providerData.service_type}
+                                                </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-lg">
-                                            <Award className="w-5 h-5 text-primary-600" />
+                                        
+                                        <div className="flex items-center gap-6 flex-shrink-0">
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">{providerData.avg_rating.toFixed(1)}</div>
-                                                <div className="text-xs text-gray-500">{providerData.review_count} reviews</div>
+                                                <div className="text-3xl font-bold text-yellow-500 mb-1">{providerData.avg_rating.toFixed(1)}</div>
+                                                <div className="flex gap-1 justify-center">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <Star key={i} className={`w-4 h-4 ${i < Math.floor(providerData.avg_rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                                                    ))}
+                                                </div>
+                                                <p className="text-sm text-gray-600 mt-2 font-medium">{providerData.review_count} reviews</p>
+                                            </div>
+                                            <div className={`px-4 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 ${providerData.verified
+                                                ? 'bg-green-100 text-green-700 border border-green-300'
+                                                : 'bg-yellow-100 text-yellow-700 border border-yellow-300'
+                                                }`}>
+                                                {providerData.verified ? '✓ Verified' : '⏳ Pending'}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-6 space-y-4">
-                                    <div className="grid md:grid-cols-3 gap-4">
-                                        <div className="p-4 bg-cream-50 rounded-lg border border-primary-100">
-                                            <p className="text-xs font-medium text-primary-700 mb-1">Experience</p>
-                                            <p className="text-lg font-bold text-gray-900">{providerData.experience_years} years</p>
+                                <div className="p-8 md:p-10 space-y-8">
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="p-6 bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl border border-orange-200">
+                                            <p className="text-xs font-bold text-orange-700 mb-2 uppercase tracking-wide">💼 Experience</p>
+                                            <p className="text-3xl font-bold text-gray-900">{providerData.experience_years}</p>
+                                            <p className="text-sm text-gray-600 mt-1">Years of experience</p>
                                         </div>
-                                        <div className="p-4 bg-cream-50 rounded-lg border border-primary-100">
-                                            <p className="text-xs font-medium text-primary-700 mb-1">Service Type</p>
-                                            <p className="text-lg font-bold text-gray-900 capitalize">{providerData.provides}</p>
+                                        <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl border border-blue-200">
+                                            <p className="text-xs font-bold text-blue-700 mb-2 uppercase tracking-wide">🎯 Service Type</p>
+                                            <p className="text-xl font-bold text-gray-900 capitalize">{providerData.provides}</p>
                                         </div>
-                                        <div className="p-4 bg-cream-50 rounded-lg border border-primary-100">
-                                            <p className="text-xs font-medium text-primary-700 mb-1">Service Area</p>
+                                        <div className="p-6 bg-gradient-to-br from-green-50 to-green-100/50 rounded-xl border border-green-200">
+                                            <p className="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">📍 Service Area</p>
                                             <p className="text-sm font-semibold text-gray-900">{providerData.service_area}</p>
                                         </div>
                                     </div>
 
+                                    {/* Description */}
                                     {providerData.description && (
-                                        <div className="p-4 bg-gray-50 rounded-lg">
-                                            <p className="text-sm font-semibold text-gray-700 mb-2">About</p>
-                                            <p className="text-gray-600 leading-relaxed text-sm">{providerData.description}</p>
+                                        <div className="p-6 bg-gray-100/50 rounded-xl border border-gray-200">
+                                            <p className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">📝 About</p>
+                                            <p className="text-gray-700 leading-relaxed">{providerData.description}</p>
                                         </div>
                                     )}
-
-                                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                                        <span className={`px-4 py-2 rounded-lg text-xs font-semibold ${providerData.verified
-                                            ? 'bg-green-50 text-green-700 border border-green-200'
-                                            : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                                            }`}>
-                                            {providerData.verified ? '✓ Verified Provider' : '⏳ Pending Verification'}
-                                        </span>
-                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
                 )}
 
-                {/* Address Modal */}
+                {/* Address Modal - Enhanced */}
                 {isAddressModalOpen && (
                     <div className="fixed inset-0 top-0 z-50 flex items-center justify-center p-4">
-                        <div className="absolute inset-0   bg-black/50 backdrop-blur-sm" onClick={handleCloseAddressModal}></div>
-                        <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleCloseAddressModal}></div>
+                        <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 animate-scale-in max-h-[90vh] overflow-y-auto border border-gray-200">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-gray-800">
-                                    {editingAddress ? 'Edit Address' : 'Add New Address'}
-                                </h3>
-                                <button onClick={handleCloseAddressModal} className="text-gray-400 hover:text-gray-600">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                        {editingAddress ? '📝 Edit Address' : '➕ Add New Address'}
+                                    </h3>
+                                    <p className="text-gray-600 text-sm mt-1">Fill in the details below</p>
+                                </div>
+                                <button onClick={handleCloseAddressModal} className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all">
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleAddressSubmit} className="space-y-4">
+                            <form onSubmit={handleAddressSubmit} className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Label</label>
                                     <input
                                         type="text"
                                         name="label"
                                         value={addressFormData.label}
                                         onChange={handleAddressInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                                        placeholder="e.g. Home, Office"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="e.g. Home, Office, Apartment"
                                         required
                                     />
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">Zip Code</label>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Zip Code</label>
                                     <div className="relative">
                                         <input
                                             type="text"
                                             name="zip_code"
                                             value={addressFormData.zip_code}
                                             onChange={handleAddressInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             placeholder="Enter 6-digit Pincode"
                                             required
                                             maxLength={6}
                                         />
                                         {pincodeLoading && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
+                                                <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
                                             </div>
                                         )}
                                     </div>
-                                    <p className="text-xs text-gray-500">Fetching city and state automatically...</p>
+                                    <p className="text-xs text-gray-500 mt-1">Fetching city and state automatically...</p>
                                 </div>
+
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
                                         <input
                                             type="text"
                                             name="city"
                                             value={addressFormData.city}
                                             onChange={handleAddressInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all bg-gray-50"
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
                                         <input
                                             type="text"
                                             name="state"
                                             value={addressFormData.state}
                                             onChange={handleAddressInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all bg-gray-50"
                                             required
                                         />
                                     </div>
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Line 1</label>
                                     <input
                                         type="text"
                                         name="address_line1"
                                         value={addressFormData.address_line1}
                                         onChange={handleAddressInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                         required
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Line 2 <span className="text-gray-400 font-normal">(Optional)</span></label>
                                     <input
                                         type="text"
                                         name="address_line2"
                                         value={addressFormData.address_line2}
                                         onChange={handleAddressInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                     />
                                 </div>
 
                                 {addressFormError && (
-                                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                                    <div className="text-red-600 text-sm bg-red-50 p-4 rounded-xl border border-red-200">
                                         {addressFormError}
                                     </div>
                                 )}
 
-                                <div className="flex justify-end space-x-3 mt-6">
+                                <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
                                     <button
                                         type="button"
                                         onClick={handleCloseAddressModal}
-                                        className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                                        className="px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-xl transition-all"
                                         disabled={addressFormLoading}
                                     >
                                         Cancel
@@ -872,7 +964,7 @@ export default function ProfilePage() {
                                     <button
                                         type="submit"
                                         disabled={addressFormLoading}
-                                        className="px-6 py-2 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+                                        className="px-6 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 hover:scale-105"
                                     >
                                         {addressFormLoading ? 'Saving...' : 'Save Address'}
                                     </button>
@@ -882,102 +974,108 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                {/* Profile Edit Modal */}
+                {/* Profile Edit Modal - Enhanced */}
                 {isProfileModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsProfileModalOpen(false)}></div>
-                        <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+                        <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 animate-scale-in max-h-[90vh] overflow-y-auto border border-gray-200">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-gray-800">
-                                    Edit Profile
-                                </h3>
-                                <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                        ✏️ Edit Profile
+                                    </h3>
+                                    <p className="text-gray-600 text-sm mt-1">Update your personal information</p>
+                                </div>
+                                <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all">
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleProfileSubmit} className="space-y-4">
+                            <form onSubmit={handleProfileSubmit} className="space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
                                         <input
                                             type="text"
                                             name="first_name"
                                             value={profileFormData.first_name}
                                             onChange={handleProfileInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
                                         <input
                                             type="text"
                                             name="last_name"
                                             value={profileFormData.last_name}
                                             onChange={handleProfileInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             required
                                         />
                                     </div>
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={profileFormData.email}
                                         onChange={handleProfileInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
-                                    <div className="flex items-center space-x-2">
-                                        <label className="flex items-center space-x-2 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-                                            <Upload className="w-5 h-5 text-gray-500" />
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Profile Picture</label>
+                                    <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all duration-300">
+                                        <div className="text-center">
+                                            <Upload className="w-8 h-8 text-orange-500 mx-auto mb-2" />
                                             <span className="text-sm text-gray-600">{profileImage ? profileImage.name : 'Upload New Picture'}</span>
-                                            <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
-                                        </label>
-                                    </div>
+                                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
+                                        </div>
+                                        <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                                    </label>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Dietary Restrictions (comma separated)</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Dietary Restrictions <span className="text-gray-400 font-normal text-xs">(comma separated)</span></label>
                                     <input
                                         type="text"
                                         name="dietary_restrictions"
                                         value={profileFormData.dietary_restrictions}
                                         onChange={handleProfileInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                                        placeholder="e.g. Vegetarian, Gluten-Free"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="e.g. Vegetarian, Gluten-Free, Vegan"
                                     />
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Culinary Preferences (comma separated)</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Culinary Preferences <span className="text-gray-400 font-normal text-xs">(comma separated)</span></label>
                                     <input
                                         type="text"
                                         name="culinary_preferences"
                                         value={profileFormData.culinary_preferences}
                                         onChange={handleProfileInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                                        placeholder="e.g. Italian, Mexican, Indian"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="e.g. Italian, Mexican, Indian, Asian"
                                     />
                                 </div>
 
                                 {profileFormError && (
-                                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                                    <div className="text-red-600 text-sm bg-red-50 p-4 rounded-xl border border-red-200">
                                         {profileFormError}
                                     </div>
                                 )}
 
-                                <div className="flex justify-end space-x-3 mt-6">
+                                <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
                                     <button
                                         type="button"
                                         onClick={() => setIsProfileModalOpen(false)}
-                                        className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                                        className="px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-xl transition-all"
                                         disabled={profileFormLoading}
                                     >
                                         Cancel
@@ -985,7 +1083,7 @@ export default function ProfilePage() {
                                     <button
                                         type="submit"
                                         disabled={profileFormLoading}
-                                        className="px-6 py-2 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+                                        className="px-6 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 hover:scale-105"
                                     >
                                         {profileFormLoading ? 'Updating...' : 'Update Profile'}
                                     </button>
@@ -995,91 +1093,94 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                {/* Service Provider Modal */}
+                {/* Service Provider Modal - Enhanced */}
                 {isProviderModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsProviderModalOpen(false)}></div>
-                        <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl p-6 animate-scale-in max-h-[90vh] overflow-y-auto">
+                        <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-8 animate-scale-in max-h-[90vh] overflow-y-auto border border-gray-200">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-bold text-gray-800">
-                                    {providerData ? 'Edit Provider Details' : 'Add Provider Details'}
-                                </h3>
-                                <button onClick={() => setIsProviderModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-900">
+                                        💼 {providerData ? 'Edit Professional Details' : 'Add Professional Details'}
+                                    </h3>
+                                    <p className="text-gray-600 text-sm mt-1">Fill in your professional information</p>
+                                </div>
+                                <button onClick={() => setIsProviderModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all">
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleProviderSubmit} className="space-y-4">
+                            <form onSubmit={handleProviderSubmit} className="space-y-5">
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Provider Type</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Provider Type</label>
                                         <select
                                             name="provider_type"
                                             value={providerFormData.provider_type}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             required
                                         >
-                                            <option value="individual">Individual</option>
-                                            <option value="company">Company</option>
+                                            <option value="individual">Individual Chef</option>
+                                            <option value="company">Company/Catering Service</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Service Type</label>
                                         <input
                                             type="text"
                                             name="service_type"
                                             value={providerFormData.service_type}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                                            placeholder="e.g. Chef, Caterer, Hall"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                            placeholder="e.g. Chef, Caterer, Event Cook"
                                             required
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Company Name (if applicable)</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Company Name <span className="text-gray-400 font-normal text-xs">(if applicable)</span></label>
                                     <input
                                         type="text"
                                         name="company_name"
                                         value={providerFormData.company_name}
                                         onChange={handleProviderInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                         placeholder="Leave blank for individual providers"
                                     />
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Provides</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Service Provides</label>
                                         <input
                                             type="text"
                                             name="provides"
                                             value={providerFormData.provides}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             placeholder="What do you provide?"
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Experience (years)</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Experience <span className="text-gray-400 font-normal text-xs">(years)</span></label>
                                         <input
                                             type="number"
                                             name="experience_years"
                                             value={providerFormData.experience_years}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             min="0"
                                             required
                                         />
                                     </div>
                                 </div>
 
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">Service Area Pincode</label>
-                                    <div className="relative">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Service Area Pincode</label>
+                                    <div className="relative mb-3">
                                         <input
                                             type="text"
                                             name="service_pincode"
@@ -1091,61 +1192,61 @@ export default function ProfilePage() {
                                                     lookupServicePincode(value);
                                                 }
                                             }}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
                                             placeholder="Enter 6-digit Pincode"
                                             required
                                             maxLength={6}
                                         />
                                         {servicePincodeLoading && (
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                <Loader2 className="w-4 h-4 animate-spin text-primary-500" />
+                                                <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
                                             </div>
                                         )}
                                     </div>
                                     {serviceLocationData.area && (
-                                        <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                                            <p><strong>Area:</strong> {serviceLocationData.area}</p>
-                                            <p><strong>City:</strong> {serviceLocationData.city}</p>
-                                            <p><strong>State:</strong> {serviceLocationData.state}</p>
+                                        <div className="text-sm bg-green-50 p-4 rounded-xl border border-green-200 space-y-1">
+                                            <p className="text-green-800"><strong>📍 Area:</strong> {serviceLocationData.area}</p>
+                                            <p className="text-green-800"><strong>🏙️ City:</strong> {serviceLocationData.city}</p>
+                                            <p className="text-green-800"><strong>🌍 State:</strong> {serviceLocationData.state}</p>
                                         </div>
                                     )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Specialization (comma-separated)</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Specialization <span className="text-gray-400 font-normal text-xs">(comma-separated)</span></label>
                                     <input
                                         type="text"
                                         name="specialization"
                                         value={providerFormData.specialization}
                                         onChange={handleProviderInputChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                                        placeholder="e.g. Italian, Indian, Chinese"
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="e.g. Italian, Indian, Chinese, Continental"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">About Your Services</label>
                                     <textarea
                                         name="description"
                                         value={providerFormData.description}
                                         onChange={handleProviderInputChange}
-                                        rows={4}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
-                                        placeholder="Tell us about your services..."
+                                        rows={5}
+                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all resize-none"
+                                        placeholder="Tell clients about your experience, specialties, and what makes you unique..."
                                     />
                                 </div>
 
                                 {providerFormError && (
-                                    <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                                    <div className="text-red-600 text-sm bg-red-50 p-4 rounded-xl border border-red-200">
                                         {providerFormError}
                                     </div>
                                 )}
 
-                                <div className="flex justify-end space-x-3 mt-6">
+                                <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
                                     <button
                                         type="button"
                                         onClick={() => setIsProviderModalOpen(false)}
-                                        className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                                        className="px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-xl transition-all"
                                         disabled={providerFormLoading}
                                     >
                                         Cancel
@@ -1153,7 +1254,7 @@ export default function ProfilePage() {
                                     <button
                                         type="submit"
                                         disabled={providerFormLoading}
-                                        className="px-6 py-2 bg-gradient-to-r from-primary-500 to-warm-500 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+                                        className="px-6 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 hover:scale-105"
                                     >
                                         {providerFormLoading ? 'Saving...' : 'Save Details'}
                                     </button>
@@ -1175,6 +1276,19 @@ export default function ProfilePage() {
                     onCancel={() => setDeleteModal({ isOpen: false, addressId: '' })}
                 />
             </div>
+
+            <style jsx>{`
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `}</style>
         </DashboardLayout>
     );
 }

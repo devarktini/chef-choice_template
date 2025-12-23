@@ -176,15 +176,24 @@ export default function BookingsPage() {
     return (
         <DashboardLayout>
             <div className="space-y-6">
-                {/* Page Header */}
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-800">My Bookings</h1>
-                        <p className="text-gray-600 mt-1">View and manage your chef bookings</p>
+                {/* Page Header with Gradient Background */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-400 via-orange-500 to-red-600 p-8 md:p-12 text-white shadow-lg">
+                    {/* Decorative Blur Elements */}
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl -mr-48 -mt-48"></div>
+                    <div className="absolute bottom-0 left-0 w-72 h-72 bg-white opacity-5 rounded-full blur-3xl -ml-36 -mb-36"></div>
+
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between">
+                        <div className="mb-4 md:mb-0">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-3 flex items-center">
+                                📅 My Bookings
+                            </h1>
+                            <p className="text-orange-100 text-lg">Manage and track all your chef bookings in one place</p>
+                            <p className="text-orange-50 text-sm mt-2 flex items-center">
+                                <span className="inline-block w-2 h-2 bg-white rounded-full mr-2"></span>
+                                Total bookings: <span className="font-bold ml-2">{bookings.length}</span>
+                            </p>
+                        </div>
                     </div>
-                    {/* <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
-                        New Booking
-                    </button> */}
                 </div>
 
                 {/* Bookings List */}
