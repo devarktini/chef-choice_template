@@ -15,7 +15,7 @@ interface Invoice {
   dueDate: string;
 }
 
-const page = () => {
+const PaymentInvoicePage = () => {
   const [activeTab, setActiveTab] = useState<'payments' | 'invoices'>('invoices');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -373,4 +373,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default PaymentInvoicePage;

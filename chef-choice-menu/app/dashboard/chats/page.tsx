@@ -638,7 +638,7 @@ export default function ChatsPage() {
                       </div>
                       <h3 className="text-2xl font-bold text-gray-800 mb-2">Start the conversation</h3>
                       <p className="text-gray-600 text-center max-w-md mb-6 leading-relaxed">
-                        Send your first message! Ask about menu details, timing, special requests, or anything else you'd like to discuss.
+                        Send your first message! Ask about menu details, timing, special requests, or anything else you&apos;d like to discuss.
                       </p>
                       <div className="bg-white rounded-xl border-2 border-orange-200 p-4 max-w-sm">
                         <p className="text-sm text-gray-700 font-semibold">💡 Tips for great conversations:</p>
