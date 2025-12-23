@@ -76,7 +76,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       // Check if user has a role (exists in system)
       const userRole = res.data?.user?.role;
       
-      if (!userRole || userRole === "") {
+      if (!userRole) {
         // New user - show role selection
         setTempTokens(res.tokens);
         setTempUserData(res.data);
