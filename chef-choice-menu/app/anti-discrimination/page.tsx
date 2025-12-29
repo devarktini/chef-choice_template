@@ -175,7 +175,7 @@ export default function AntiDiscriminationPolicyPage() {
 
             <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-xl">
               <p className="text-gray-800">
-                <strong>Discretion & Compliance:</strong> All corrective actions are taken at the Company's sole discretion and in accordance with applicable laws in India and the respective states/union territories where our services operate.
+                <strong>Discretion & Compliance:</strong> All corrective actions are taken at the Company&lsquo;s sole discretion and in accordance with applicable laws in India and the respective states/union territories where our services operate.
               </p>
             </div>
           </div>
