@@ -964,7 +964,7 @@ export default function TermsPage() {
                         <div>
                           <h4 className="font-semibold text-gray-900">As Is Basis</h4>
                           <p className="text-gray-700">
-                            Platform services provided as is and as available" without warranties of any kind.
+                            Platform services provided as is and as available without warranties of any kind.
                           </p>
                         </div>
                       </div>
