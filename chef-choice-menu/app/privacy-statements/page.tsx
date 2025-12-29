@@ -206,7 +206,7 @@ export default function PrivacyPolicyPage() {
                   
                   <div className="space-y-6 text-gray-700 leading-relaxed">
                     <p className="text-lg">
-                      "CHEFCHOICEMENU" Website and App is brought to you by TingleTaste LLP. This Privacy Policy describes how we collect, use, and protect your personal information.
+                      CHEFCHOICEMENU Website and App is brought to you by TingleTaste LLP. This Privacy Policy describes how we collect, use, and protect your personal information.
                     </p>
                     
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
                         <div>
                           <h3 className="font-bold text-gray-900 text-lg mb-2">Key Agreement</h3>
                           <p className="text-gray-700">
-                            By using CHEFCHOICEMENU, you agree to our privacy practices. If you don't agree, please don't use our services.
+                            By using CHEFCHOICEMENU, you agree to our privacy practices. If you don&lsquo;t agree, please don&lsquo;t use our services.
                           </p>
                         </div>
                       </div>
@@ -475,7 +475,7 @@ export default function PrivacyPolicyPage() {
                       </ul>
                       <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
                         <p className="text-sm text-blue-800">
-                          💡 <strong>Tip:</strong> Check your browser's "Help" menu to learn how to change cookie preferences
+                          💡 <strong>Tip:</strong> Check your browser&lsquo;s Help menu to learn how to change cookie preferences
                         </p>
                       </div>
                     </div>
@@ -755,7 +755,7 @@ export default function PrivacyPolicyPage() {
                     <div className="p-3 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-xl">
                       <Users className="w-6 h-6 text-yellow-600" />
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Children's Privacy</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Children&lsquo;s Privacy</h2>
                   </div>
                   
                   <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-6">
@@ -792,7 +792,7 @@ export default function PrivacyPolicyPage() {
                       <div className="bg-white p-4 rounded-lg border border-yellow-300">
                         <h4 className="font-semibold text-gray-900 mb-2">Parental Responsibility</h4>
                         <p className="text-sm text-gray-600">
-                          Parents/guardians should monitor children's internet usage and help enforce our privacy policy.
+                          Parents/guardians should monitor children&lsquo;s internet usage and help enforce our privacy policy.
                         </p>
                       </div>
                     </div>

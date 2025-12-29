@@ -26,7 +26,7 @@ export default function AntiDiscriminationPolicyPage() {
           <div>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Our Commitment</h3>
             <p className="text-gray-700 leading-relaxed">
-              ChefChoiceMenu, operated by Tinge Taste LLP ("Company", "we", "our", or "us"), is committed to maintaining a safe, inclusive, and non-discriminatory platform for all users and service partners across India.
+              ChefChoiceMenu, operated by Tinge Taste LLP (Company, we, our, or us), is committed to maintaining a safe, inclusive, and non-discriminatory platform for all users and service partners across India.
             </p>
           </div>
           

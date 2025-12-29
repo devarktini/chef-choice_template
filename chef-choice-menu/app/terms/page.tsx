@@ -502,7 +502,7 @@ export default function TermsPage() {
                     <div className="p-3 bg-gradient-to-r from-emerald-100 to-emerald-200 rounded-xl">
                       <Target className="w-6 h-6 text-emerald-600" />
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">5. DOs & DON'Ts</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900">5. DOs & DON&lsquo;Ts</h2>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-8">
@@ -554,7 +554,7 @@ export default function TermsPage() {
                         <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center text-white">
                           <XCircle className="w-6 h-6" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">DON'Ts</h3>
+                        <h3 className="text-2xl font-bold text-gray-900">DON&lsquo;Ts</h3>
                       </div>
                       
                       <div className="space-y-4">
@@ -633,7 +633,7 @@ export default function TermsPage() {
                           </div>
                           <div className="flex items-start gap-2">
                             <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
-                            <span>Taxes: Partner's responsibility</span>
+                            <span>Taxes: Partner&lsquo;s responsibility</span>
                           </div>
                         </div>
                       </div>
@@ -962,9 +962,9 @@ export default function TermsPage() {
                       <div className="flex items-start gap-3">
                         <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-1" />
                         <div>
-                          <h4 className="font-semibold text-gray-900">"As Is" Basis</h4>
+                          <h4 className="font-semibold text-gray-900">As Is Basis</h4>
                           <p className="text-gray-700">
-                            Platform services provided "as is" and "as available" without warranties of any kind.
+                            Platform services provided as is and as available" without warranties of any kind.
                           </p>
                         </div>
                       </div>

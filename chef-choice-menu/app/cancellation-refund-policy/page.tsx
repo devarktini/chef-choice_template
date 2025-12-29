@@ -203,7 +203,7 @@ export default function RefundPolicyPage() {
                                 </div>
                                 <div className="flex items-start gap-2">
                                   <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2 flex-shrink-0"></div>
-                                  <span>Up to 12 hours before Service Partner's estimated arrival time</span>
+                                  <span>Up to 12 hours before Service Partner&lsquo;s estimated arrival time</span>
                                 </div>
                               </div>
                             </div>
@@ -598,7 +598,7 @@ export default function RefundPolicyPage() {
                                   Breach/Misconduct Cancellation
                                 </h5>
                                 <p className="text-gray-600 text-sm">
-                                  Company may withhold payment and recover costs incurred due to Service Partner's misconduct
+                                  Company may withhold payment and recover costs incurred due to Service Partner&lsquo;s misconduct
                                 </p>
                               </div>
                             </div>

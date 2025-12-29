@@ -135,7 +135,7 @@ export default function PrivacyPage() {
                   
                   <div className="space-y-6 text-gray-700 leading-relaxed">
                     <p className="text-lg">
-                      This Technology Platform / Website (the "Website") and the Mobile App "CHEFCHOICEMENU", is owned and operated by TingleTaste LLP ("CHEFCHOICEMENU"), a Company incorporated under the Indian Companies Act.
+                      This Technology Platform / Website (the Website) and the Mobile App CHEFCHOICEMENU, is owned and operated by TingleTaste LLP (CHEFCHOICEMENU), a Company incorporated under the Indian Companies Act.
                     </p>
                     
                     <div className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-6">
@@ -337,7 +337,7 @@ export default function PrivacyPage() {
                       <ul className="space-y-3">
                         <li className="flex items-start gap-2">
                           <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2 flex-shrink-0"></div>
-                          <span>Cancellation subject to chef's terms & conditions</span>
+                          <span>Cancellation subject to chef&lsquo;s terms & conditions</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2 flex-shrink-0"></div>
@@ -383,7 +383,7 @@ export default function PrivacyPage() {
                         </li>
                         <li className="flex items-start gap-2">
                           <div className="w-2 h-2 rounded-full bg-gray-500 mt-2 flex-shrink-0"></div>
-                          <span>Services provided "as is" without warranties</span>
+                          <span>Services provided as is without warranties</span>
                         </li>
                       </ul>
                     </div>
@@ -491,7 +491,7 @@ export default function PrivacyPage() {
                     <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-xl p-6">
                       <h3 className="font-bold text-gray-900 text-lg mb-4">⚠️ Important Notice</h3>
                       <p className="text-gray-700">
-                        "CHEFCHOICEMENU" is a trademark owned by TingleTaste LLP. All rights reserved. Any unauthorized use, reproduction, or imitation without written permission constitutes infringement.
+                        CHEFCHOICEMENU is a trademark owned by TingleTaste LLP. All rights reserved. Any unauthorized use, reproduction, or imitation without written permission constitutes infringement.
                       </p>
                     </div>
                   </div>
