@@ -12,7 +12,7 @@ export default function DisclaimerPage() {
         warranties regarding the completeness or reliability of the content.
       </p>
 
-      <h2 className="text-xl mt-6 mb-3 text-gray-700">Service Disclaimer</h2>
+      <h2 className="text-xl mt-6 mb-3 font-medium text-gray-700">Service Disclaimer</h2>
       <p className="mb-4 leading-relaxed">
         Chefs listed on our platform are independent contractors. We are not
         responsible for their actions, cooking methods, food safety handling, or
@@ -20,34 +20,34 @@ export default function DisclaimerPage() {
         discretion.
       </p>
 
-      <h2 className="text-xl mt-6 mb-3 text-gray-700">Health & Allergies</h2>
+      <h2 className="text-xl mt-6 mb-3 font-medium text-gray-700">Health & Allergies</h2>
       <p className="mb-4 leading-relaxed">
         Customers must disclose allergies or dietary restrictions during
         booking. Chef Choice Menu does not guarantee allergen-free meals and
         assumes no liability for undisclosed conditions.
       </p>
 
-      <h2 className="text-xl mt-6 mb-3 text-gray-700">External Links</h2>
+      <h2 className="text-xl mt-6 mb-3 font-medium text-gray-700">External Links</h2>
       <p className="mb-4 leading-relaxed">
         Our website may contain links to third-party sites. We are not
         responsible for the content, privacy policies, or practices of external
         websites.
       </p>
 
-      <h2 className="text-xl mt-6 mb-3 text-gray-700">Limitation of Liability</h2>
+      <h2 className="text-xl mt-6 mb-3 font-medium text-gray-700">Limitation of Liability</h2>
       <p className="mb-4 leading-relaxed">
         To the maximum extent permitted by law, Chef Choice Menu disclaims
         liability for damages, losses, or issues arising from the use of our
         website, chefs, or services.
       </p>
 
-      <h2 className="text-xl mt-6 mb-3 text-gray-700">Consent</h2>
+      <h2 className="text-xl mt-6 mb-3 font-medium text-gray-700">Consent</h2>
       <p className="mb-4 leading-relaxed">
         By using our website, you hereby consent to our disclaimer and agree to
         its terms.
       </p>
 
-      <h2 className="text-xl mt-6 mb-3 text-gray-700">Contact Us</h2>
+      <h2 className="text-xl mt-6 mb-3 font-medium text-gray-700">Contact Us</h2>
       <p className="mb-2">Email: support@chefchoicemenu.com</p>
       <p>Phone: +91 85 959 039 39</p>
     </div>

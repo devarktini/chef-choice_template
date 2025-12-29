@@ -4,10 +4,11 @@ import { ChefHat, Play } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useBookingModalStore } from '@/stores/bookingModalStore';
 
 export default function Hero() {
   const [imageError, setImageError] = useState(false);
-
+  const { openModal } = useBookingModalStore();
   const videoSrc =
   "https://res.cloudinary.com/dzvvb0z0h/video/upload/f_auto,q_auto/v1760203198/8626668-hd_1920_1080_25fps_xxekee.mp4";
 
@@ -17,7 +18,8 @@ const posterSrc =
 
 
   return (
-    <section className="relative bg-gradient-to-br from-cream-100 via-primary-50 to-warm-50 py-20 overflow-hidden">
+    <>
+    <section className="relative  bg-gradient-to-br from-cream-100 via-primary-50 to-warm-50 py-20 overflow-hidden">
       {/* Decorative Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary-200 rounded-full filter blur-3xl opacity-20 animate-pulse-slow"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-warm-200 rounded-full filter blur-3xl opacity-20 animate-pulse-slow" style={{animationDelay: '1s'}}></div>
@@ -42,7 +44,7 @@ const posterSrc =
              Celebrate with Choice, Cherish with Menu
             </p>
 
-            <Link href="/book-chef">
+            <Link href="#" onClick={() => openModal()}>
               <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 animate-scale-in pulse-glow">
                 Explore Our Services
               </button>
@@ -87,6 +89,9 @@ const posterSrc =
           </p>
         </div>
       </div>
+      
     </section>
+   
+    </>
   );
 }

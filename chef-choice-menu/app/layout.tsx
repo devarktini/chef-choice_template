@@ -4,6 +4,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Providers from "@/components/Providers";
+import BookingFlowModalPortal from "@/components/booking/BookingFlowModalPortal";
 
 export const metadata: Metadata = {
   title: "Chef Choice Menu - Premium Chef Services",
@@ -24,6 +25,7 @@ export default function RootLayout({
           {children}
         </div>
         <Footer />
+        <BookingFlowModalPortal />
       </body>
     </html>
   );

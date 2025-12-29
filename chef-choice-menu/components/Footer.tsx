@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Heart, LinkedinIcon } from 'lucide-react';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -52,8 +52,10 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-primary-300">Legal</h4>
             <ul className="space-y-2">
               <li><Link href="/privacy" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Privacy Policy</Link></li>
+              <li><Link href="/privacy-statements" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Privacy Statement</Link></li>
               <li><Link href="/terms" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Terms & Conditions</Link></li>
-              <li><Link href="/disclaimer" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Disclaimer</Link></li>
+              <li> <Link href="/cancellation-refund-policy" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Cancellation & Refund Policy</Link></li>
+              <li><Link href="/anti-discrimination" className="text-gray-300 hover:text-primary-400 transition-colors duration-300 hover:translate-x-1 inline-block">Anti-Discrimination Policy</Link></li>
             </ul>
           </div>
 
@@ -70,7 +72,7 @@ export default function Footer() {
               </div>
               <div className="flex items-start space-x-3 group">
                 <MapPin className="w-5 h-5 text-primary-400 flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
-                <span className="text-gray-300 text-sm">B-99, 5th Floor, Panchsheel Park, New Delhi - 110017</span>
+                <span className="text-gray-300 text-sm">2nd Floor, Plot - 300, Block - F, Sector - 63, Noida. 2010307</span>
               </div>
             </div>
           </div>
@@ -83,13 +85,13 @@ export default function Footer() {
             </p>
 
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-primary-400 transition-all duration-300 hover:scale-110 transform">
+              <a href="https://www.facebook.com/profile.php?id=61577755351958" target='_blank' className="text-gray-400 hover:text-primary-400 transition-all duration-300 hover:scale-110 transform">
                 <Facebook className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary-400 transition-all duration-300 hover:scale-110 transform">
-                <Twitter className="w-6 h-6" />
+              <a href="https://www.linkedin.com/company/107559661/admin/dashboard/" target='_blank' className="text-gray-400 hover:text-primary-400 transition-all duration-300 hover:scale-110 transform">
+                <LinkedinIcon className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary-400 transition-all duration-300 hover:scale-110 transform">
+              <a href="https://www.instagram.com/chefchoicemenu/" target='_blank' className="text-gray-400 hover:text-primary-400 transition-all duration-300 hover:scale-110 transform">
                 <Instagram className="w-6 h-6" />
               </a>
             </div>

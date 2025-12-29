@@ -32,6 +32,7 @@ export default function ProfilePage() {
     const [addressFormError, setAddressFormError] = useState('');
     const [addressFormLoading, setAddressFormLoading] = useState(false);
     const [pincodeLoading, setPincodeLoading] = useState(false);
+    const [addressFormErrors, setAddressFormErrors] = useState<Record<string, string>>({});
 
     // Delete Modal State
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, addressId: '' });
@@ -49,6 +50,7 @@ export default function ProfilePage() {
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [profileFormError, setProfileFormError] = useState('');
     const [profileFormLoading, setProfileFormLoading] = useState(false);
+    const [profileFormErrors, setProfileFormErrors] = useState<Record<string, string>>({});
 
     // Service Provider Modal State
     const [providerData, setProviderData] = useState<ServiceProviderProfile | null>(null);
@@ -67,6 +69,7 @@ export default function ProfilePage() {
     const [providerFormLoading, setProviderFormLoading] = useState(false);
     const [servicePincodeLoading, setServicePincodeLoading] = useState(false);
     const [serviceLocationData, setServiceLocationData] = useState({ area: '', city: '', state: '', pincode: '' });
+    const [providerFormErrors, setProviderFormErrors] = useState<Record<string, string>>({});
 
     const fetchUserDetails = useCallback(async () => {
         if (!user?.id) return;
@@ -115,8 +118,31 @@ export default function ProfilePage() {
         }
     }, [fetchAddresses, fetchUserDetails, fetchProviderData, user?.role]);
 
-    // --- Address Handlers ---
+    // --- Address Validation ---
+    const validateAddressField = (name: string, value: string): string => {
+        if (!value.trim()) return 'This field is required';
+        
+        switch (name) {
+            case 'label':
+                if (!/^[A-Za-z\s]+$/.test(value)) return 'Label should contain only letters and spaces';
+                if (value.length < 2) return 'Label should be at least 2 characters';
+                break;
+            case 'zip_code':
+                if (!/^\d{6}$/.test(value)) return 'Pincode must be exactly 6 digits';
+                break;
+            case 'city':
+            case 'state':
+                if (!/^[A-Za-z\s]+$/.test(value)) return 'Should contain only letters and spaces';
+                break;
+            case 'address_line1':
+            case 'address_line2':
+                if (value.length < 5) return 'Address should be at least 5 characters';
+                break;
+        }
+        return '';
+    };
 
+    // --- Address Handlers ---
     const handleOpenAddressModal = (address?: Address) => {
         if (address) {
             setEditingAddress(address);
@@ -140,6 +166,7 @@ export default function ProfilePage() {
             });
         }
         setAddressFormError('');
+        setAddressFormErrors({});
         setIsAddressModalOpen(true);
     };
 
@@ -147,15 +174,33 @@ export default function ProfilePage() {
         setIsAddressModalOpen(false);
         setEditingAddress(null);
         setAddressFormError('');
+        setAddressFormErrors({});
     };
 
     const handleAddressInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setAddressFormData(prev => ({ ...prev, [name]: value }));
+        let processedValue = value;
+        
+        // Apply input restrictions based on field type
+        if (name === 'zip_code') {
+            processedValue = value.replace(/\D/g, '');
+        } else if (name === 'city' || name === 'state' || name === 'label') {
+            processedValue = value.replace(/[0-9]/g, '');
+        }
+
+        // Update form data
+        setAddressFormData(prev => ({ ...prev, [name]: processedValue }));
+
+        // Validate field
+        const error = validateAddressField(name, processedValue);
+        setAddressFormErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
 
         // Pincode lookup logic
-        if (name === 'zip_code' && value.length === 6) {
-            lookupPincode(value);
+        if (name === 'zip_code' && processedValue.length === 6 && !error) {
+            lookupPincode(processedValue);
         }
     };
 
@@ -172,6 +217,12 @@ export default function ProfilePage() {
                     city: office.District,
                     state: office.State
                 }));
+                // Clear city and state errors if auto-filled
+                setAddressFormErrors(prev => ({
+                    ...prev,
+                    city: '',
+                    state: ''
+                }));
             }
         } catch (error) {
             console.error('Pincode lookup failed', error);
@@ -182,6 +233,23 @@ export default function ProfilePage() {
 
     const handleAddressSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validate all fields
+        const newErrors: Record<string, string> = {};
+        Object.entries(addressFormData).forEach(([key, value]) => {
+            const error = validateAddressField(key, value);
+            if (error && key !== 'address_line2') { // address_line2 is optional
+                newErrors[key] = error;
+            }
+        });
+        
+        setAddressFormErrors(newErrors);
+        
+        if (Object.keys(newErrors).length > 0) {
+            toast.error('Please fix the errors in the form');
+            return;
+        }
+
         setAddressFormLoading(true);
         setAddressFormError('');
         startLoading();
@@ -235,105 +303,96 @@ export default function ProfilePage() {
         }
     };
 
-    // --- Profile Handlers ---
+    // --- Profile Validation ---
+    const validateProfileField = (name: string, value: string): string => {
+        if (!value.trim() && name !== 'dietary_restrictions' && name !== 'culinary_preferences') {
+            return 'This field is required';
+        }
+        
+        switch (name) {
+            case 'first_name':
+            case 'last_name':
+                if (!/^[A-Za-z\s]+$/.test(value)) return 'Should contain only letters and spaces';
+                if (value.length < 2) return 'Should be at least 2 characters';
+                if (value.length > 50) return 'Should not exceed 50 characters';
+                break;
+            case 'email':
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
+                break;
+            case 'dietary_restrictions':
+            case 'culinary_preferences':
+                if (value.trim()) {
+                    const items = value.split(',').map(item => item.trim()).filter(Boolean);
+                    for (const item of items) {
+                        if (!/^[A-Za-z\s\-]+$/.test(item)) {
+                            return 'Items should contain only letters, spaces, and hyphens';
+                        }
+                        if (item.length < 2) {
+                            return 'Each item should be at least 2 characters';
+                        }
+                    }
+                }
+                break;
+        }
+        return '';
+    };
 
+    // --- Profile Handlers ---
     const handleProfileInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setProfileFormData(prev => ({ ...prev, [name]: value }));
+        let processedValue = value;
+        
+        // Apply input restrictions
+        if (name === 'first_name' || name === 'last_name') {
+            processedValue = value.replace(/[0-9]/g, '');
+        }
+        
+        setProfileFormData(prev => ({ ...prev, [name]: processedValue }));
+        
+        // Validate field
+        const error = validateProfileField(name, processedValue);
+        setProfileFormErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setProfileImage(e.target.files[0]);
+            const file = e.target.files[0];
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                toast.error('Please select an image file');
+                return;
+            }
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('Image size should be less than 5MB');
+                return;
+            }
+            setProfileImage(file);
         }
     };
 
-    // const handleProfileSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     setProfileFormLoading(true);
-    //     setProfileFormError('');
-    //     startLoading();
-
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append('first_name', profileFormData.first_name);
-    //         formData.append('last_name', profileFormData.last_name);
-    //         formData.append('email', profileFormData.email);
-    //         formData.append('dietary_restrictions', profileFormData.dietary_restrictions);
-    //         formData.append('culinary_preferences', profileFormData.culinary_preferences);
-
-    //         if (profileImage) {
-    //             formData.append('profile_picture', profileImage);
-    //         }
-
-    //         // Update Profile
-    //         await AuthService.updateUserProfile(formData);
-
-    //         // Fetch latest user data (standard fields)
-    //         let freshUser = user;
-    //         if (user?.id) {
-    //             try {
-    //                 freshUser = await AuthService.getUser(user.id);
-    //             } catch (e) {
-    //                 console.warn("Could not fetch fresh user details", e);
-    //             }
-    //         }
-
-    //         // Update LocalStorage to ensure changes persist on reload
-    //         const currentData = AuthService.getUserData();
-    //         if (currentData) {
-    //             const updatedData = {
-    //                 ...currentData,
-    //                 // Merge fresh user details
-    //                 user: { ...currentData.user, ...freshUser },
-    //                 // Manually merge client profile preferences (optimistic update)
-    //                 // This ensures dietary restrictions show up immediately even if 
-    //                 // the user endpoint doesn't return the nested profile.
-    //                 client_profile: currentData.client_profile ? {
-    //                     ...currentData.client_profile,
-    //                     dietary_restrictions: profileFormData.dietary_restrictions.split(',').map((s: string) => s.trim()).filter(Boolean),
-    //                     culinary_preferences: profileFormData.culinary_preferences.split(',').map((s: string) => s.trim()).filter(Boolean),
-    //                 } : currentData.client_profile
-    //             };
-    //             AuthService.storeUserData(updatedData);
-    //             // Also update the store if login function supports partial update or re-init
-    //             // Since this uses useAuthStore, we might need to manually trigger a re-hydration or state update
-    //             // The logical existing flow was reload, but now we want SPA feel.
-    //             // Assuming login() call might not be appropriate here as it might require full object.
-    //             // Ideally, AuthService.storeUserData updates localStorage, so a reload would fix it.
-    //             // To avoid reload, we must update the store state.
-    //             // Let's assume useAuthStore syncs with localStorage or we can just force update if possible.
-    //             // For now, removing reload and letting the user see the success message.
-    //             // If the store doesn't auto-update from localStorage, we might need to call login(updatedData.user, updatedData.token).
-    //             if (updatedData.user && updatedData.access_token) {
-    //                 // We need to fetch current tokens because updatedData (from localStorage) might not have them in the right structure
-    //                 // and login() expects (data, tokens)
-    //                 const currentTokens = AuthService.getTokens();
-    //                 if (currentTokens.access) {
-    //                     login(updatedData, {
-    //                         access: currentTokens.access,
-    //                         refresh: currentTokens.refresh || ''
-    //                     });
-    //                 }
-    //             }
-    //         }
-
-    //         toast.success('Profile updated successfully!');
-    //         setIsProfileModalOpen(false); // Close modal on success
-    //     } catch (error: any) {
-    //         setProfileFormError(error.message || 'Failed to update profile');
-    //         toast.error(error.message || 'Failed to update profile');
-    //     } finally {
-    //         setProfileFormLoading(false);
-    //         stopLoading();
-    //     }
-    // };
-
-    // --- Service Provider Handlers ---
-
-
     const handleProfileSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validate all fields
+        const newErrors: Record<string, string> = {};
+        Object.entries(profileFormData).forEach(([key, value]) => {
+            const error = validateProfileField(key, value);
+            if (error) {
+                newErrors[key] = error;
+            }
+        });
+        
+        setProfileFormErrors(newErrors);
+        
+        if (Object.keys(newErrors).length > 0) {
+            toast.error('Please fix the errors in the form');
+            return;
+        }
+
         setProfileFormLoading(true);
         setProfileFormError("");
         startLoading();
@@ -367,8 +426,53 @@ export default function ProfilePage() {
         }
     };
 
+    // --- Service Provider Validation ---
+    const validateProviderField = (name: string, value: any): string => {
+        if (!value && name !== 'company_name' && name !== 'specialization' && name !== 'description') {
+            return 'This field is required';
+        }
+        
+        switch (name) {
+            case 'service_type':
+            case 'provides':
+                if (!/^[A-Za-z\s]+$/.test(value)) return 'Should contain only letters and spaces';
+                if (value.length < 2) return 'Should be at least 2 characters';
+                if (value.length > 100) return 'Should not exceed 100 characters';
+                break;
+            case 'company_name':
+                if (providerFormData.provider_type === 'company' && !value.trim()) {
+                    return 'Company name is required for company providers';
+                }
+                if (value && value.length > 100) {
+                    return 'Should not exceed 100 characters';
+                }
+                break;
+            case 'experience_years':
+                const years = parseInt(value);
+                if (isNaN(years) || years < 0) return 'Experience should be a positive number';
+                if (years > 50) return 'Experience should not exceed 50 years';
+                break;
+            case 'specialization':
+                if (value.trim()) {
+                    const items = value.split(',').map((item: string) => item.trim()).filter(Boolean);
+                    for (const item of items) {
+                        if (!/^[A-Za-z\s\-]+$/.test(item)) {
+                            return 'Items should contain only letters, spaces, and hyphens';
+                        }
+                        if (item.length < 2) {
+                            return 'Each item should be at least 2 characters';
+                        }
+                    }
+                }
+                break;
+            case 'description':
+                if (value.length > 500) return 'Description should not exceed 500 characters';
+                break;
+        }
+        return '';
+    };
 
-
+    // --- Service Provider Handlers ---
     const handleOpenProviderModal = () => {
         if (providerData) {
             // Parse existing service_area if it exists
@@ -405,14 +509,33 @@ export default function ProfilePage() {
             });
         }
         setProviderFormError('');
+        setProviderFormErrors({});
         setIsProviderModalOpen(true);
     };
 
     const handleProviderInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+        let processedValue = value;
+        
+        // Apply input restrictions
+        if (name === 'service_type' || name === 'provides' || name === 'company_name') {
+            processedValue = value.replace(/[0-9]/g, '');
+        } else if (name === 'experience_years') {
+            processedValue = value.replace(/\D/g, '');
+        } else if (name === 'specialization') {
+            processedValue = value.replace(/[^A-Za-z,\s\-]/g, '');
+        }
+        
         setProviderFormData(prev => ({
             ...prev,
-            [name]: name === 'experience_years' ? parseInt(value) || 0 : value
+            [name]: name === 'experience_years' ? parseInt(processedValue) || 0 : processedValue
+        }));
+
+        // Validate field
+        const error = validateProviderField(name, processedValue);
+        setProviderFormErrors(prev => ({
+            ...prev,
+            [name]: error
         }));
 
         // Trigger pincode lookup for service area
@@ -445,6 +568,23 @@ export default function ProfilePage() {
 
     const handleProviderSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validate all fields
+        const newErrors: Record<string, string> = {};
+        Object.entries(providerFormData).forEach(([key, value]) => {
+            const error = validateProviderField(key, value);
+            if (error) {
+                newErrors[key] = error;
+            }
+        });
+        
+        setProviderFormErrors(newErrors);
+        
+        if (Object.keys(newErrors).length > 0) {
+            toast.error('Please fix the errors in the form');
+            return;
+        }
+
         setProviderFormLoading(true);
         setProviderFormError('');
         startLoading();
@@ -488,6 +628,11 @@ export default function ProfilePage() {
             stopLoading();
         }
     };
+
+    // Check if form has errors
+    const hasAddressErrors = Object.values(addressFormErrors).some(error => error);
+    const hasProfileErrors = Object.values(profileFormErrors).some(error => error);
+    const hasProviderErrors = Object.values(providerFormErrors).some(error => error);
 
     return (
         <DashboardLayout>
@@ -554,7 +699,7 @@ export default function ProfilePage() {
                                         ? 'bg-green-100 text-green-700 border border-green-300'
                                         : 'bg-yellow-100 text-yellow-700 border border-yellow-300'
                                         }`}>
-                                        <div className={`w-2 h-2 rounded-full ${user?.is_verified ? 'bg-green-600' : 'bg-yellow-600'}`}></div>
+                                        <div className={`w-2.5 h-2.5 rounded-full ${user?.is_verified ? 'bg-green-600' : 'bg-yellow-600'}`}></div>
                                         {user?.is_verified ? '✓ Verified Account' : '⏳ Verification Pending'}
                                     </span>
                                     
@@ -726,13 +871,6 @@ export default function ProfilePage() {
                                 )}
                             </div>
                         </div>
-
-                        {/* <button
-                            onClick={() => setIsProfileModalOpen(true)}
-                            className="mt-8 px-6 py-3 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all hover:scale-105"
-                        >
-                            Update Preferences
-                        </button> */}
                     </div>
                 )}
 
@@ -864,29 +1002,30 @@ export default function ProfilePage() {
 
                             <form onSubmit={handleAddressSubmit} className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Label</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Label *</label>
                                     <input
                                         type="text"
                                         name="label"
                                         value={addressFormData.label}
                                         onChange={handleAddressInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.label ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         placeholder="e.g. Home, Office, Apartment"
-                                        required
                                     />
+                                    {addressFormErrors.label && (
+                                        <p className="mt-1 text-sm text-red-600">{addressFormErrors.label}</p>
+                                    )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Zip Code</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Zip Code *</label>
                                     <div className="relative">
                                         <input
                                             type="text"
                                             name="zip_code"
                                             value={addressFormData.zip_code}
                                             onChange={handleAddressInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.zip_code ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                             placeholder="Enter 6-digit Pincode"
-                                            required
                                             maxLength={6}
                                         />
                                         {pincodeLoading && (
@@ -895,44 +1034,55 @@ export default function ProfilePage() {
                                             </div>
                                         )}
                                     </div>
-                                    <p className="text-xs text-gray-500 mt-1">Fetching city and state automatically...</p>
+                                    {addressFormErrors.zip_code ? (
+                                        <p className="mt-1 text-sm text-red-600">{addressFormErrors.zip_code}</p>
+                                    ) : (
+                                        <p className="text-xs text-gray-500 mt-1">City and state will be fetched automatically</p>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">City *</label>
                                         <input
                                             type="text"
                                             name="city"
                                             value={addressFormData.city}
                                             onChange={handleAddressInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all bg-gray-50"
-                                            required
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.city ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         />
+                                        {addressFormErrors.city && (
+                                            <p className="mt-1 text-sm text-red-600">{addressFormErrors.city}</p>
+                                        )}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">State</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">State *</label>
                                         <input
                                             type="text"
                                             name="state"
                                             value={addressFormData.state}
                                             onChange={handleAddressInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all bg-gray-50"
-                                            required
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.state ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         />
+                                        {addressFormErrors.state && (
+                                            <p className="mt-1 text-sm text-red-600">{addressFormErrors.state}</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Line 1</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Address Line 1 *</label>
                                     <input
                                         type="text"
                                         name="address_line1"
                                         value={addressFormData.address_line1}
                                         onChange={handleAddressInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
-                                        required
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.address_line1 ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                                        placeholder="Street address, building, floor, etc."
                                     />
+                                    {addressFormErrors.address_line1 && (
+                                        <p className="mt-1 text-sm text-red-600">{addressFormErrors.address_line1}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -943,6 +1093,7 @@ export default function ProfilePage() {
                                         value={addressFormData.address_line2}
                                         onChange={handleAddressInputChange}
                                         className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        placeholder="Apartment, suite, unit, etc."
                                     />
                                 </div>
 
@@ -963,8 +1114,8 @@ export default function ProfilePage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={addressFormLoading}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 hover:scale-105"
+                                        disabled={addressFormLoading || hasAddressErrors}
+                                        className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${addressFormLoading || hasAddressErrors ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105'}`}
                                     >
                                         {addressFormLoading ? 'Saving...' : 'Save Address'}
                                     </button>
@@ -994,39 +1145,45 @@ export default function ProfilePage() {
                             <form onSubmit={handleProfileSubmit} className="space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
                                         <input
                                             type="text"
                                             name="first_name"
                                             value={profileFormData.first_name}
                                             onChange={handleProfileInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
-                                            required
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${profileFormErrors.first_name ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         />
+                                        {profileFormErrors.first_name && (
+                                            <p className="mt-1 text-sm text-red-600">{profileFormErrors.first_name}</p>
+                                        )}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
                                         <input
                                             type="text"
                                             name="last_name"
                                             value={profileFormData.last_name}
                                             onChange={handleProfileInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
-                                            required
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${profileFormErrors.last_name ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         />
+                                        {profileFormErrors.last_name && (
+                                            <p className="mt-1 text-sm text-red-600">{profileFormErrors.last_name}</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={profileFormData.email}
                                         onChange={handleProfileInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
-                                        required
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${profileFormErrors.email ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                     />
+                                    {profileFormErrors.email && (
+                                        <p className="mt-1 text-sm text-red-600">{profileFormErrors.email}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -1035,7 +1192,7 @@ export default function ProfilePage() {
                                         <div className="text-center">
                                             <Upload className="w-8 h-8 text-orange-500 mx-auto mb-2" />
                                             <span className="text-sm text-gray-600">{profileImage ? profileImage.name : 'Upload New Picture'}</span>
-                                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
+                                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
                                         </div>
                                         <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                                     </label>
@@ -1048,9 +1205,12 @@ export default function ProfilePage() {
                                         name="dietary_restrictions"
                                         value={profileFormData.dietary_restrictions}
                                         onChange={handleProfileInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${profileFormErrors.dietary_restrictions ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         placeholder="e.g. Vegetarian, Gluten-Free, Vegan"
                                     />
+                                    {profileFormErrors.dietary_restrictions && (
+                                        <p className="mt-1 text-sm text-red-600">{profileFormErrors.dietary_restrictions}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -1060,9 +1220,12 @@ export default function ProfilePage() {
                                         name="culinary_preferences"
                                         value={profileFormData.culinary_preferences}
                                         onChange={handleProfileInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${profileFormErrors.culinary_preferences ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         placeholder="e.g. Italian, Mexican, Indian, Asian"
                                     />
+                                    {profileFormErrors.culinary_preferences && (
+                                        <p className="mt-1 text-sm text-red-600">{profileFormErrors.culinary_preferences}</p>
+                                    )}
                                 </div>
 
                                 {profileFormError && (
@@ -1082,8 +1245,8 @@ export default function ProfilePage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={profileFormLoading}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 hover:scale-105"
+                                        disabled={profileFormLoading || hasProfileErrors}
+                                        className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${profileFormLoading || hasProfileErrors ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105'}`}
                                     >
                                         {profileFormLoading ? 'Updating...' : 'Update Profile'}
                                     </button>
@@ -1113,88 +1276,99 @@ export default function ProfilePage() {
                             <form onSubmit={handleProviderSubmit} className="space-y-5">
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Provider Type</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Provider Type *</label>
                                         <select
                                             name="provider_type"
                                             value={providerFormData.provider_type}
                                             onChange={handleProviderInputChange}
                                             className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
-                                            required
                                         >
                                             <option value="individual">Individual Chef</option>
                                             <option value="company">Company/Catering Service</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Service Type</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Service Type *</label>
                                         <input
                                             type="text"
                                             name="service_type"
                                             value={providerFormData.service_type}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.service_type ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                             placeholder="e.g. Chef, Caterer, Event Cook"
-                                            required
                                         />
+                                        {providerFormErrors.service_type && (
+                                            <p className="mt-1 text-sm text-red-600">{providerFormErrors.service_type}</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Company Name <span className="text-gray-400 font-normal text-xs">(if applicable)</span></label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Company Name {providerFormData.provider_type === 'company' && ' *'}
+                                        <span className="text-gray-400 font-normal text-xs">(if applicable)</span>
+                                    </label>
                                     <input
                                         type="text"
                                         name="company_name"
                                         value={providerFormData.company_name}
                                         onChange={handleProviderInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.company_name ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         placeholder="Leave blank for individual providers"
                                     />
+                                    {providerFormErrors.company_name && (
+                                        <p className="mt-1 text-sm text-red-600">{providerFormErrors.company_name}</p>
+                                    )}
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Service Provides</label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Service Provides *</label>
                                         <input
                                             type="text"
                                             name="provides"
                                             value={providerFormData.provides}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.provides ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                             placeholder="What do you provide?"
-                                            required
                                         />
+                                        {providerFormErrors.provides && (
+                                            <p className="mt-1 text-sm text-red-600">{providerFormErrors.provides}</p>
+                                        )}
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Experience <span className="text-gray-400 font-normal text-xs">(years)</span></label>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Experience (years) *</label>
                                         <input
                                             type="number"
                                             name="experience_years"
                                             value={providerFormData.experience_years}
                                             onChange={handleProviderInputChange}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.experience_years ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                             min="0"
-                                            required
+                                            max="50"
                                         />
+                                        {providerFormErrors.experience_years && (
+                                            <p className="mt-1 text-sm text-red-600">{providerFormErrors.experience_years}</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Service Area Pincode</label>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Service Area Pincode *</label>
                                     <div className="relative mb-3">
                                         <input
                                             type="text"
                                             name="service_pincode"
                                             value={serviceLocationData.pincode}
                                             onChange={(e) => {
-                                                const value = e.target.value;
+                                                const value = e.target.value.replace(/\D/g, '');
                                                 setServiceLocationData(prev => ({ ...prev, pincode: value }));
                                                 if (value.length === 6) {
                                                     lookupServicePincode(value);
                                                 }
                                             }}
-                                            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                            className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.service_pincode ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                             placeholder="Enter 6-digit Pincode"
-                                            required
                                             maxLength={6}
                                         />
                                         {servicePincodeLoading && (
@@ -1219,9 +1393,12 @@ export default function ProfilePage() {
                                         name="specialization"
                                         value={providerFormData.specialization}
                                         onChange={handleProviderInputChange}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all"
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.specialization ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                                         placeholder="e.g. Italian, Indian, Chinese, Continental"
                                     />
+                                    {providerFormErrors.specialization && (
+                                        <p className="mt-1 text-sm text-red-600">{providerFormErrors.specialization}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -1231,9 +1408,15 @@ export default function ProfilePage() {
                                         value={providerFormData.description}
                                         onChange={handleProviderInputChange}
                                         rows={5}
-                                        className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all resize-none"
+                                        className={`w-full px-4 py-2.5 rounded-xl border ${providerFormErrors.description ? 'border-red-300' : 'border-gray-300'} focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all resize-none`}
                                         placeholder="Tell clients about your experience, specialties, and what makes you unique..."
                                     />
+                                    {providerFormErrors.description && (
+                                        <p className="mt-1 text-sm text-red-600">{providerFormErrors.description}</p>
+                                    )}
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        {providerFormData.description.length}/500 characters
+                                    </p>
                                 </div>
 
                                 {providerFormError && (
@@ -1253,8 +1436,8 @@ export default function ProfilePage() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={providerFormLoading}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 hover:scale-105"
+                                        disabled={providerFormLoading || hasProviderErrors}
+                                        className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${providerFormLoading || hasProviderErrors ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105'}`}
                                     >
                                         {providerFormLoading ? 'Saving...' : 'Save Details'}
                                     </button>

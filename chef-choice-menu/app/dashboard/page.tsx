@@ -323,7 +323,7 @@ export default function DashboardPage() {
                             <AlertCircle className="w-5 h-5 text-orange-600 mb-3" />
                             <h3 className="font-bold text-gray-900 mb-2">Need Help?</h3>
                             <p className="text-gray-700 text-sm mb-4">Check our help center for guides and FAQ</p>
-                            <Link href="/dashboard/help" className="inline-block text-orange-600 hover:text-orange-700 font-semibold text-sm">
+                            <Link href="/contact" className="inline-block text-orange-600 hover:text-orange-700 font-semibold text-sm">
                                 Visit Help Center →
                             </Link>
                         </div>
