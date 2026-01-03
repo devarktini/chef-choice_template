@@ -44,7 +44,7 @@ const posterSrc =
              Celebrate with Choice, Cherish with Menu
             </p>
 
-            <Link href="#" onClick={() => openModal()}>
+            <Link href="/service">
               <button className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 animate-scale-in pulse-glow">
                 Explore Our Services
               </button>

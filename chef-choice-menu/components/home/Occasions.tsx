@@ -2,6 +2,7 @@
 
 import { Cake, Heart, PartyPopper, Coffee, Gift, Users, Baby, Home, Church, Music, Flame, Calendar } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Occasions() {
   const occasions = [
@@ -107,7 +108,8 @@ export default function Occasions() {
 
         <div className="grid md:grid-cols-4 gap-6">
           {occasions.map((occasion, index) => (
-            <div 
+            <Link 
+             href={'/contact'}
               key={index} 
               className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2 animate-scale-in"
               style={{animationDelay: `${index * 0.05}s`}}
@@ -135,7 +137,7 @@ export default function Occasions() {
                   {occasion.description}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
