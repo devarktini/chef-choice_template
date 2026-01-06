@@ -432,7 +432,7 @@ const PaymentInvoicePage = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
-              <div className="sticky top-0 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6 flex justify-between items-center border-b">
+              <div className="sticky top-0 bg-white  text-black p-6 flex justify-between items-center border-b">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                   <FileText className="w-6 h-6" />
                   Invoice Details
@@ -450,7 +450,15 @@ const PaymentInvoicePage = () => {
                 {/* Invoice Header */}
                 <div className="flex justify-between items-start mb-8 pb-6 border-b-2 border-gray-200">
                   <div>
-                    <h1 className="text-3xl font-bold text-green-600">INVOICE</h1>
+                    <h1 className="text-3xl font-bold text-green-600">
+                       <div className="w-24">
+                <img 
+                  src="https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1757953170/removeb_sxbskt.png" 
+                  alt="Chef Choice Logo" 
+                  className=""
+                />
+              </div>
+                    </h1>
                     <p className="text-gray-600 text-sm mt-2">Transaction ID: {selectedPayment.id}</p>
                   </div>
                   <div className="text-right">

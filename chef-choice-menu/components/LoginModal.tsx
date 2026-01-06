@@ -19,7 +19,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
-  const [countdown, setCountdown] = useState(0);
+  const [countdown, setCountdown] = useState(1);
   const [tempTokens, setTempTokens] = useState<any>(null);
   const [tempUserData, setTempUserData] = useState<any>(null);
 
@@ -52,8 +52,16 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setLoading(true);
       setError("");
       const res = await AuthService.sendOTP(phoneNumber);
-      setExpiresAt(res.expires_at);
-      setStep("otp");
+      
+      // Check if OTP sent successfully using status
+      if (res.status === 200 || res.message === "OTP sent successfully") {
+        // Calculate expiration time (10 minutes from now)
+        const expirationTime = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+        setExpiresAt(expirationTime);
+        setStep("otp");
+      } else {
+        setError("Failed to send OTP. Please try again.");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to send OTP");
     } finally {
@@ -258,16 +266,32 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           {/* OTP Step */}
           {step === "otp" && (
             <>
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-3">
                 <p className="text-gray-600 text-sm">
                   OTP sent to <b>{phoneNumber}</b>
                 </p>
-                {countdown > 0 && (
-                  <span className="inline-block text-xs bg-primary-50 text-primary-600 px-3 py-1 rounded-full">
-                    Expires in {Math.floor(countdown / 60)}:
-                    {(countdown % 60).toString().padStart(2, "0")}
-                  </span>
-                )}
+                
+                {/* Timer Display */}
+                <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  countdown > 0
+                    ? "bg-gradient-to-r from-primary-100 to-primary-50 text-primary-700 border border-primary-200"
+                    : "bg-red-100 text-red-700 border border-red-200"
+                }`}>
+                  {/* {console.log("ssss", countdown)} */}
+                  {countdown > 0 ? (
+                    <>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-block w-2 h-2 bg-primary-600 rounded-full animate-pulse"></span>
+                        OTP valid for: <span className="font-mono">{Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}</span>
+                      </span>
+                    </>
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
+                      OTP Expired
+                    </span>
+                  )}
+                </div>
               </div>
 
               <input
@@ -287,25 +311,36 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
               <button
                 onClick={handleVerifyOTP}
-                disabled={loading || otp.length !== 6}
+                disabled={loading || otp.length !== 6 || countdown === 0}
                 className="w-full py-4 rounded-xl font-semibold text-white
                 bg-gradient-to-r from-primary-500 to-warm-500
                 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(245,158,11,0.4)]
                 transition disabled:opacity-50"
               >
-                {loading ? "Verifying..." : "Verify & Continue"}
+                {loading ? "Verifying..." : countdown === 0 ? "OTP Expired" : "Verify & Continue"}
               </button>
 
-              <div className="flex justify-between">
+              {countdown === 0 && (
+                <button
+                  onClick={handleSendOTP}
+                  disabled={loading}
+                  className="w-full py-3 rounded-xl font-semibold text-primary-600 border-2 border-primary-500
+                  bg-white hover:bg-primary-50 transition"
+                >
+                  {loading ? "Resending..." : "Resend OTP"}
+                </button>
+              )}
+
+              <div className="flex justify-between text-xs">
                 <button
                   onClick={() => setStep("phone")}
-                  className="text-sm text-gray-500 hover:text-primary-600"
+                  className="text-gray-500 hover:text-primary-600 transition"
                 >
                   Change phone number
                 </button>
                 <button
                   onClick={resetToInitial}
-                  className="text-sm text-gray-500 hover:text-primary-600"
+                  className="text-gray-500 hover:text-primary-600 transition"
                 >
                   Use different number
                 </button>

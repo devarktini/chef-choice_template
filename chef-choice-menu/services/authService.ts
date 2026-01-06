@@ -202,7 +202,6 @@ export class AuthService {
      * Update user role
      */
     static async updateUserRole(userId: string, role: string, tokens: any): Promise<any> {
-        console.log("ssss", userId, role)
         try {
             // const tokens = this.getTokens();
             // console.log("ssss", tokens)
@@ -228,4 +227,30 @@ export class AuthService {
             throw error;
         }
     }
+
+    static async getGalleryItems(page: number = 1, pageSize: number = 10): Promise<any> {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/api/gallery/?page=${page}&page_size=${pageSize}`, 
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+           },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to fetch gallery items");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Get Gallery error:", error);
+    throw error;
+  }
+}
+
+
 }
