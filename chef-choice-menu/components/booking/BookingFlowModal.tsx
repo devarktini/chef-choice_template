@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DatePicker from "react-datepicker";
-import { AddressService as AddressApiService } from '@/services/addressService';
+import { AddressService as AddressApiService } from "@/services/addressService";
 import "react-datepicker/dist/react-datepicker.css";
 import {
   X,
@@ -81,6 +81,8 @@ import {
   Award as AwardIcon,
   Clock as ClockIcon,
   DollarSign,
+  Leaf,
+  Flame,
 } from "lucide-react";
 import MultiSelect from "@/components/ui/MultiSelect";
 import { BookingService, Booking } from "@/services/bookingService";
@@ -90,6 +92,7 @@ import { toast } from "react-hot-toast";
 import { mapProviders } from "@/utils/mapProviders";
 import { useRouter } from "next/navigation";
 import { ProviderService } from "@/services/providerService";
+import { MenuItemsService, MenuItem } from "@/services/menuItemsService";
 
 // Enhanced Dummy Data
 const EVENT_TYPES = [
@@ -276,105 +279,6 @@ const ADDITIONAL_SERVICES = [
   },
 ];
 
-// Enhanced service providers
-const SERVICE_PROVIDERS = [
-  {
-    value: "chef_raj",
-    label: "Chef Raj Kumar",
-    title: "Master Chef (20+ years)",
-    image: "https://i.pravatar.cc/150?u=chef_raj",
-    rating: 4.9,
-    reviews: 245,
-    specialties: ["North Indian", "Mughlai", "Tandoor", "Street Food"],
-    price: "₹8,500/day",
-    badge: "Top Rated",
-    verified: true,
-    experience: "20+ years",
-    location: "Delhi",
-    contact: "+91 9876543210",
-    email: "chef.raj@example.com",
-    description: "Award-winning chef specializing in North Indian and Mughlai cuisine with 20+ years of experience in 5-star hotels.",
-    awards: ["Best Chef 2022", "Golden Spoon Award"],
-    languages: ["Hindi", "English", "Punjabi"]
-  },
-  {
-    value: "chef_anita",
-    label: "Chef Anita Singh",
-    title: "Pastry Specialist",
-    image: "https://i.pravatar.cc/150?u=chef_anita",
-    rating: 4.8,
-    reviews: 189,
-    specialties: ["Desserts", "Baking", "Continental", "Fusion"],
-    price: "₹6,500/day",
-    badge: "Popular",
-    verified: true,
-    experience: "12 years",
-    location: "Mumbai",
-    contact: "+91 9876543211",
-    email: "chef.anita@example.com",
-    description: "Specialized in European desserts and fusion cuisine. Trained in France and Italy.",
-    awards: ["Pastry Chef of the Year", "Culinary Excellence"],
-    languages: ["Hindi", "English", "French"]
-  },
-  {
-    value: "catering_delight",
-    label: "Delight Catering",
-    title: "Premium Catering Service",
-    image: "https://i.pravatar.cc/150?u=catering",
-    rating: 4.7,
-    reviews: 356,
-    specialties: ["Bulk Orders", "Weddings", "Corporate", "Beverages"],
-    price: "₹350/person",
-    badge: "Budget Friendly",
-    verified: true,
-    experience: "15 years",
-    location: "Bangalore",
-    contact: "+91 9876543212",
-    email: "info@delightcatering.com",
-    description: "Full-service catering company specializing in weddings and corporate events.",
-    awards: ["Best Catering Service", "Customer Choice"],
-    languages: ["Hindi", "English", "Kannada"]
-  },
-  {
-    value: "royal_venue",
-    label: "Royal Palace Hall",
-    title: "Luxury Venue",
-    image: "https://i.pravatar.cc/150?u=venue1",
-    rating: 4.6,
-    reviews: 123,
-    specialties: ["Weddings", "Grand Events", "Banquets"],
-    price: "₹50,000/day",
-    badge: "Luxury",
-    verified: true,
-    experience: "8 years",
-    location: "Jaipur",
-    contact: "+91 9876543213",
-    email: "royalpalace@example.com",
-    description: "Historic palace converted into luxury event venue with royal ambiance.",
-    awards: ["Best Venue", "Heritage Award"],
-    languages: ["Hindi", "English", "Rajasthani"]
-  },
-  {
-    value: "event_planners",
-    label: "Dream Event Planners",
-    title: "Full Event Management",
-    image: "https://i.pravatar.cc/150?u=planner",
-    rating: 4.9,
-    reviews: 289,
-    specialties: ["Complete Planning", "Decoration", "Coordination", "Logistics"],
-    price: "₹25,000+",
-    badge: "All-in-One",
-    verified: true,
-    experience: "10 years",
-    location: "Chennai",
-    contact: "+91 9876543214",
-    email: "dream@eventplanners.com",
-    description: "End-to-end event management service with in-house chefs and decorators.",
-    awards: ["Best Event Planner", "Excellence in Service"],
-    languages: ["Hindi", "English", "Tamil"]
-  },
-];
-
 // Types
 interface BookingData {
   eventType: string;
@@ -385,6 +289,8 @@ interface BookingData {
   isMealConfigSkipped: boolean;
   isServiceProviderSkipped: boolean;
   selectedMenu: string[];
+  selectedMealTypes: string[];
+  selectedDishIds: Record<string, Record<string, number[]>>;
   guests: { adults: number; children: number; babies: number };
   serviceProviders: string[];
   eventAddressId?: string;
@@ -413,6 +319,8 @@ const INITIAL_DATA: BookingData = {
   isMealConfigSkipped: false,
   isServiceProviderSkipped: false,
   selectedMenu: [],
+  selectedMealTypes: [],
+  selectedDishIds: {},
   guests: { adults: 0, children: 0, babies: 0 },
   serviceProviders: [],
   eventAddressId: "",
@@ -433,7 +341,13 @@ const INITIAL_DATA: BookingData = {
 };
 
 // Address Form Component
-const AddAddressForm = ({ onSave, onCancel }: { onSave: (address: any) => void; onCancel: () => void }) => {
+const AddAddressForm = ({
+  onSave,
+  onCancel,
+}: {
+  onSave: (address: any) => void;
+  onCancel: () => void;
+}) => {
   const [formData, setFormData] = useState({
     label: "",
     address_line1: "",
@@ -443,7 +357,7 @@ const AddAddressForm = ({ onSave, onCancel }: { onSave: (address: any) => void; 
     zip_code: "",
     country: "India",
     phone: "",
-    type: "home"
+    type: "home",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -453,15 +367,19 @@ const AddAddressForm = ({ onSave, onCancel }: { onSave: (address: any) => void; 
       id: `temp-${Date.now()}`,
       ...formData,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
     onSave(newAddress);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -617,13 +535,13 @@ const AddAddressForm = ({ onSave, onCancel }: { onSave: (address: any) => void; 
 };
 
 // Provider Detail Modal Component
-const ProviderDetailModal = ({ 
-  provider, 
-  onClose, 
-  onSelect 
-}: { 
-  provider: any; 
-  onClose: () => void; 
+const ProviderDetailModal = ({
+  provider,
+  onClose,
+  onSelect,
+}: {
+  provider: any;
+  onClose: () => void;
   onSelect: () => void;
 }) => {
   return (
@@ -642,7 +560,7 @@ const ProviderDetailModal = ({
           >
             <X className="w-5 h-5 text-white" />
           </button>
-          
+
           <div className="absolute -bottom-12 left-6">
             <img
               src={provider.image}
@@ -657,19 +575,23 @@ const ProviderDetailModal = ({
           <div className="mb-6">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">{provider.label}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {provider.label}
+                </h2>
                 <p className="text-gray-600">{provider.title}</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  provider.badge === "Top Rated"
-                    ? "bg-amber-100 text-amber-800"
-                    : provider.badge === "Popular"
-                    ? "bg-pink-100 text-pink-800"
-                    : provider.badge === "Budget Friendly"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-purple-100 text-purple-800"
-                }`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    provider.badge === "Top Rated"
+                      ? "bg-amber-100 text-amber-800"
+                      : provider.badge === "Popular"
+                      ? "bg-pink-100 text-pink-800"
+                      : provider.badge === "Budget Friendly"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-purple-100 text-purple-800"
+                  }`}
+                >
                   {provider.badge}
                 </span>
                 {provider.verified && (
@@ -721,7 +643,9 @@ const ProviderDetailModal = ({
 
             {/* Contact Info */}
             <div>
-              <h3 className="font-bold text-gray-800 mb-3">Contact Information</h3>
+              <h3 className="font-bold text-gray-800 mb-3">
+                Contact Information
+              </h3>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-gray-600">
                   <Phone className="w-4 h-4" />
@@ -742,10 +666,15 @@ const ProviderDetailModal = ({
           {/* Awards */}
           {provider.awards && provider.awards.length > 0 && (
             <div className="mt-6">
-              <h3 className="font-bold text-gray-800 mb-3">Awards & Recognition</h3>
+              <h3 className="font-bold text-gray-800 mb-3">
+                Awards & Recognition
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {provider.awards.map((award: string, i: number) => (
-                  <div key={i} className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg"
+                  >
                     <AwardIcon className="w-4 h-4 text-amber-600" />
                     <span className="text-sm text-amber-800">{award}</span>
                   </div>
@@ -759,7 +688,9 @@ const ProviderDetailModal = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-gray-900">Starting Price</p>
-                <p className="text-2xl font-bold text-gray-900">{provider.price}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {provider.price}
+                </p>
               </div>
               <button
                 onClick={onSelect}
@@ -797,9 +728,21 @@ export default function BookingFlowModal({
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [showProviderModal, setShowProviderModal] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  
-const [providers, setProviders] = useState<any[]>([]);
-const [loadingProviders, setLoadingProviders] = useState(false);
+
+  const [providers, setProviders] = useState<any[]>([]);
+  const [loadingProviders, setLoadingProviders] = useState(false);
+
+  // Menu API state
+  const [availableCuisines, setAvailableCuisines] = useState<string[]>([]);
+  const [availableMealTypes, setAvailableMealTypes] = useState<string[]>([]);
+  const [availableDishes, setAvailableDishes] = useState<MenuItem[]>([]);
+  const [loadingMenu, setLoadingMenu] = useState(false);
+  const [menuError, setMenuError] = useState<string | null>(null);
+  const [searchDishes, setSearchDishes] = useState("");
+  const [expandedMealTypes, setExpandedMealTypes] = useState<Set<string>>(
+    new Set()
+  );
+
   const router = useRouter();
 
   const totalSteps = 8;
@@ -819,6 +762,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
         isMealConfigSkipped: false,
         isServiceProviderSkipped: false,
         selectedMenu: existingBooking.menu_items_details?.items || [],
+        selectedMealTypes: [],
+        selectedDishIds: {},
         guests: existingBooking.guests || { adults: 0, children: 0, babies: 0 },
         serviceProviders: existingBooking.services_selections?.providers || [],
         eventAddressId: existingBooking.event_address?.id || "",
@@ -840,22 +785,148 @@ const [loadingProviders, setLoadingProviders] = useState(false);
     }
   }, [existingBooking]);
 
+  // Load cuisines based on menuType (Veg/Non-Veg selection)
+  useEffect(() => {
+    if (!data.menuType) {
+      setAvailableCuisines([]);
+      setAvailableMealTypes([]);
+      setAvailableDishes([]);
+      return;
+    }
+
+    setLoadingMenu(true);
+    setMenuError(null);
+
+    const categoryMap: Record<string, string> = {
+      veg: "Veg",
+      non_veg: "Non-Veg",
+      both: "Veg", // Default to Veg if both selected
+    };
+
+    MenuItemsService.getCuisinesByCategory(categoryMap[data.menuType])
+      .then((cuisines) => {
+        setAvailableCuisines(cuisines);
+        // Reset meal types and dishes when cuisines change
+        setAvailableMealTypes([]);
+        setAvailableDishes([]);
+      })
+      .catch((error) => {
+        console.error("Error loading cuisines:", error);
+        setMenuError("Failed to load cuisines");
+      })
+      .finally(() => setLoadingMenu(false));
+  }, [data.menuType]);
+
+  // Load meal types based on selected cuisines
+  useEffect(() => {
+    if (!data.menuType || data.cuisines.length === 0) {
+      setAvailableMealTypes([]);
+      setAvailableDishes([]);
+      return;
+    }
+
+    setLoadingMenu(true);
+    setMenuError(null);
+
+    const categoryMap: Record<string, string> = {
+      veg: "Veg",
+      non_veg: "Non-Veg",
+      both: "Veg",
+    };
+
+    const category = categoryMap[data.menuType];
+    const mealTypesPromises = data.cuisines.map((cuisine) =>
+      MenuItemsService.getMealTypesByCuisine(category, cuisine)
+    );
+
+    Promise.all(mealTypesPromises)
+      .then((results) => {
+        // Combine and deduplicate meal types from all cuisines
+        const uniqueMealTypes = Array.from(new Set(results.flat()));
+        setAvailableMealTypes(uniqueMealTypes);
+        setAvailableDishes([]);
+      })
+      .catch((error) => {
+        console.error("Error loading meal types:", error);
+        setMenuError("Failed to load meal types");
+      })
+      .finally(() => setLoadingMenu(false));
+  }, [data.cuisines, data.menuType]);
+
+  // Load dishes based on selected cuisines and meal types
+  useEffect(() => {
+    if (!data.menuType || data.cuisines.length === 0) {
+      setAvailableDishes([]);
+      return;
+    }
+
+    setLoadingMenu(true);
+    setMenuError(null);
+
+    const categoryMap: Record<string, string> = {
+      veg: "Veg",
+      non_veg: "Non-Veg",
+      both: "Veg",
+    };
+
+    const category = categoryMap[data.menuType];
+    const dishesPromises: Promise<MenuItem[]>[] = [];
+
+    if (data.selectedMealTypes.length > 0) {
+      // Load dishes for specific meal types
+      data.cuisines.forEach((cuisine) => {
+        data.selectedMealTypes.forEach((mealType) => {
+          dishesPromises.push(
+            MenuItemsService.getDishesByCuisineAndMealType(
+              category,
+              cuisine,
+              mealType
+            )
+          );
+        });
+      });
+    } else {
+      // Load all dishes for selected cuisines
+      data.cuisines.forEach((cuisine) => {
+        dishesPromises.push(
+          MenuItemsService.getAllDishesByCuisine(category, cuisine)
+        );
+      });
+    }
+
+    Promise.all(dishesPromises)
+      .then((results) => {
+        // Deduplicate dishes by ID
+        const uniqueDishesMap: Record<string, MenuItem> = {};
+        results.flat().forEach((dish) => {
+          if (!uniqueDishesMap[String(dish.id)]) {
+            uniqueDishesMap[String(dish.id)] = dish;
+          }
+        });
+        setAvailableDishes(Object.values(uniqueDishesMap));
+      })
+      .catch((error) => {
+        console.error("Error loading dishes:", error);
+        setMenuError("Failed to load dishes");
+      })
+      .finally(() => setLoadingMenu(false));
+  }, [data.cuisines, data.selectedMealTypes, data.menuType]);
 
   useEffect(() => {
-  if (step === 6) {
-    // setLoadingProviders(true);
-    ProviderService.getAllProviders()
-      .then((res) => {
-        const providerData = Array.isArray(res) ? res : res.results || res;
-        setProviders(mapProviders(providerData));
-      })
-      .catch((err) => {
-        console.error("Failed to load providers", err);
-        toast.error("Failed to load service providers");
-      })
+    if (step === 6) {
+      // setLoadingProviders(true);
+      ProviderService.getAllProviders()
+        .then((res) => {
+          const providerData = Array.isArray(res) ? res : res.results || res;
+          setProviders(mapProviders(providerData));
+        })
+        .catch((err) => {
+          console.error("Failed to load providers", err);
+          toast.error("Failed to load service providers");
+        });
       // .finally(() => setLoadingProviders(false));
-  }
-}, [step]);
+    }
+  }, [step]);
 
   const updateData = (updates: Partial<BookingData>) => {
     setData((prev) => ({ ...prev, ...updates }));
@@ -901,7 +972,7 @@ const [loadingProviders, setLoadingProviders] = useState(false);
         event_type: data.eventType,
         event_address: data.eventAddressId,
         dates: data.dates.reduce((acc, date) => {
-          const dateStr = date.toISOString().split("T")[0];
+          const dateStr = getLocalDateKey(date);
           return { ...acc, [dateStr]: dateStr };
         }, {}),
         food_cuisines_preferences: {
@@ -910,7 +981,21 @@ const [loadingProviders, setLoadingProviders] = useState(false);
         },
         meal_timings: data.mealConfig,
         menu_items_details: {
-          items: data.selectedMenu,
+          items: Object.entries(data.selectedDishIds).flatMap(([date, meals]) =>
+            Object.entries(meals).flatMap(([mealType, dishIds]) =>
+              dishIds.map((dishId) => {
+                const dish = availableDishes.find((d) => d.id === dishId);
+                return {
+                  date,
+                  mealType,
+                  dishId,
+                  name: dish?.name || "",
+                  cuisine: dish?.cuisine || "",
+                  category: dish?.category || "",
+                };
+              })
+            )
+          ),
         },
         booking_teams: {},
         guests: data.guests,
@@ -932,13 +1017,14 @@ const [loadingProviders, setLoadingProviders] = useState(false);
           entertainment: data.otherRequirements.entertainment,
         },
       };
-
+      console.log("ddssdsdsd11111111111111111");
+      console.log("payload", payload);
       if (existingBooking) {
         await BookingService.updateBooking(existingBooking.id, payload);
         toast.success("Booking updated successfully!");
       } else {
         await BookingService.createBooking(payload);
-         setData(INITIAL_DATA);
+        setData(INITIAL_DATA);
         setStep(1);
         setCompletedSteps([]);
         toast.success("Booking request submitted successfully!");
@@ -967,6 +1053,14 @@ const [loadingProviders, setLoadingProviders] = useState(false);
     }
   }, [step]);
 
+  // Helper function to get local date string (YYYY-MM-DD) without timezone conversion
+  const getLocalDateKey = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const canProceed = () => {
     switch (step) {
       case 1:
@@ -976,17 +1070,30 @@ const [loadingProviders, setLoadingProviders] = useState(false);
       case 3:
         if (data.isMealConfigSkipped) return true;
         return data.dates.every((d) => {
-          const dateKey = d.toISOString().split("T")[0];
+          const dateKey = getLocalDateKey(d);
           const config = data.mealConfig[dateKey];
           return config && config.meals.length > 0;
         });
-      case 4:
-        return data.selectedMenu.length > 0;
+      case 4: {
+        let hasSelection = false;
+        for (const dateSelection of Object.values(data.selectedDishIds)) {
+          for (const mealSelection of Object.values(dateSelection)) {
+            if (mealSelection.length > 0) {
+              hasSelection = true;
+              break;
+            }
+          }
+          if (hasSelection) break;
+        }
+        return hasSelection;
+      }
       case 5:
         return data.guests.adults + data.guests.children > 0;
       case 6:
         // Allow proceeding if service providers are selected OR if user has skipped
-        return data.serviceProviders.length > 0 || data.isServiceProviderSkipped;
+        return (
+          data.serviceProviders.length > 0 || data.isServiceProviderSkipped
+        );
       case 7:
         return !!data.clientMaterials.kitchenType;
       case 8:
@@ -1014,20 +1121,18 @@ const [loadingProviders, setLoadingProviders] = useState(false);
     setShowProviderModal(false);
   };
 
-  const handleAddAddress = async(newAddress: any) => {
+  const handleAddAddress = async (newAddress: any) => {
     try {
-     const response =   await AddressApiService.createAddress(newAddress);
-     console.log("response", response)
-       setAddresses(prev => [...prev, response]);
-    updateData({ eventAddressId: response.id });
-    setShowAddressForm(false);
-    toast.success("Address added successfully!");
-      
+      const response = await AddressApiService.createAddress(newAddress);
+      console.log("response", response);
+      setAddresses((prev) => [...prev, response]);
+      updateData({ eventAddressId: response.id });
+      setShowAddressForm(false);
+      toast.success("Address added successfully!");
     } catch (error) {
-       console.error("Create address error:", error);
-    toast.error("Failed to add address");
+      console.error("Create address error:", error);
+      toast.error("Failed to add address");
     }
-   
   };
 
   if (!isOpen) return null;
@@ -1123,8 +1228,9 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                   <Sparkles className="w-3 h-3 text-amber-500" />
                   {step === 8
                     ? "Final Step!"
-                    : `Step ${step} of ${totalSteps} - ${selectedEvent?.label || "Plan Your Event"
-                    }`}
+                    : `Step ${step} of ${totalSteps} - ${
+                        selectedEvent?.label || "Plan Your Event"
+                      }`}
                 </p>
               </div>
             </div>
@@ -1200,21 +1306,23 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                   <button
                     key={s.id}
                     onClick={() => setStep(s.id)}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${step === s.id
-                      ? "bg-amber-50 border border-amber-200"
-                      : completedSteps.includes(s.id)
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${
+                      step === s.id
+                        ? "bg-amber-50 border border-amber-200"
+                        : completedSteps.includes(s.id)
                         ? "bg-green-50 border border-green-200"
                         : "border border-gray-100 hover:bg-gray-50"
-                      }`}
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-8 h-8 rounded-md flex items-center justify-center ${step === s.id
-                          ? "bg-amber-500 text-white"
-                          : completedSteps.includes(s.id)
+                        className={`w-8 h-8 rounded-md flex items-center justify-center ${
+                          step === s.id
+                            ? "bg-amber-500 text-white"
+                            : completedSteps.includes(s.id)
                             ? "bg-green-500 text-white"
                             : "bg-gray-100 text-gray-500"
-                          }`}
+                        }`}
                       >
                         {completedSteps.includes(s.id) ? (
                           <Check className="w-4 h-4" />
@@ -1224,8 +1332,9 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                       </div>
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`font-medium text-sm ${step === s.id ? "text-amber-700" : "text-gray-800"
-                            }`}
+                          className={`font-medium text-sm ${
+                            step === s.id ? "text-amber-700" : "text-gray-800"
+                          }`}
                         >
                           {s.label}
                         </p>
@@ -1320,21 +1429,25 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                     updateData({ eventType: type.value })
                                   }
                                   disabled={isRestricted}
-                                  className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${data.eventType === type.value
-                                    ? `${type.color.split(" ")[0]} ${type.color.split(" ")[1]
-                                    } border-orange-500 text-white shadow-2xl`
-                                    : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
-                                    } ${isRestricted
+                                  className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${
+                                    data.eventType === type.value
+                                      ? `${type.color.split(" ")[0]} ${
+                                          type.color.split(" ")[1]
+                                        } border-orange-500 text-white shadow-2xl`
+                                      : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
+                                  } ${
+                                    isRestricted
                                       ? "opacity-70 cursor-not-allowed"
                                       : "cursor-pointer"
-                                    }`}
+                                  }`}
                                 >
                                   {/* Background Gradient */}
                                   <div
-                                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${type.color.includes("from")
+                                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                                      type.color.includes("from")
                                         ? type.color
                                         : "from-amber-500 to-orange-500"
-                                      }`}
+                                    }`}
                                   />
 
                                   <span className="text-3xl md:text-4xl relative z-10">
@@ -1378,10 +1491,11 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                             </div>
 
                             <div
-                              className={`bg-white w-1/2 border-2 ${data.dates.length > 0
-                                ? "border-amber-200"
-                                : "border-gray-200"
-                                } rounded-2xl p-4 shadow-lg`}
+                              className={`bg-white w-1/2 border-2 ${
+                                data.dates.length > 0
+                                  ? "border-amber-200"
+                                  : "border-gray-200"
+                              } rounded-2xl p-4 shadow-lg`}
                             >
                               <DatePicker
                                 selected={data.dates[selectedDateIndex] || null}
@@ -1415,12 +1529,13 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                   const isToday =
                                     date.toDateString() ===
                                     new Date().toDateString();
-                                  return `!rounded-xl !transition-all ${isSelected
-                                    ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
-                                    : isToday
+                                  return `!rounded-xl !transition-all ${
+                                    isSelected
+                                      ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
+                                      : isToday
                                       ? "!bg-amber-100 !text-amber-700"
                                       : "hover:!bg-amber-50"
-                                    }`;
+                                  }`;
                                 }}
                               />
 
@@ -1529,10 +1644,11 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                   onClick={() =>
                                     updateData({ menuType: type.value as any })
                                   }
-                                  className={`relative group p-2 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${data.menuType === type.value
-                                    ? `${type.color} border-orange-500 text-white shadow-xl`
-                                    : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
-                                    }`}
+                                  className={`relative group p-2 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
+                                    data.menuType === type.value
+                                      ? `${type.color} border-orange-500 text-white shadow-xl`
+                                      : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                                  }`}
                                 >
                                   <div className="flex flex-col items-center gap-3">
                                     <span className="text-4xl">
@@ -1575,16 +1691,57 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                               )}
                             </div>
 
-                            <div className="bg-white border-2 border-gray-200 rounded-2xl p-4 shadow-lg">
-                              <MultiSelect
-                                options={CUISINES}
-                                value={data.cuisines}
-                                onChange={(vals) =>
-                                  updateData({ cuisines: vals })
-                                }
-                                placeholder="Search and select cuisines..."
-                              />
-                            </div>
+                            {menuError && (
+                              <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                                <span className="text-red-700">
+                                  {menuError}
+                                </span>
+                              </div>
+                            )}
+
+                            {loadingMenu && availableCuisines.length === 0 ? (
+                              <div className="flex items-center justify-center py-8 bg-gray-50 rounded-lg">
+                                <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                  className="w-8 h-8 border-4 border-gray-300 border-t-amber-500 rounded-full"
+                                />
+                              </div>
+                            ) : availableCuisines.length === 0 ? (
+                              <div className="p-4 bg-gray-50 rounded-lg text-center text-gray-600">
+                                Please select a food type first
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                                {availableCuisines.map((cuisine) => (
+                                  <motion.button
+                                    key={cuisine}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                      const newCuisines =
+                                        data.cuisines.includes(cuisine)
+                                          ? data.cuisines.filter(
+                                              (c) => c !== cuisine
+                                            )
+                                          : [...data.cuisines, cuisine];
+                                      updateData({ cuisines: newCuisines });
+                                    }}
+                                    className={`p-3 rounded-lg border-2 flex flex-row items-center space-x-1 justify-center transition-all text-center font-medium ${
+                                      data.cuisines.includes(cuisine)
+                                        ? "border-amber-500 bg-amber-50 text-amber-900"
+                                        : "border-gray-200 bg-white text-gray-700 hover:border-amber-200"
+                                    }`}
+                                  >
+                                    <div className="text-sm">{cuisine}</div>
+                                    {data.cuisines.includes(cuisine) && (
+                                      <div className="text-lg pl-1 rotate-12">✓</div>
+                                    )}
+                                  </motion.button>
+                                ))}
+                              </div>
+                            )}
                           </motion.div>
                         </div>
                       </div>
@@ -1627,10 +1784,11 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                 />
                                 <div className="relative w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                   <div
-                                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${data.isMealConfigSkipped
-                                      ? "left-7"
-                                      : "left-1"
-                                      }`}
+                                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                                      data.isMealConfigSkipped
+                                        ? "left-7"
+                                        : "left-1"
+                                    }`}
                                   ></div>
                                 </div>
                               </label>
@@ -1641,7 +1799,7 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                         {!data.isMealConfigSkipped && data.dates.length > 0 && (
                           <div className=" grid grid-cols-1  lg:grid-cols-2 gap-6">
                             {data.dates.map((date, index) => {
-                              const dateKey = date.toISOString().split("T")[0];
+                              const dateKey = getLocalDateKey(date);
                               const config = data.mealConfig[dateKey] || {
                                 meals: [],
                                 time: "",
@@ -1673,60 +1831,81 @@ const [loadingProviders, setLoadingProviders] = useState(false);
 
                                   {/* Meal Selection */}
                                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    {MEAL_TYPES.map((meal) => {
-                                      const isSelected = config.meals.includes(
-                                        meal.value
-                                      );
+                                    {availableMealTypes.length === 0 ? (
+                                      <div className="col-span-full text-center py-4 text-gray-500 text-sm">
+                                        No meal types available
+                                      </div>
+                                    ) : (
+                                      availableMealTypes.map((mealType) => {
+                                        const isSelected =
+                                          config.meals.includes(mealType);
+                                        const mealEmojis: Record<
+                                          string,
+                                          string
+                                        > = {
+                                          breakfast: "☕",
+                                          lunch: "🍽️",
+                                          dinner: "🍷",
+                                          evening_snacks: "🍵",
+                                        };
 
-                                      return (
-                                        <label
-                                          key={meal.value}
-                                          className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected
-                                            ? "border-amber-500 bg-amber-50"
-                                            : "border-gray-200 hover:border-gray-300"
+                                        return (
+                                          <label
+                                            key={mealType}
+                                            className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                                              isSelected
+                                                ? "border-amber-500 bg-amber-50"
+                                                : "border-gray-200 hover:border-gray-300"
                                             }`}
-                                        >
-                                          <div className="flex items-center justify-center w-8 h-8 mb-2">
-                                            <span className="text-lg">
-                                              {meal.icon}
-                                            </span>
-                                          </div>
-                                          <input
-                                            type="checkbox"
-                                            checked={isSelected}
-                                            onChange={() => {
-                                              const dateKey = date
-                                                .toISOString()
-                                                .split("T")[0];
-                                              const config = data.mealConfig[
-                                                dateKey
-                                              ] || { meals: [], time: "" };
-                                              const newMeals = isSelected
-                                                ? config.meals.filter(
-                                                  (m) => m !== meal.value
-                                                )
-                                                : [...config.meals, meal.value];
-                                              updateData({
-                                                mealConfig: {
-                                                  ...data.mealConfig,
-                                                  [dateKey]: {
-                                                    ...config,
-                                                    meals: newMeals,
+                                          >
+                                            <div className="flex items-center justify-center w-8 h-8 mb-2">
+                                              <span className="text-lg">
+                                                {mealEmojis[mealType] || "🍴"}
+                                              </span>
+                                            </div>
+                                            <input
+                                              type="checkbox"
+                                              checked={isSelected}
+                                              onChange={() => {
+                                                const dateKey = getLocalDateKey(date);
+                                                const config = data.mealConfig[
+                                                  dateKey
+                                                ] || { meals: [], time: "" };
+                                                const newMeals = isSelected
+                                                  ? config.meals.filter(
+                                                      (m) => m !== mealType
+                                                    )
+                                                  : [...config.meals, mealType];
+
+                                                // Also update selectedMealTypes
+                                                const selectedMealTypes =
+                                                  Array.from(
+                                                    new Set([
+                                                      ...data.selectedMealTypes,
+                                                      ...newMeals,
+                                                    ])
+                                                  );
+
+                                                updateData({
+                                                  mealConfig: {
+                                                    ...data.mealConfig,
+                                                    [dateKey]: {
+                                                      ...config,
+                                                      meals: newMeals,
+                                                    },
                                                   },
-                                                },
-                                              });
-                                            }}
-                                            className="hidden"
-                                          />
-                                          <span className="font-medium whitespace-nowrap text-sm text-gray-800">
-                                            {meal.label}
-                                          </span>
-                                          <span className="text-xs  truncate whitespace-nowrap text-gray-500">
-                                            {meal.time}
-                                          </span>
-                                        </label>
-                                      );
-                                    })}
+                                                  selectedMealTypes,
+                                                });
+                                              }}
+                                              className="hidden"
+                                            />
+                                            <span className="font-medium whitespace-nowrap text-sm text-gray-800 capitalize">
+                                              {mealType.replace("_", " ")}
+                                            </span>
+                                          </label>
+                                        );
+                                      })
+                                    )}
                                   </div>
 
                                   {/* Selected Meals Summary */}
@@ -1737,17 +1916,24 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                       </p>
                                       <div className="flex flex-wrap gap-2">
                                         {config.meals.map((mealValue) => {
-                                          const meal = MEAL_TYPES.find(
-                                            (m) => m.value === mealValue
-                                          );
-                                          return meal ? (
+                                          const mealEmojis: Record<
+                                            string,
+                                            string
+                                          > = {
+                                            breakfast: "☕",
+                                            lunch: "🍽️",
+                                            dinner: "🍷",
+                                            evening_snacks: "🍵",
+                                          };
+                                          return (
                                             <span
-                                              key={meal.value}
-                                              className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm"
+                                              key={mealValue}
+                                              className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm capitalize"
                                             >
-                                              {meal.icon} {meal.label}
+                                              {mealEmojis[mealValue] || "🍴"}{" "}
+                                              {mealValue.replace("_", " ")}
                                             </span>
-                                          ) : null;
+                                          );
                                         })}
                                       </div>
                                     </div>
@@ -1786,11 +1972,7 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                           </p>
                         </div>
 
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="space-y-6"
-                        >
+                        <div className="space-y-6">
                           {/* Selection Stats */}
                           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100">
                             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -1800,46 +1982,362 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                 </p>
                                 <p className="text-amber-600 text-sm">
                                   {data.cuisines.length} cuisines selected •{" "}
-                                  {data.selectedMenu.length} dishes chosen
+                                  {
+                                    Object.values(data.selectedDishIds).reduce(
+                                      (sum, meals) =>
+                                        sum +
+                                        Object.values(meals).reduce(
+                                          (s, dishes) => s + dishes.length,
+                                          0
+                                        ),
+                                      0
+                                    )
+                                  }{" "}
+                                  dishes chosen
                                 </p>
                               </div>
-                              {data.selectedMenu.length > 0 && (
+                              {Object.values(data.selectedDishIds).some(
+                                (meals) =>
+                                  Object.values(meals).some(
+                                    (dishes) => dishes.length > 0
+                                  )
+                              ) && (
                                 <button
                                   onClick={() =>
-                                    updateData({ selectedMenu: [] })
+                                    updateData({ selectedDishIds: {} })
                                   }
                                   className="px-3 py-1.5 bg-white border border-amber-200 text-amber-700 rounded-lg text-sm hover:bg-amber-50 transition-colors"
                                 >
-                                  Clear Selection
+                                  Clear All Selection
                                 </button>
                               )}
                             </div>
                           </div>
 
-                          {/* Menu Selection */}
-                          <div className="bg-white border-2 border-gray-200 rounded-2xl p-4 shadow-lg">
-                            <MultiSelect
-                              options={data.cuisines.flatMap((cuisineKey) => {
-                                const cuisine = CUISINES.find(
-                                  (c) => c.value === cuisineKey
-                                );
-                                return Array.from({ length: 8 }, (_, i) => ({
-                                  value: `${cuisineKey}_dish_${i}`,
-                                  label: `${cuisine?.label} Dish ${i + 1}`,
-                                  description: `Delicious ${cuisine?.label.toLowerCase()} specialty`,
-                                  icon: cuisine?.icon,
-                                }));
-                              })}
-                              value={data.selectedMenu}
-                              onChange={(vals) =>
-                                updateData({ selectedMenu: vals })
-                              }
-                              placeholder="Search and select dishes..."
-                            />
+                          {/* Error State */}
+                          {menuError && (
+                            <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                              <span className="text-red-700">{menuError}</span>
+                            </div>
+                          )}
+
+                          {/* Loading State */}
+                          {loadingMenu && (
+                            <div className="flex items-center justify-center py-12">
+                              <div
+                                
+                                className="w-10 h-10 border-4 border-gray-300 border-t-amber-500 rounded-full"
+                              />
+                            </div>
+                          )}
+
+                          {/* No cuisines selected state */}
+                          {!loadingMenu && data.cuisines.length === 0 && (
+                            <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+                              <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                              <p className="text-gray-600 mb-2">
+                                No cuisines selected
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Please go back and select cuisines first
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Dishes Grid by Date and Meal Type */}
+                          {!loadingMenu &&
+                            data.cuisines.length > 0 &&
+                            availableDishes.length > 0 && (
+                              <>
+                                {/* Search Input */}
+                                <div className="space-y-4">
+                                  <div className="relative">
+                                    <input
+                                      type="text"
+                                      placeholder="Search dishes..."
+                                      value={searchDishes}
+                                      onChange={(e) =>
+                                        setSearchDishes(e.target.value)
+                                      }
+                                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                                    />
+                                  </div>
+                                </div>
+
+                                {/* Stacked Date Sections */}
+                                {(() => {
+                                  const mealEmojis: Record<string, string> = {
+                                    breakfast: "☕",
+                                    lunch: "🍽️",
+                                    dinner: "🍷",
+                                    evening_snacks: "🍵",
+                                  };
+
+                                  return data.dates.length > 0 ? (
+                                    <div className="space-y-8">
+                                      {data.dates.map((date, dateIndex) => {
+                                        const dateKey = getLocalDateKey(date);
+                                        const mealTypesForDate = data.mealConfig[dateKey]?.meals || [];
+
+                                        return (
+                                          <div key={dateKey} className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                                            {/* Date Header */}
+                                            <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-4 text-white">
+                                              <div className="flex items-center justify-between">
+                                                <div>
+                                                  <h3 className="text-xl font-bold">
+                                                    📅 {date.toLocaleDateString("en-IN", {
+                                                      weekday: "long",
+                                                      month: "long",
+                                                      day: "numeric",
+                                                      year: "numeric",
+                                                    })}
+                                                  </h3>
+                                                  <p className="text-blue-100 text-sm mt-1">
+                                                    {mealTypesForDate.length > 0
+                                                      ? mealTypesForDate.map((mt) => mt.replace("_", " ")).join(", ")
+                                                      : "No meals configured"}
+                                                  </p>
+                                                </div>
+                                                {Object.keys(data.selectedDishIds[dateKey] || {}).reduce(
+                                                  (sum, mealType) =>
+                                                    sum + (data.selectedDishIds[dateKey][mealType]?.length || 0),
+                                                  0
+                                                ) > 0 && (
+                                                  <span className="px-3 py-1 bg-white text-blue-600 rounded-full text-sm font-medium">
+                                                    {Object.keys(data.selectedDishIds[dateKey] || {}).reduce(
+                                                      (sum, mealType) =>
+                                                        sum + (data.selectedDishIds[dateKey][mealType]?.length || 0),
+                                                      0
+                                                    )} dishes
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </div>
+
+                                            {/* Meal Types for this Date */}
+                                            {mealTypesForDate.length > 0 ? (
+                                              <div className="bg-white divide-y">
+                                                {mealTypesForDate.map((mealType) => {
+                                                  const dishesByMealType = availableDishes.filter(
+                                                    (dish) =>
+                                                      dish.mealTypes
+                                                        .map((mt) => mt.toLowerCase())
+                                                        .includes(mealType.toLowerCase()) &&
+                                                      (dish.name
+                                                        .toLowerCase()
+                                                        .includes(searchDishes.toLowerCase()) ||
+                                                        dish.description
+                                                          .toLowerCase()
+                                                          .includes(searchDishes.toLowerCase()))
+                                                  );
+
+                                                  return (
+                                                    <div key={mealType} className="border-b last:border-b-0">
+                                                      {/* Meal Type Header - Clickable */}
+                                                      <button
+                                                        onClick={() => {
+                                                          const key = `${dateKey}-${mealType}`;
+                                                          const newExpanded = new Set(expandedMealTypes);
+                                                          if (newExpanded.has(key)) {
+                                                            newExpanded.delete(key);
+                                                          } else {
+                                                            newExpanded.add(key);
+                                                          }
+                                                          setExpandedMealTypes(newExpanded);
+                                                        }}
+                                                        className="w-full flex items-center gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 transition-colors"
+                                                      >
+                                                        <span className="text-2xl">
+                                                          {mealEmojis[mealType] || "🍴"}
+                                                        </span>
+                                                        <div className="flex-1 text-left">
+                                                          <h3 className="font-bold text-gray-900 capitalize">
+                                                            {mealType.replace("_", " ")}
+                                                          </h3>
+                                                          <p className="text-xs text-gray-600">
+                                                            {dishesByMealType.length} dishes available
+                                                          </p>
+                                                        </div>
+                                                        {dishesByMealType.filter((d) =>
+                                                          data.selectedDishIds[dateKey]?.[mealType]?.includes(d.id)
+                                                        ).length > 0 && (
+                                                          <span className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                                            {
+                                                              dishesByMealType.filter((d) =>
+                                                                data.selectedDishIds[dateKey]?.[mealType]?.includes(d.id)
+                                                              ).length
+                                                            }{" "}
+                                                            selected
+                                                          </span>
+                                                        )}
+                                                        <motion.div
+                                                          animate={{
+                                                            rotate: expandedMealTypes.has(`${dateKey}-${mealType}`)
+                                                              ? 180
+                                                              : 0,
+                                                          }}
+                                                          transition={{ duration: 0.2 }}
+                                                        >
+                                                          <ChevronRight className="w-5 h-5 text-gray-600" />
+                                                        </motion.div>
+                                                      </button>
+
+                                                      {/* Dishes Grid - Collapsible */}
+                                                      <AnimatePresence>
+                                                        {expandedMealTypes.has(`${dateKey}-${mealType}`) && (
+                                                          <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: "auto", opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            transition={{ duration: 0.2 }}
+                                                          >
+                                                            {dishesByMealType.length > 0 ? (
+                                                              <div className="p-4 bg-white grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                                                                {dishesByMealType.map((dish) => (
+                                                                  <div
+                                                                    key={dish.id}
+                                                                    onClick={() => {
+                                                                      const currentDateDishes =
+                                                                        data.selectedDishIds[dateKey] || {};
+                                                                      const currentMealDishes =
+                                                                        currentDateDishes[mealType] || [];
+
+                                                                      const newMealDishes =
+                                                                        currentMealDishes.includes(dish.id)
+                                                                          ? currentMealDishes.filter(
+                                                                              (id) => id !== dish.id
+                                                                            )
+                                                                          : [
+                                                                              ...currentMealDishes,
+                                                                              dish.id,
+                                                                            ];
+
+                                                                      updateData({
+                                                                        selectedDishIds: {
+                                                                          ...data.selectedDishIds,
+                                                                          [dateKey]: {
+                                                                            ...currentDateDishes,
+                                                                            [mealType]: newMealDishes,
+                                                                          },
+                                                                        },
+                                                                      });
+                                                                    }}
+                                                                    className="cursor-pointer"
+                                                                  >
+                                                                    <motion.div
+                                                                      whileHover={{ scale: 1.02 }}
+                                                                      whileTap={{ scale: 0.98 }}
+                                                                      className={`border-2 rounded-lg overflow-hidden transition-all relative ${
+                                                                        data.selectedDishIds[dateKey]?.[mealType]?.includes(
+                                                                          dish.id
+                                                                        )
+                                                                          ? "border-amber-500 bg-amber-50"
+                                                                          : "border-gray-200 hover:border-amber-300 bg-white"
+                                                                      }`}
+                                                                    >
+                                                                      {/* Checkbox */}
+                                                                      <div className="absolute top-2 right-2 z-10">
+                                                                        <div
+                                                                          className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                                                            data.selectedDishIds[dateKey]?.[mealType]?.includes(
+                                                                              dish.id
+                                                                            )
+                                                                              ? "bg-amber-500 border-amber-500"
+                                                                              : "border-gray-300 bg-white"
+                                                                          }`}
+                                                                        >
+                                                                          {data.selectedDishIds[dateKey]?.[mealType]?.includes(
+                                                                            dish.id
+                                                                          ) && (
+                                                                            <Check className="w-2.5 h-2.5 text-white" />
+                                                                          )}
+                                                                        </div>
+                                                                      </div>
+
+                                                                      {/* Veg Badge */}
+                                                                      <div className="absolute top-2 left-2 z-10 text-xs">
+                                                                        {dish.isVeg === 1 ? (
+                                                                          <span className="text-green-700">
+                                                                            🥬
+                                                                          </span>
+                                                                        ) : (
+                                                                          <span className="text-red-700">
+                                                                            🔥
+                                                                          </span>
+                                                                        )}
+                                                                      </div>
+
+                                                                      {/* Image */}
+                                                                      <div className="relative h-20 bg-gray-100 overflow-hidden">
+                                                                        <img
+                                                                          src={dish.image}
+                                                                          alt={dish.name}
+                                                                          className="w-full h-full object-cover"
+                                                                          onError={(e) => {
+                                                                            (
+                                                                              e.target as HTMLImageElement
+                                                                            ).src =
+                                                                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23f0f0f0' width='100' height='100'/%3E%3C/svg%3E";
+                                                                          }}
+                                                                        />
+                                                                      </div>
+
+                                                                      {/* Content */}
+                                                                      <div className="p-2">
+                                                                        <h5 className="font-semibold text-gray-800 text-xs line-clamp-2">
+                                                                          {dish.name}
+                                                                        </h5>
+                                                                        <p className="text-xs text-gray-600 line-clamp-1">
+                                                                          {dish.cuisine}
+                                                                        </p>
+                                                                      </div>
+                                                                    </motion.div>
+                                                                  </div>
+                                                                ))}
+                                                              </div>
+
+                                            ) : (
+                                              <div className="p-8 text-center text-gray-500 text-sm bg-gray-50">
+                                                No dishes available
+                                              </div>
+                                            )}
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                                <p className="text-gray-600">
+                                  No meals configured for this date
+                                </p>
+                              </div>
+                            )}
                           </div>
-                        </motion.div>
-                      </div>
-                    )}
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600 mb-2">
+                        No dates with meals configured
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Please configure meals in Step 3 first
+                      </p>
+                    </div>
+                  );
+                })()}
+              </>
+            )}
+        </div>
+      </div>
+    )}
 
                     {/* Step 5: Guest Count */}
                     {step === 5 && (
@@ -1899,7 +2397,7 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                             [item.key]: Math.max(
                                               0,
                                               data.guests[
-                                              item.key as keyof typeof data.guests
+                                                item.key as keyof typeof data.guests
                                               ] - 1
                                             ),
                                           },
@@ -1916,7 +2414,7 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                         min="0"
                                         value={
                                           data.guests[
-                                          item.key as keyof typeof data.guests
+                                            item.key as keyof typeof data.guests
                                           ]
                                         }
                                         onChange={(e) =>
@@ -1941,7 +2439,7 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                             ...data.guests,
                                             [item.key]:
                                               data.guests[
-                                              item.key as keyof typeof data.guests
+                                                item.key as keyof typeof data.guests
                                               ] + 1,
                                           },
                                         })
@@ -2046,18 +2544,22 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                   checked={data.isServiceProviderSkipped}
                                   onChange={(e) =>
                                     updateData({
-                                      isServiceProviderSkipped: e.target.checked,
-                                      ...(e.target.checked && { serviceProviders: [] }) // Clear selection when skipping
+                                      isServiceProviderSkipped:
+                                        e.target.checked,
+                                      ...(e.target.checked && {
+                                        serviceProviders: [],
+                                      }), // Clear selection when skipping
                                     })
                                   }
                                   className="sr-only peer"
                                 />
                                 <div className="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                   <div
-                                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${data.isServiceProviderSkipped
-                                      ? "translate-x-5"
-                                      : "translate-x-0.5"
-                                      }`}
+                                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+                                      data.isServiceProviderSkipped
+                                        ? "translate-x-5"
+                                        : "translate-x-0.5"
+                                    }`}
                                   ></div>
                                 </div>
                               </label>
@@ -2073,7 +2575,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                               Service provider selection skipped
                             </p>
                             <p className="text-sm text-gray-600 max-w-md mx-auto">
-                              You can discuss service provider options with your event manager later
+                              You can discuss service provider options with your
+                              event manager later
                             </p>
                           </div>
                         ) : (
@@ -2089,7 +2592,9 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                     image: p.image,
                                   }))}
                                   value={data.serviceProviders}
-                                  onChange={(vals) => updateData({ serviceProviders: vals })}
+                                  onChange={(vals) =>
+                                    updateData({ serviceProviders: vals })
+                                  }
                                   placeholder="Search chefs or catering services..."
                                   disabled={isRestricted}
                                   // className="text-sm"
@@ -2105,7 +2610,9 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                     Selected ({data.serviceProviders.length})
                                   </h3>
                                   <button
-                                    onClick={() => updateData({ serviceProviders: [] })}
+                                    onClick={() =>
+                                      updateData({ serviceProviders: [] })
+                                    }
                                     className="text-xs text-red-600 hover:text-red-800 font-medium px-2 py-1 bg-red-50 rounded"
                                   >
                                     Clear all
@@ -2113,47 +2620,150 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-2">
-                                  {providers.filter((p) =>
-                                    data.serviceProviders.includes(p.value)
-                                  ).map((provider) => (
-                                    <div
-                                      key={provider.value}
-                                      className="bg-blue-50 border border-blue-200 rounded-lg p-3"
-                                    >
-                                      <div className="flex items-center gap-3">
-                                        <img
-                                          src={provider.image}
-                                          alt={provider.label}
-                                          className="w-10 h-10 rounded-lg object-cover"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                          <div className="flex items-start justify-between gap-2">
-                                            <div className="min-w-0">
-                                              <h4 className="font-semibold text-gray-900 text-sm truncate">
-                                                {provider.label}
-                                              </h4>
-                                              <p className="text-xs text-gray-600 truncate">
-                                                {provider.title}
-                                              </p>
-                                            </div>
-                                            <div className="flex flex-col items-end gap-1">
-                                              <span
-                                                className={`text-[10px] px-1.5 py-0.5 rounded-full ${provider.badge === "Top Rated"
-                                                  ? "bg-amber-100 text-amber-800"
-                                                  : provider.badge === "Popular"
-                                                    ? "bg-pink-100 text-pink-800"
-                                                    : provider.badge === "Budget Friendly"
+                                  {providers
+                                    .filter((p) =>
+                                      data.serviceProviders.includes(p.value)
+                                    )
+                                    .map((provider) => (
+                                      <div
+                                        key={provider.value}
+                                        className="bg-blue-50 border border-blue-200 rounded-lg p-3"
+                                      >
+                                        <div className="flex items-center gap-3">
+                                          <img
+                                            src={provider.image}
+                                            alt={provider.label}
+                                            className="w-10 h-10 rounded-lg object-cover"
+                                          />
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-2">
+                                              <div className="min-w-0">
+                                                <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                                  {provider.label}
+                                                </h4>
+                                                <p className="text-xs text-gray-600 truncate">
+                                                  {provider.title}
+                                                </p>
+                                              </div>
+                                              <div className="flex flex-col items-end gap-1">
+                                                <span
+                                                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                                                    provider.badge ===
+                                                    "Top Rated"
+                                                      ? "bg-amber-100 text-amber-800"
+                                                      : provider.badge ===
+                                                        "Popular"
+                                                      ? "bg-pink-100 text-pink-800"
+                                                      : provider.badge ===
+                                                        "Budget Friendly"
                                                       ? "bg-green-100 text-green-800"
                                                       : "bg-purple-100 text-purple-800"
                                                   }`}
+                                                >
+                                                  {provider.badge}
+                                                </span>
+                                              </div>
+                                            </div>
+                                            <div className="flex items-center justify-between mt-2">
+                                              <div className="flex flex-wrap gap-1">
+                                                {provider.specialties
+                                                  .slice(0, 2)
+                                                  .map((spec: any, i: any) => (
+                                                    <span
+                                                      key={i}
+                                                      className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
+                                                    >
+                                                      {spec}
+                                                    </span>
+                                                  ))}
+                                                {provider.specialties.length >
+                                                  2 && (
+                                                  <span className="text-[10px] text-gray-500">
+                                                    +
+                                                    {provider.specialties
+                                                      .length - 2}{" "}
+                                                    more
+                                                  </span>
+                                                )}
+                                              </div>
+                                              <button
+                                                onClick={() =>
+                                                  updateData({
+                                                    serviceProviders:
+                                                      data.serviceProviders.filter(
+                                                        (sp: string) =>
+                                                          sp !== provider.value
+                                                      ),
+                                                  })
+                                                }
+                                                className="text-xs text-red-600 hover:text-red-800"
                                               >
-                                                {provider.badge}
-                                              </span>
+                                                Remove
+                                              </button>
                                             </div>
                                           </div>
-                                          <div className="flex items-center justify-between mt-2">
-                                            <div className="flex flex-wrap gap-1">
-                                              {provider.specialties.slice(0, 2).map((spec: any, i: any) => (
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Available Providers Grid */}
+                            {data.serviceProviders.length <
+                              providers.length && (
+                              <div>
+                                <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                                  Available Providers
+                                </h3>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  {providers
+                                    .filter(
+                                      (p) =>
+                                        !data.serviceProviders.includes(p.value)
+                                    )
+                                    .map((provider) => (
+                                      <div
+                                        key={provider.value}
+                                        className="bg-white border border-gray-200 rounded-lg p-3 hover:border-gray-300 hover:shadow-xs transition-all group"
+                                      >
+                                        <div className="space-y-2">
+                                          {/* Header */}
+                                          <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-center gap-2">
+                                              <img
+                                                src={provider.image}
+                                                alt={provider.label}
+                                                className="w-8 h-8 rounded-md object-cover"
+                                              />
+                                              <div className="min-w-0">
+                                                <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                                  {provider.label}
+                                                </h4>
+                                                <p className="text-xs text-gray-500 truncate">
+                                                  {provider.title}
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <span
+                                              className={`text-[10px] px-1.5 py-0.5 rounded ${
+                                                provider.badge === "Top Rated"
+                                                  ? "bg-amber-100 text-amber-800"
+                                                  : provider.badge === "Popular"
+                                                  ? "bg-pink-100 text-pink-800"
+                                                  : "bg-gray-100 text-gray-800"
+                                              }`}
+                                            >
+                                              {provider.badge}
+                                            </span>
+                                          </div>
+
+                                          {/* Specialties */}
+                                          <div className="flex flex-wrap gap-1">
+                                            {provider.specialties
+                                              .slice(0, 2)
+                                              .map((spec: any, i: any) => (
                                                 <span
                                                   key={i}
                                                   className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
@@ -2161,124 +2771,60 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                                   {spec}
                                                 </span>
                                               ))}
-                                              {provider.specialties.length > 2 && (
-                                                <span className="text-[10px] text-gray-500">
-                                                  +{provider.specialties.length - 2} more
-                                                </span>
-                                              )}
-                                            </div>
+                                            {provider.specialties.length >
+                                              2 && (
+                                              <span className="text-[10px] text-gray-500">
+                                                +
+                                                {provider.specialties.length -
+                                                  2}{" "}
+                                                more
+                                              </span>
+                                            )}
+                                          </div>
+
+                                          {/* Action Buttons */}
+                                          <div className="flex items-center gap-2 pt-2">
                                             <button
                                               onClick={() =>
-                                                updateData({
-                                                  serviceProviders: data.serviceProviders.filter(
-                                                    (sp: string) => sp !== provider.value
-                                                  ),
-                                                })
+                                                handleProviderClick(provider)
                                               }
-                                              className="text-xs text-red-600 hover:text-red-800"
+                                              className="flex-1 text-xs font-medium text-blue-600 hover:text-blue-800 px-2 py-1.5 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
                                             >
-                                              Remove
+                                              View Details
+                                            </button>
+                                            <button
+                                              onClick={() => {
+                                                updateData({
+                                                  serviceProviders: [
+                                                    ...data.serviceProviders,
+                                                    provider.value,
+                                                  ],
+                                                });
+                                              }}
+                                              disabled={
+                                                isRestricted ||
+                                                data.serviceProviders.includes(
+                                                  provider.value
+                                                )
+                                              }
+                                              className={`flex-1 text-xs font-medium px-2 py-1.5 rounded transition-colors ${
+                                                data.serviceProviders.includes(
+                                                  provider.value
+                                                )
+                                                  ? "bg-green-100 text-green-700 cursor-not-allowed"
+                                                  : "bg-amber-500 text-white hover:bg-amber-600"
+                                              }`}
+                                            >
+                                              {data.serviceProviders.includes(
+                                                provider.value
+                                              )
+                                                ? "Selected"
+                                                : "Select"}
                                             </button>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Available Providers Grid */}
-                            {data.serviceProviders.length < providers.length && (
-                              <div>
-                                <h3 className="text-sm font-semibold text-gray-800 mb-3">
-                                  Available Providers
-                                </h3>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                  {providers.filter(
-                                    (p) => !data.serviceProviders.includes(p.value)
-                                  ).map((provider) => (
-                                    <div
-                                      key={provider.value}
-                                      className="bg-white border border-gray-200 rounded-lg p-3 hover:border-gray-300 hover:shadow-xs transition-all group"
-                                    >
-                                      <div className="space-y-2">
-                                        {/* Header */}
-                                        <div className="flex items-start justify-between gap-2">
-                                          <div className="flex items-center gap-2">
-                                            <img
-                                              src={provider.image}
-                                              alt={provider.label}
-                                              className="w-8 h-8 rounded-md object-cover"
-                                            />
-                                            <div className="min-w-0">
-                                              <h4 className="font-semibold text-gray-900 text-sm truncate">
-                                                {provider.label}
-                                              </h4>
-                                              <p className="text-xs text-gray-500 truncate">
-                                                {provider.title}
-                                              </p>
-                                            </div>
-                                          </div>
-                                          <span
-                                            className={`text-[10px] px-1.5 py-0.5 rounded ${provider.badge === "Top Rated"
-                                              ? "bg-amber-100 text-amber-800"
-                                              : provider.badge === "Popular"
-                                                ? "bg-pink-100 text-pink-800"
-                                                : "bg-gray-100 text-gray-800"
-                                              }`}
-                                          >
-                                            {provider.badge}
-                                          </span>
-                                        </div>
-
-                                        {/* Specialties */}
-                                        <div className="flex flex-wrap gap-1">
-                                          {provider.specialties.slice(0, 2).map((spec: any, i: any) => (
-                                            <span
-                                              key={i}
-                                              className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
-                                            >
-                                              {spec}
-                                            </span>
-                                          ))}
-                                          {provider.specialties.length > 2 && (
-                                            <span className="text-[10px] text-gray-500">
-                                              +{provider.specialties.length - 2} more
-                                            </span>
-                                          )}
-                                        </div>
-
-                                        {/* Action Buttons */}
-                                        <div className="flex items-center gap-2 pt-2">
-                                          <button
-                                            onClick={() => handleProviderClick(provider)}
-                                            className="flex-1 text-xs font-medium text-blue-600 hover:text-blue-800 px-2 py-1.5 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
-                                          >
-                                            View Details
-                                          </button>
-                                          <button
-                                            onClick={() => {
-                                              updateData({
-                                                serviceProviders: [
-                                                  ...data.serviceProviders,
-                                                  provider.value,
-                                                ],
-                                              });
-                                            }}
-                                            disabled={isRestricted || data.serviceProviders.includes(provider.value)}
-                                            className={`flex-1 text-xs font-medium px-2 py-1.5 rounded transition-colors ${data.serviceProviders.includes(provider.value)
-                                              ? "bg-green-100 text-green-700 cursor-not-allowed"
-                                              : "bg-amber-500 text-white hover:bg-amber-600"
-                                              }`}
-                                          >
-                                            {data.serviceProviders.includes(provider.value) ? "Selected" : "Select"}
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ))}
+                                    ))}
                                 </div>
                               </div>
                             )}
@@ -2289,7 +2835,10 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                 <div className="flex items-center justify-center">
                                   <span className="text-xs font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
                                     {data.serviceProviders.length} provider
-                                    {data.serviceProviders.length !== 1 ? "s" : ""} selected
+                                    {data.serviceProviders.length !== 1
+                                      ? "s"
+                                      : ""}{" "}
+                                    selected
                                   </span>
                                 </div>
                               </div>
@@ -2348,24 +2897,26 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                   ].map((option) => (
                                     <label
                                       key={option.value}
-                                      className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${data.clientMaterials.kitchenType ===
+                                      className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                        data.clientMaterials.kitchenType ===
                                         option.value
-                                        ? "border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 ring-2 ring-blue-200"
-                                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                                        }`}
+                                          ? "border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 ring-2 ring-blue-200"
+                                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                                      }`}
                                     >
                                       <div className="flex items-center gap-3">
                                         <div
-                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.clientMaterials.kitchenType ===
+                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                            data.clientMaterials.kitchenType ===
                                             option.value
-                                            ? "border-blue-500 bg-blue-500"
-                                            : "border-gray-300"
-                                            }`}
+                                              ? "border-blue-500 bg-blue-500"
+                                              : "border-gray-300"
+                                          }`}
                                         >
                                           {data.clientMaterials.kitchenType ===
                                             option.value && (
-                                              <Check className="w-3 h-3 text-white" />
-                                            )}
+                                            <Check className="w-3 h-3 text-white" />
+                                          )}
                                         </div>
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2">
@@ -2404,12 +2955,18 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                               </div>
 
                               {/* Kitchen Appliances - Only show when "I Provide Kitchen" */}
-                              {data.clientMaterials.kitchenType === "provided_kitchen" && (
+                              {data.clientMaterials.kitchenType ===
+                                "provided_kitchen" && (
                                 <div className="space-y-4">
                                   <label className="block text-sm font-semibold text-gray-700">
                                     Available Appliances
                                     <span className="text-gray-500 text-sm font-normal ml-2">
-                                      ({data.clientMaterials.kitchenAppliances.length} selected)
+                                      (
+                                      {
+                                        data.clientMaterials.kitchenAppliances
+                                          .length
+                                      }{" "}
+                                      selected)
                                     </span>
                                   </label>
                                   <div className="grid grid-cols-2 gap-3">
@@ -2422,10 +2979,11 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                       return (
                                         <label
                                           key={appliance.value}
-                                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${isSelected
-                                            ? "border-green-500 bg-green-50 text-green-700"
-                                            : "border-gray-200 hover:border-gray-300 text-gray-600"
-                                            }`}
+                                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                                            isSelected
+                                              ? "border-green-500 bg-green-50 text-green-700"
+                                              : "border-gray-200 hover:border-gray-300 text-gray-600"
+                                          }`}
                                         >
                                           <input
                                             type="checkbox"
@@ -2437,8 +2995,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                               const updated = e.target.checked
                                                 ? [...current, appliance.value]
                                                 : current.filter(
-                                                  (a) => a !== appliance.value
-                                                );
+                                                    (a) => a !== appliance.value
+                                                  );
                                               updateData({
                                                 clientMaterials: {
                                                   ...data.clientMaterials,
@@ -2484,16 +3042,18 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                     return (
                                       <label
                                         key={item.value}
-                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${isSelected
-                                          ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
-                                          : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                          }`}
+                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${
+                                          isSelected
+                                            ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
+                                            : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
+                                        }`}
                                       >
                                         <Icon
-                                          className={`w-6 h-6 mb-2 ${isSelected
-                                            ? "text-amber-600"
-                                            : "text-gray-500"
-                                            }`}
+                                          className={`w-6 h-6 mb-2 ${
+                                            isSelected
+                                              ? "text-amber-600"
+                                              : "text-gray-500"
+                                          }`}
                                         />
                                         <span className="text-sm font-medium text-center">
                                           {item.label}
@@ -2507,8 +3067,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                             const updated = e.target.checked
                                               ? [...current, item.value]
                                               : current.filter(
-                                                (i) => i !== item.value
-                                              );
+                                                  (i) => i !== item.value
+                                                );
                                             updateData({
                                               clientMaterials: {
                                                 ...data.clientMaterials,
@@ -2549,18 +3109,20 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                 return (
                                   <label
                                     key={service.value}
-                                    className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected
-                                      ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
-                                      : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
-                                      }`}
+                                    className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                      isSelected
+                                        ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
+                                        : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
+                                    }`}
                                   >
                                     <div className="flex items-start justify-between">
                                       <div className="flex items-center gap-3">
                                         <div
-                                          className={`p-2 rounded-lg ${isSelected
-                                            ? "bg-purple-100 text-purple-600"
-                                            : "bg-gray-100 text-gray-500"
-                                            }`}
+                                          className={`p-2 rounded-lg ${
+                                            isSelected
+                                              ? "bg-purple-100 text-purple-600"
+                                              : "bg-gray-100 text-gray-500"
+                                          }`}
                                         >
                                           <Icon className="w-4 h-4" />
                                         </div>
@@ -2587,8 +3149,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                             const updated = e.target.checked
                                               ? [...current, service.value]
                                               : current.filter(
-                                                (s) => s !== service.value
-                                              );
+                                                  (s) => s !== service.value
+                                                );
                                             updateData({
                                               otherRequirements: {
                                                 ...data.otherRequirements,
@@ -2650,11 +3212,11 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                           animate={{ opacity: 1, y: 0 }}
                           className="space-y-6"
                         >
-                          {/* Booking Summary */}
+                          {/* Booking Summary - All Details */}
                           <div className="bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl p-6 shadow-lg">
                             <div className="flex items-center justify-between mb-6">
                               <h3 className="text-xl font-bold text-gray-800">
-                                Booking Summary
+                                Complete Booking Summary
                               </h3>
                               <div className="flex items-center gap-2 text-amber-600">
                                 <Shield className="w-5 h-5" />
@@ -2664,14 +3226,15 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                               </div>
                             </div>
 
-                            <div className="space-y-4">
-                              {/* Event Details */}
+                            <div className="space-y-6">
+                              {/* Event & Guest Details */}
                               <div className="grid md:grid-cols-2 gap-4">
                                 <div className="bg-white p-4 rounded-xl border border-gray-100">
                                   <p className="text-sm text-gray-500 mb-1">
                                     Event Type
                                   </p>
-                                  <p className="font-bold text-gray-900 capitalize">
+                                  <p className="font-bold text-gray-900 capitalize flex items-center gap-2">
+                                    <PartyPopper className="w-4 h-4 text-amber-500" />
                                     {data.eventType.replace("_", " ")}
                                   </p>
                                 </div>
@@ -2679,103 +3242,365 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                   <p className="text-sm text-gray-500 mb-1">
                                     Total Guests
                                   </p>
-                                  <p className="font-bold text-gray-900">
+                                  <p className="font-bold text-gray-900 flex items-center gap-2">
+                                    <Users className="w-4 h-4 text-blue-500" />
                                     {totalGuests} people
                                   </p>
+                                  <p className="text-xs text-gray-600 mt-2">
+                                    {data.guests.adults} adults, {data.guests.children} children{data.guests.babies > 0 ? `, ${data.guests.babies} babies` : ""}
+                                  </p>
                                 </div>
+
                                 <div className="bg-white p-4 rounded-xl border border-gray-100">
                                   <p className="text-sm text-gray-500 mb-1">
-                                    Dates
+                                    Event Dates
                                   </p>
-                                  <p className="font-bold text-gray-900">
-                                    {data.dates.length} day
-                                    {data.dates.length > 1 ? "s" : ""}
+                                  <p className="font-bold text-gray-900 flex items-center gap-2">
+                                    <CalendarIcon className="w-4 h-4 text-green-500" />
+                                    {data.dates.length} day{data.dates.length > 1 ? "s" : ""}
                                   </p>
+                                  {data.dates.length > 0 && (
+                                    <div className="text-xs text-gray-600 mt-2 space-y-1">
+                                      {data.dates.map((date, i) => (
+                                        <div key={i}>
+                                          {date.toLocaleDateString("en-US", {
+                                            weekday: "short",
+                                            month: "short",
+                                            day: "numeric",
+                                            year: "numeric",
+                                          })}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
+
                                 <div className="bg-white p-4 rounded-xl border border-gray-100">
                                   <p className="text-sm text-gray-500 mb-1">
                                     Food Type
                                   </p>
-                                  <p className="font-bold text-gray-900 capitalize">
+                                  <p className="font-bold text-gray-900 capitalize flex items-center gap-2">
+                                    <Utensils className="w-4 h-4 text-orange-500" />
                                     {data.menuType.replace("_", " ")}
                                   </p>
                                 </div>
                               </div>
 
-                              {/* Detailed Sections */}
-                              {[
-                                {
-                                  title: "Cuisines",
-                                  items: data.cuisines.map(
-                                    (c) =>
-                                      CUISINES.find((cui) => cui.value === c)
-                                        ?.label
-                                  ),
-                                },
-                                {
-                                  title: "Selected Dishes",
-                                  items: data.selectedMenu
-                                    .slice(0, 5)
-                                    .map((_, i) => `Dish ${i + 1}`),
-                                },
-                                {
-                                  title: "Service Providers",
-                                  items: data.serviceProviders.map(
-                                    (p) =>
-                                      providers.find(
-                                        (sp) => sp.value === p
-                                      )?.label
-                                  ),
-                                },
-                              ].map((section, idx) => (
-                                <div
-                                  key={idx}
-                                  className="bg-white p-4 rounded-xl border border-gray-100"
-                                >
-                                  <p className="text-sm text-gray-500 mb-2">
-                                    {section.title}
+                              {/* Cuisines Section */}
+                              {data.cuisines.length > 0 && (
+                                <div className="bg-white p-4 rounded-xl border border-gray-100">
+                                  <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                    <Flame className="w-4 h-4 text-red-500" />
+                                    Cuisines Selected
                                   </p>
                                   <div className="flex flex-wrap gap-2">
-                                    {section.items
-                                      .filter(Boolean)
-                                      .map((item, i) => (
-                                        <span
-                                          key={i}
-                                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm"
+                                    {data.cuisines
+                                      .map(
+                                        (c) => <span
+                                        
+                                          className="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 rounded-lg text-sm font-medium flex items-center gap-2"
                                         >
-                                          {item}
+                                        
+                                          {c}
                                         </span>
-                                      ))}
+                                          
+                                      )
+                                      
+                                      }
                                   </div>
                                 </div>
-                              ))}
+                              )}
 
-                              {/* Requirements Summary */}
-                              <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-100">
-                                <p className="font-semibold text-amber-800 mb-2">
-                                  Requirements Summary
+                              {/* Meal Timings Section */}
+                              {Object.keys(data.mealConfig).length > 0 && (
+                                <div className="bg-white p-4 rounded-xl border border-gray-100">
+                                  <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-purple-500" />
+                                    Meal Timings
+                                  </p>
+                                  <div className="space-y-2">
+                                    {Object.entries(data.mealConfig).map(
+                                      ([date, config]: [string, any], idx) => (
+                                        <div
+                                          key={idx}
+                                          className="text-sm bg-gray-50 p-3 rounded-lg"
+                                        >
+                                          <p className="font-medium text-gray-800">
+                                            {new Date(date).toLocaleDateString(
+                                              "en-US",
+                                              {
+                                                weekday: "short",
+                                                month: "short",
+                                                day: "numeric",
+                                              }
+                                            )}
+                                          </p>
+                                          <p className="text-gray-600 text-xs mt-1">
+                                            {config.meals?.join(", ") ||
+                                              "No meals selected"}{" "}
+                                            {config.time && `@ ${config.time}`}
+                                          </p>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Selected Dishes Section */}
+                              {data.selectedMenu.length > 0 && (
+                                <div className="bg-white p-4 rounded-xl border border-gray-100">
+                                  <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                    <ChefHat className="w-4 h-4 text-blue-500" />
+                                    Selected Dishes ({data.selectedMenu.length})
+                                  </p>
+                                  <div className="grid md:grid-cols-2 gap-2">
+                                    {data.selectedMenu.map((dishId, i) => {
+                                      const dish = availableDishes.find(
+                                        (d) => Number(d.id) === Number(dishId)
+                                      );
+                                      return (
+                                        <div
+                                          key={i}
+                                          className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg border border-blue-100"
+                                        >
+                                          <p className="font-medium text-gray-800 text-sm">
+                                            {dish?.name || `Dish ${i + 1}`}
+                                          </p>
+                                          {dish?.description && (
+                                            <p className="text-xs text-gray-600 mt-1">
+                                              {dish.description}
+                                            </p>
+                                          )}
+                                          {dish?.price && (
+                                            <p className="text-xs font-semibold text-blue-600 mt-1">
+                                              ₹{dish.price}
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Service Providers Section */}
+                              {data.serviceProviders.length > 0 && (
+                                <div className="bg-white p-4 rounded-xl border border-gray-100">
+                                  <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                    <Briefcase className="w-4 h-4 text-green-500" />
+                                    Selected Service Providers
+                                  </p>
+                                  <div className="space-y-2">
+                                    {data.serviceProviders.map((providerId, i) => {
+                                      const provider = providers.find(
+                                        (p) => p.value === providerId
+                                      );
+                                      return (
+                                        <div
+                                          key={i}
+                                          className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100"
+                                        >
+                                          <p className="font-medium text-gray-800 text-sm flex items-center gap-2">
+                                            <Crown className="w-4 h-4 text-yellow-600" />
+                                            {provider?.label || `Provider ${i + 1}`}
+                                          </p>
+                                          {provider?.rating && (
+                                            <p className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                                              <Star className="w-3 h-3 text-yellow-500" />
+                                              {provider.rating} • {provider.reviews || 0} reviews
+                                            </p>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Kitchen & Materials Section */}
+                              <div className="bg-white p-4 rounded-xl border border-gray-100">
+                                <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                  <Home className="w-4 h-4 text-pink-500" />
+                                  Kitchen & Materials
                                 </p>
-                                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                <div className="space-y-3">
                                   <div>
-                                    <span className="text-gray-600">
-                                      Kitchen:
-                                    </span>
-                                    <span className="font-medium text-gray-800 ml-2">
+                                    <p className="text-xs font-medium text-gray-600 mb-2">
+                                      Kitchen Type
+                                    </p>
+                                    <p className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium">
                                       {data.clientMaterials.kitchenType ===
-                                        "own_kitchen"
-                                        ? "Chef Provides"
-                                        : "Client Provides"}
-                                    </span>
+                                      "own_kitchen"
+                                        ? "Chef Provides Own Kitchen"
+                                        : data.clientMaterials.kitchenType ===
+                                          "provided_kitchen"
+                                        ? "Client Provides Kitchen"
+                                        : "Not specified"}
+                                    </p>
                                   </div>
-                                  <div>
-                                    <span className="text-gray-600">
-                                      Additional Services:
-                                    </span>
-                                    <span className="font-medium text-gray-800 ml-2">
-                                      {data.otherRequirements.additionalServices
-                                        .length || "None"}
-                                    </span>
-                                  </div>
+
+                                  {data.clientMaterials.kitchenAppliances
+                                    .length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Kitchen Appliances Available
+                                      </p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {data.clientMaterials.kitchenAppliances
+                                          .map(
+                                            (app) =>
+                                              KITCHEN_APPLIANCES.find(
+                                                (ka) => ka.value === app
+                                              )
+                                          )
+                                          .filter(Boolean)
+                                          .map((appliance, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium"
+                                            >
+                                              {appliance?.label}
+                                            </span>
+                                          ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {data.clientMaterials.utensils.length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Utensils Provided
+                                      </p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {data.clientMaterials.utensils
+                                          .map(
+                                            (utensil) =>
+                                              UTENSIL_TYPES.find(
+                                                (ut) => ut.value === utensil
+                                              )
+                                          )
+                                          .filter(Boolean)
+                                          .map((utensil, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium"
+                                            >
+                                              {utensil?.label}
+                                            </span>
+                                          ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Additional Services & Requirements */}
+                              <div className="bg-white p-4 rounded-xl border border-gray-100">
+                                <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                  <Sparkles className="w-4 h-4 text-yellow-500" />
+                                  Additional Services & Requirements
+                                </p>
+                                <div className="space-y-3">
+                                  {data.otherRequirements.additionalServices
+                                    .length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Additional Services
+                                      </p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {data.otherRequirements.additionalServices
+                                          .map(
+                                            (service) =>
+                                              ADDITIONAL_SERVICES.find(
+                                                (as) => as.value === service
+                                              )
+                                          )
+                                          .filter(Boolean)
+                                          .map((service, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-3 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-xs font-medium"
+                                            >
+                                              {service?.label}
+                                            </span>
+                                          ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {data.otherRequirements.ambience.length >
+                                    0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Ambience Preferences
+                                      </p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {data.otherRequirements.ambience.map(
+                                          (item, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-xs font-medium"
+                                            >
+                                              {item}
+                                            </span>
+                                          )
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {data.otherRequirements.transportation
+                                    .length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Transportation Needs
+                                      </p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {data.otherRequirements.transportation.map(
+                                          (item, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg text-xs font-medium"
+                                            >
+                                              {item}
+                                            </span>
+                                          )
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {data.otherRequirements.dietaryRestrictions
+                                    .length > 0 && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Dietary Restrictions
+                                      </p>
+                                      <div className="flex flex-wrap gap-2">
+                                        {data.otherRequirements.dietaryRestrictions.map(
+                                          (item, i) => (
+                                            <span
+                                              key={i}
+                                              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium"
+                                            >
+                                              {item}
+                                            </span>
+                                          )
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {data.otherRequirements.specialRequests && (
+                                    <div>
+                                      <p className="text-xs font-medium text-gray-600 mb-2">
+                                        Special Requests
+                                      </p>
+                                      <p className="bg-gray-50 p-3 rounded-lg text-sm text-gray-700 border border-gray-200">
+                                        {data.otherRequirements.specialRequests}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -2815,7 +3640,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                       No addresses found
                                     </p>
                                     <p className="text-gray-500 text-sm mt-1">
-                                      Please add an address to continue with booking
+                                      Please add an address to continue with
+                                      booking
                                     </p>
                                     <button
                                       onClick={() => setShowAddressForm(true)}
@@ -2831,12 +3657,15 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                         key={addr.id}
                                         whileHover={{ scale: 1.01 }}
                                         onClick={() =>
-                                          updateData({ eventAddressId: addr.id })
+                                          updateData({
+                                            eventAddressId: addr.id,
+                                          })
                                         }
-                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${data.eventAddressId === addr.id
-                                          ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
-                                          : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                          }`}
+                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                                          data.eventAddressId === addr.id
+                                            ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
+                                            : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
+                                        }`}
                                       >
                                         <div className="flex items-start justify-between">
                                           <div className="flex-1">
@@ -2844,7 +3673,8 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                                               <span className="font-bold text-gray-900">
                                                 {addr.label}
                                               </span>
-                                              {data.eventAddressId === addr.id && (
+                                              {data.eventAddressId ===
+                                                addr.id && (
                                                 <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
                                                   Selected
                                                 </span>
@@ -2959,10 +3789,11 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                       whileTap={{ scale: 0.95 }}
                       onClick={handleBack}
                       disabled={step === 1}
-                      className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${step === 1
-                        ? "opacity-0 pointer-events-none"
-                        : "text-gray-600 hover:bg-gray-100 border border-gray-200"
-                        }`}
+                      className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                        step === 1
+                          ? "opacity-0 pointer-events-none"
+                          : "text-gray-600 hover:bg-gray-100 border border-gray-200"
+                      }`}
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Back
@@ -2973,11 +3804,13 @@ const [loadingProviders, setLoadingProviders] = useState(false);
                       whileTap={{ scale: canProceed() ? 0.95 : 1 }}
                       onClick={step === totalSteps ? handleSubmit : handleNext}
                       disabled={!canProceed()}
-                      className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${step === totalSteps
-                        ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                        : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                        } ${!canProceed() ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
+                      className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${
+                        step === totalSteps
+                          ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                          : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                      } ${
+                        !canProceed() ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       {isSubmitting ? (
                         <>

@@ -3,6 +3,8 @@ import { AuthService } from './authService';
 import { Address } from '@/types/auth';
 
 export interface Booking {
+    other_requirements: any;
+    client_materials: any;
     conversation: any;
     id: string;
     client: {
@@ -127,6 +129,22 @@ export class BookingService {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(JSON.stringify(errorData) || 'Failed to update booking request');
+        }
+
+        return response.json();
+    }
+
+    /**
+     * Get all menu items
+     */
+    static async getMenuItems(): Promise<any> {
+        const response = await fetch(`${API_BASE_URL}/api/menu-items/`, {
+            method: 'GET',
+            headers: this.getHeaders(),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch menu items');
         }
 
         return response.json();

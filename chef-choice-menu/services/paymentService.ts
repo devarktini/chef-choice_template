@@ -68,4 +68,25 @@ export class PaymentService {
 
         return response.json();
     }
+
+    /**
+     * Search payment transactions
+     */
+    static async searchPaymentTransactions(params?: Record<string, string | number>): Promise<any> {
+        const queryString = params ? '?' + new URLSearchParams(
+            Object.entries(params).map(([key, value]) => [key, String(value)])
+        ).toString() : '';
+
+        const response = await fetch(`${API_BASE_URL}/api/payment-transactions/search/${queryString}`, {
+            method: 'GET',
+            headers: this.getHeaders(),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(JSON.stringify(errorData) || 'Failed to search payment transactions');
+        }
+
+        return response.json();
+    }
 }
