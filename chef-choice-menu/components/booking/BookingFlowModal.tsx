@@ -1736,7 +1736,9 @@ export default function BookingFlowModal({
                                   >
                                     <div className="text-sm">{cuisine}</div>
                                     {data.cuisines.includes(cuisine) && (
-                                      <div className="text-lg pl-1 rotate-12">✓</div>
+                                      <div className="text-lg pl-1 rotate-12">
+                                        ✓
+                                      </div>
                                     )}
                                   </motion.button>
                                 ))}
@@ -1867,7 +1869,8 @@ export default function BookingFlowModal({
                                               type="checkbox"
                                               checked={isSelected}
                                               onChange={() => {
-                                                const dateKey = getLocalDateKey(date);
+                                                const dateKey =
+                                                  getLocalDateKey(date);
                                                 const config = data.mealConfig[
                                                   dateKey
                                                 ] || { meals: [], time: "" };
@@ -1982,17 +1985,15 @@ export default function BookingFlowModal({
                                 </p>
                                 <p className="text-amber-600 text-sm">
                                   {data.cuisines.length} cuisines selected •{" "}
-                                  {
-                                    Object.values(data.selectedDishIds).reduce(
-                                      (sum, meals) =>
-                                        sum +
-                                        Object.values(meals).reduce(
-                                          (s, dishes) => s + dishes.length,
-                                          0
-                                        ),
-                                      0
-                                    )
-                                  }{" "}
+                                  {Object.values(data.selectedDishIds).reduce(
+                                    (sum, meals) =>
+                                      sum +
+                                      Object.values(meals).reduce(
+                                        (s, dishes) => s + dishes.length,
+                                        0
+                                      ),
+                                    0
+                                  )}{" "}
                                   dishes chosen
                                 </p>
                               </div>
@@ -2025,10 +2026,7 @@ export default function BookingFlowModal({
                           {/* Loading State */}
                           {loadingMenu && (
                             <div className="flex items-center justify-center py-12">
-                              <div
-                                
-                                className="w-10 h-10 border-4 border-gray-300 border-t-amber-500 rounded-full"
-                              />
+                              <div className="w-10 h-10 border-4 border-gray-300 border-t-amber-500 rounded-full" />
                             </div>
                           )}
 
@@ -2078,39 +2076,67 @@ export default function BookingFlowModal({
                                     <div className="space-y-8">
                                       {data.dates.map((date, dateIndex) => {
                                         const dateKey = getLocalDateKey(date);
-                                        const mealTypesForDate = data.mealConfig[dateKey]?.meals || [];
+                                        const mealTypesForDate =
+                                          data.mealConfig[dateKey]?.meals || [];
 
                                         return (
-                                          <div key={dateKey} className="border-2 border-gray-300 rounded-lg overflow-hidden">
+                                          <div
+                                            key={dateKey}
+                                            className="border-2 border-gray-300 rounded-lg overflow-hidden"
+                                          >
                                             {/* Date Header */}
                                             <div className="bg-gradient-to-r from-blue-500 to-cyan-500 px-6 py-4 text-white">
                                               <div className="flex items-center justify-between">
                                                 <div>
                                                   <h3 className="text-xl font-bold">
-                                                    📅 {date.toLocaleDateString("en-IN", {
-                                                      weekday: "long",
-                                                      month: "long",
-                                                      day: "numeric",
-                                                      year: "numeric",
-                                                    })}
+                                                    📅{" "}
+                                                    {date.toLocaleDateString(
+                                                      "en-IN",
+                                                      {
+                                                        weekday: "long",
+                                                        month: "long",
+                                                        day: "numeric",
+                                                        year: "numeric",
+                                                      }
+                                                    )}
                                                   </h3>
                                                   <p className="text-blue-100 text-sm mt-1">
                                                     {mealTypesForDate.length > 0
-                                                      ? mealTypesForDate.map((mt) => mt.replace("_", " ")).join(", ")
+                                                      ? mealTypesForDate
+                                                          .map((mt) =>
+                                                            mt.replace("_", " ")
+                                                          )
+                                                          .join(", ")
                                                       : "No meals configured"}
                                                   </p>
                                                 </div>
-                                                {Object.keys(data.selectedDishIds[dateKey] || {}).reduce(
+                                                {Object.keys(
+                                                  data.selectedDishIds[
+                                                    dateKey
+                                                  ] || {}
+                                                ).reduce(
                                                   (sum, mealType) =>
-                                                    sum + (data.selectedDishIds[dateKey][mealType]?.length || 0),
+                                                    sum +
+                                                    (data.selectedDishIds[
+                                                      dateKey
+                                                    ][mealType]?.length || 0),
                                                   0
                                                 ) > 0 && (
                                                   <span className="px-3 py-1 bg-white text-blue-600 rounded-full text-sm font-medium">
-                                                    {Object.keys(data.selectedDishIds[dateKey] || {}).reduce(
+                                                    {Object.keys(
+                                                      data.selectedDishIds[
+                                                        dateKey
+                                                      ] || {}
+                                                    ).reduce(
                                                       (sum, mealType) =>
-                                                        sum + (data.selectedDishIds[dateKey][mealType]?.length || 0),
+                                                        sum +
+                                                        (data.selectedDishIds[
+                                                          dateKey
+                                                        ][mealType]?.length ||
+                                                          0),
                                                       0
-                                                    )} dishes
+                                                    )}{" "}
+                                                    dishes
                                                   </span>
                                                 )}
                                               </div>
@@ -2119,225 +2145,341 @@ export default function BookingFlowModal({
                                             {/* Meal Types for this Date */}
                                             {mealTypesForDate.length > 0 ? (
                                               <div className="bg-white divide-y">
-                                                {mealTypesForDate.map((mealType) => {
-                                                  const dishesByMealType = availableDishes.filter(
-                                                    (dish) =>
-                                                      dish.mealTypes
-                                                        .map((mt) => mt.toLowerCase())
-                                                        .includes(mealType.toLowerCase()) &&
-                                                      (dish.name
-                                                        .toLowerCase()
-                                                        .includes(searchDishes.toLowerCase()) ||
-                                                        dish.description
-                                                          .toLowerCase()
-                                                          .includes(searchDishes.toLowerCase()))
-                                                  );
+                                                {mealTypesForDate.map(
+                                                  (mealType) => {
+                                                    const dishesByMealType =
+                                                      availableDishes.filter(
+                                                        (dish) =>
+                                                          dish.mealTypes
+                                                            .map((mt) =>
+                                                              mt.toLowerCase()
+                                                            )
+                                                            .includes(
+                                                              mealType.toLowerCase()
+                                                            ) &&
+                                                          (dish.name
+                                                            .toLowerCase()
+                                                            .includes(
+                                                              searchDishes.toLowerCase()
+                                                            ) ||
+                                                            dish.description
+                                                              .toLowerCase()
+                                                              .includes(
+                                                                searchDishes.toLowerCase()
+                                                              ))
+                                                      );
 
-                                                  return (
-                                                    <div key={mealType} className="border-b last:border-b-0">
-                                                      {/* Meal Type Header - Clickable */}
-                                                      <button
-                                                        onClick={() => {
-                                                          const key = `${dateKey}-${mealType}`;
-                                                          const newExpanded = new Set(expandedMealTypes);
-                                                          if (newExpanded.has(key)) {
-                                                            newExpanded.delete(key);
-                                                          } else {
-                                                            newExpanded.add(key);
-                                                          }
-                                                          setExpandedMealTypes(newExpanded);
-                                                        }}
-                                                        className="w-full flex items-center gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 transition-colors"
+                                                    return (
+                                                      <div
+                                                        key={mealType}
+                                                        className="border-b last:border-b-0"
                                                       >
-                                                        <span className="text-2xl">
-                                                          {mealEmojis[mealType] || "🍴"}
-                                                        </span>
-                                                        <div className="flex-1 text-left">
-                                                          <h3 className="font-bold text-gray-900 capitalize">
-                                                            {mealType.replace("_", " ")}
-                                                          </h3>
-                                                          <p className="text-xs text-gray-600">
-                                                            {dishesByMealType.length} dishes available
-                                                          </p>
-                                                        </div>
-                                                        {dishesByMealType.filter((d) =>
-                                                          data.selectedDishIds[dateKey]?.[mealType]?.includes(d.id)
-                                                        ).length > 0 && (
-                                                          <span className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                                            {
-                                                              dishesByMealType.filter((d) =>
-                                                                data.selectedDishIds[dateKey]?.[mealType]?.includes(d.id)
-                                                              ).length
-                                                            }{" "}
-                                                            selected
-                                                          </span>
-                                                        )}
-                                                        <motion.div
-                                                          animate={{
-                                                            rotate: expandedMealTypes.has(`${dateKey}-${mealType}`)
-                                                              ? 180
-                                                              : 0,
+                                                        {/* Meal Type Header - Clickable */}
+                                                        <button
+                                                          onClick={() => {
+                                                            const key = `${dateKey}-${mealType}`;
+                                                            const newExpanded =
+                                                              new Set(
+                                                                expandedMealTypes
+                                                              );
+                                                            if (
+                                                              newExpanded.has(
+                                                                key
+                                                              )
+                                                            ) {
+                                                              newExpanded.delete(
+                                                                key
+                                                              );
+                                                            } else {
+                                                              newExpanded.add(
+                                                                key
+                                                              );
+                                                            }
+                                                            setExpandedMealTypes(
+                                                              newExpanded
+                                                            );
                                                           }}
-                                                          transition={{ duration: 0.2 }}
+                                                          className="w-full flex items-center gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 transition-colors"
                                                         >
-                                                          <ChevronRight className="w-5 h-5 text-gray-600" />
-                                                        </motion.div>
-                                                      </button>
-
-                                                      {/* Dishes Grid - Collapsible */}
-                                                      <AnimatePresence>
-                                                        {expandedMealTypes.has(`${dateKey}-${mealType}`) && (
+                                                          <span className="text-2xl">
+                                                            {mealEmojis[
+                                                              mealType
+                                                            ] || "🍴"}
+                                                          </span>
+                                                          <div className="flex-1 text-left">
+                                                            <h3 className="font-bold text-gray-900 capitalize">
+                                                              {mealType.replace(
+                                                                "_",
+                                                                " "
+                                                              )}
+                                                            </h3>
+                                                            <p className="text-xs text-gray-600">
+                                                              {
+                                                                dishesByMealType.length
+                                                              }{" "}
+                                                              dishes available
+                                                            </p>
+                                                          </div>
+                                                          {dishesByMealType.filter(
+                                                            (d) =>
+                                                              data.selectedDishIds[
+                                                                dateKey
+                                                              ]?.[
+                                                                mealType
+                                                              ]?.includes(d.id)
+                                                          ).length > 0 && (
+                                                            <span className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                                              {
+                                                                dishesByMealType.filter(
+                                                                  (d) =>
+                                                                    data.selectedDishIds[
+                                                                      dateKey
+                                                                    ]?.[
+                                                                      mealType
+                                                                    ]?.includes(
+                                                                      d.id
+                                                                    )
+                                                                ).length
+                                                              }{" "}
+                                                              selected
+                                                            </span>
+                                                          )}
                                                           <motion.div
-                                                            initial={{ height: 0, opacity: 0 }}
-                                                            animate={{ height: "auto", opacity: 1 }}
-                                                            exit={{ height: 0, opacity: 0 }}
-                                                            transition={{ duration: 0.2 }}
+                                                            animate={{
+                                                              rotate:
+                                                                expandedMealTypes.has(
+                                                                  `${dateKey}-${mealType}`
+                                                                )
+                                                                  ? 180
+                                                                  : 0,
+                                                            }}
+                                                            transition={{
+                                                              duration: 0.2,
+                                                            }}
                                                           >
-                                                            {dishesByMealType.length > 0 ? (
-                                                              <div className="p-4 bg-white grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                                                                {dishesByMealType.map((dish) => (
-                                                                  <div
-                                                                    key={dish.id}
-                                                                    onClick={() => {
-                                                                      const currentDateDishes =
-                                                                        data.selectedDishIds[dateKey] || {};
-                                                                      const currentMealDishes =
-                                                                        currentDateDishes[mealType] || [];
+                                                            <ChevronRight className="w-5 h-5 text-gray-600" />
+                                                          </motion.div>
+                                                        </button>
 
-                                                                      const newMealDishes =
-                                                                        currentMealDishes.includes(dish.id)
-                                                                          ? currentMealDishes.filter(
-                                                                              (id) => id !== dish.id
-                                                                            )
-                                                                          : [
-                                                                              ...currentMealDishes,
-                                                                              dish.id,
-                                                                            ];
-
-                                                                      updateData({
-                                                                        selectedDishIds: {
-                                                                          ...data.selectedDishIds,
-                                                                          [dateKey]: {
-                                                                            ...currentDateDishes,
-                                                                            [mealType]: newMealDishes,
-                                                                          },
-                                                                        },
-                                                                      });
-                                                                    }}
-                                                                    className="cursor-pointer"
-                                                                  >
-                                                                    <motion.div
-                                                                      whileHover={{ scale: 1.02 }}
-                                                                      whileTap={{ scale: 0.98 }}
-                                                                      className={`border-2 rounded-lg overflow-hidden transition-all relative ${
-                                                                        data.selectedDishIds[dateKey]?.[mealType]?.includes(
+                                                        {/* Dishes Grid - Collapsible */}
+                                                        <AnimatePresence>
+                                                          {expandedMealTypes.has(
+                                                            `${dateKey}-${mealType}`
+                                                          ) && (
+                                                            <motion.div
+                                                              initial={{
+                                                                height: 0,
+                                                                opacity: 0,
+                                                              }}
+                                                              animate={{
+                                                                height: "auto",
+                                                                opacity: 1,
+                                                              }}
+                                                              exit={{
+                                                                height: 0,
+                                                                opacity: 0,
+                                                              }}
+                                                              transition={{
+                                                                duration: 0.2,
+                                                              }}
+                                                            >
+                                                              {dishesByMealType.length >
+                                                              0 ? (
+                                                                <div className="p-4 bg-white grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                                                                  {dishesByMealType.map(
+                                                                    (dish) => (
+                                                                      <div
+                                                                        key={
                                                                           dish.id
-                                                                        )
-                                                                          ? "border-amber-500 bg-amber-50"
-                                                                          : "border-gray-200 hover:border-amber-300 bg-white"
-                                                                      }`}
-                                                                    >
-                                                                      {/* Checkbox */}
-                                                                      <div className="absolute top-2 right-2 z-10">
-                                                                        <div
-                                                                          className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                                                                            data.selectedDishIds[dateKey]?.[mealType]?.includes(
+                                                                        }
+                                                                        onClick={() => {
+                                                                          const currentDateDishes =
+                                                                            data
+                                                                              .selectedDishIds[
+                                                                              dateKey
+                                                                            ] ||
+                                                                            {};
+                                                                          const currentMealDishes =
+                                                                            currentDateDishes[
+                                                                              mealType
+                                                                            ] ||
+                                                                            [];
+
+                                                                          const newMealDishes =
+                                                                            currentMealDishes.includes(
                                                                               dish.id
                                                                             )
-                                                                              ? "bg-amber-500 border-amber-500"
-                                                                              : "border-gray-300 bg-white"
+                                                                              ? currentMealDishes.filter(
+                                                                                  (
+                                                                                    id
+                                                                                  ) =>
+                                                                                    id !==
+                                                                                    dish.id
+                                                                                )
+                                                                              : [
+                                                                                  ...currentMealDishes,
+                                                                                  dish.id,
+                                                                                ];
+
+                                                                          updateData(
+                                                                            {
+                                                                              selectedDishIds:
+                                                                                {
+                                                                                  ...data.selectedDishIds,
+                                                                                  [dateKey]:
+                                                                                    {
+                                                                                      ...currentDateDishes,
+                                                                                      [mealType]:
+                                                                                        newMealDishes,
+                                                                                    },
+                                                                                },
+                                                                            }
+                                                                          );
+                                                                        }}
+                                                                        className="cursor-pointer"
+                                                                      >
+                                                                        <motion.div
+                                                                          whileHover={{
+                                                                            scale: 1.02,
+                                                                          }}
+                                                                          whileTap={{
+                                                                            scale: 0.98,
+                                                                          }}
+                                                                          className={`border-2 rounded-lg overflow-hidden transition-all relative ${
+                                                                            data.selectedDishIds[
+                                                                              dateKey
+                                                                            ]?.[
+                                                                              mealType
+                                                                            ]?.includes(
+                                                                              dish.id
+                                                                            )
+                                                                              ? "border-amber-500 bg-amber-50"
+                                                                              : "border-gray-200 hover:border-amber-300 bg-white"
                                                                           }`}
                                                                         >
-                                                                          {data.selectedDishIds[dateKey]?.[mealType]?.includes(
-                                                                            dish.id
-                                                                          ) && (
-                                                                            <Check className="w-2.5 h-2.5 text-white" />
-                                                                          )}
-                                                                        </div>
-                                                                      </div>
+                                                                          {/* Checkbox */}
+                                                                          <div className="absolute top-2 right-2 z-10">
+                                                                            <div
+                                                                              className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                                                                data.selectedDishIds[
+                                                                                  dateKey
+                                                                                ]?.[
+                                                                                  mealType
+                                                                                ]?.includes(
+                                                                                  dish.id
+                                                                                )
+                                                                                  ? "bg-amber-500 border-amber-500"
+                                                                                  : "border-gray-300 bg-white"
+                                                                              }`}
+                                                                            >
+                                                                              {data.selectedDishIds[
+                                                                                dateKey
+                                                                              ]?.[
+                                                                                mealType
+                                                                              ]?.includes(
+                                                                                dish.id
+                                                                              ) && (
+                                                                                <Check className="w-2.5 h-2.5 text-white" />
+                                                                              )}
+                                                                            </div>
+                                                                          </div>
 
-                                                                      {/* Veg Badge */}
-                                                                      <div className="absolute top-2 left-2 z-10 text-xs">
-                                                                        {dish.isVeg === 1 ? (
-                                                                          <span className="text-green-700">
-                                                                            🥬
-                                                                          </span>
-                                                                        ) : (
-                                                                          <span className="text-red-700">
-                                                                            🔥
-                                                                          </span>
-                                                                        )}
-                                                                      </div>
+                                                                          {/* Veg Badge */}
+                                                                          <div className="absolute top-2 left-2 z-10 text-xs">
+                                                                            {dish.isVeg ===
+                                                                            1 ? (
+                                                                              <span className="text-green-700">
+                                                                                🥬
+                                                                              </span>
+                                                                            ) : (
+                                                                              <span className="text-red-700">
+                                                                                🔥
+                                                                              </span>
+                                                                            )}
+                                                                          </div>
 
-                                                                      {/* Image */}
-                                                                      <div className="relative h-20 bg-gray-100 overflow-hidden">
-                                                                        <img
-                                                                          src={dish.image}
-                                                                          alt={dish.name}
-                                                                          className="w-full h-full object-cover"
-                                                                          onError={(e) => {
-                                                                            (
-                                                                              e.target as HTMLImageElement
-                                                                            ).src =
-                                                                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23f0f0f0' width='100' height='100'/%3E%3C/svg%3E";
-                                                                          }}
-                                                                        />
-                                                                      </div>
+                                                                          {/* Image */}
+                                                                          <div className="relative h-20 bg-gray-100 overflow-hidden">
+                                                                            <img
+                                                                              src={
+                                                                                dish.image
+                                                                              }
+                                                                              alt={
+                                                                                dish.name
+                                                                              }
+                                                                              className="w-full h-full object-cover"
+                                                                              onError={(
+                                                                                e
+                                                                              ) => {
+                                                                                (
+                                                                                  e.target as HTMLImageElement
+                                                                                ).src =
+                                                                                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23f0f0f0' width='100' height='100'/%3E%3C/svg%3E";
+                                                                              }}
+                                                                            />
+                                                                          </div>
 
-                                                                      {/* Content */}
-                                                                      <div className="p-2">
-                                                                        <h5 className="font-semibold text-gray-800 text-xs line-clamp-2">
-                                                                          {dish.name}
-                                                                        </h5>
-                                                                        <p className="text-xs text-gray-600 line-clamp-1">
-                                                                          {dish.cuisine}
-                                                                        </p>
+                                                                          {/* Content */}
+                                                                          <div className="p-2">
+                                                                            <h5 className="font-semibold text-gray-800 text-xs line-clamp-2">
+                                                                              {
+                                                                                dish.name
+                                                                              }
+                                                                            </h5>
+                                                                            <p className="text-xs text-gray-600 line-clamp-1">
+                                                                              {
+                                                                                dish.cuisine
+                                                                              }
+                                                                            </p>
+                                                                          </div>
+                                                                        </motion.div>
                                                                       </div>
-                                                                    </motion.div>
-                                                                  </div>
-                                                                ))}
-                                                              </div>
-
+                                                                    )
+                                                                  )}
+                                                                </div>
+                                                              ) : (
+                                                                <div className="p-8 text-center text-gray-500 text-sm bg-gray-50">
+                                                                  No dishes
+                                                                  available
+                                                                </div>
+                                                              )}
+                                                            </motion.div>
+                                                          )}
+                                                        </AnimatePresence>
+                                                      </div>
+                                                    );
+                                                  }
+                                                )}
+                                              </div>
                                             ) : (
-                                              <div className="p-8 text-center text-gray-500 text-sm bg-gray-50">
-                                                No dishes available
+                                              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                                                <p className="text-gray-600">
+                                                  No meals configured for this
+                                                  date
+                                                </p>
                                               </div>
                                             )}
-                                          </motion.div>
-                                        )}
-                                      </AnimatePresence>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  ) : (
+                                    <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
+                                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                                      <p className="text-gray-600 mb-2">
+                                        No dates with meals configured
+                                      </p>
+                                      <p className="text-sm text-gray-500">
+                                        Please configure meals in Step 3 first
+                                      </p>
                                     </div>
                                   );
-                                })}
-                              </div>
-                            ) : (
-                              <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-                                <p className="text-gray-600">
-                                  No meals configured for this date
-                                </p>
-                              </div>
+                                })()}
+                              </>
                             )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 bg-gray-50 rounded-xl border border-gray-200">
-                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-2">
-                        No dates with meals configured
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Please configure meals in Step 3 first
-                      </p>
-                    </div>
-                  );
-                })()}
-              </>
-            )}
-        </div>
-      </div>
-    )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Step 5: Guest Count */}
                     {step === 5 && (
@@ -3247,7 +3389,11 @@ export default function BookingFlowModal({
                                     {totalGuests} people
                                   </p>
                                   <p className="text-xs text-gray-600 mt-2">
-                                    {data.guests.adults} adults, {data.guests.children} children{data.guests.babies > 0 ? `, ${data.guests.babies} babies` : ""}
+                                    {data.guests.adults} adults,{" "}
+                                    {data.guests.children} children
+                                    {data.guests.babies > 0
+                                      ? `, ${data.guests.babies} babies`
+                                      : ""}
                                   </p>
                                 </div>
 
@@ -3257,7 +3403,8 @@ export default function BookingFlowModal({
                                   </p>
                                   <p className="font-bold text-gray-900 flex items-center gap-2">
                                     <CalendarIcon className="w-4 h-4 text-green-500" />
-                                    {data.dates.length} day{data.dates.length > 1 ? "s" : ""}
+                                    {data.dates.length} day
+                                    {data.dates.length > 1 ? "s" : ""}
                                   </p>
                                   {data.dates.length > 0 && (
                                     <div className="text-xs text-gray-600 mt-2 space-y-1">
@@ -3294,19 +3441,14 @@ export default function BookingFlowModal({
                                     Cuisines Selected
                                   </p>
                                   <div className="flex flex-wrap gap-2">
-                                    {data.cuisines
-                                      .map(
-                                        (c) => <span
-                                        
-                                          className="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 rounded-lg text-sm font-medium flex items-center gap-2"
-                                        >
-                                        
-                                          {c}
-                                        </span>
-                                          
-                                      )
-                                      
-                                      }
+                                    {data.cuisines.map((c, index) => (
+                                      <span
+                                        key={index + 1}
+                                        className="px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-800 rounded-lg text-sm font-medium flex items-center gap-2"
+                                      >
+                                        {c}
+                                      </span>
+                                    ))}
                                   </div>
                                 </div>
                               )}
@@ -3392,28 +3534,32 @@ export default function BookingFlowModal({
                                     Selected Service Providers
                                   </p>
                                   <div className="space-y-2">
-                                    {data.serviceProviders.map((providerId, i) => {
-                                      const provider = providers.find(
-                                        (p) => p.value === providerId
-                                      );
-                                      return (
-                                        <div
-                                          key={i}
-                                          className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100"
-                                        >
-                                          <p className="font-medium text-gray-800 text-sm flex items-center gap-2">
-                                            <Crown className="w-4 h-4 text-yellow-600" />
-                                            {provider?.label || `Provider ${i + 1}`}
-                                          </p>
-                                          {provider?.rating && (
-                                            <p className="text-xs text-gray-600 mt-1 flex items-center gap-1">
-                                              <Star className="w-3 h-3 text-yellow-500" />
-                                              {provider.rating} • {provider.reviews || 0} reviews
+                                    {data.serviceProviders.map(
+                                      (providerId, i) => {
+                                        const provider = providers.find(
+                                          (p) => p.value === providerId
+                                        );
+                                        return (
+                                          <div
+                                            key={i}
+                                            className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100"
+                                          >
+                                            <p className="font-medium text-gray-800 text-sm flex items-center gap-2">
+                                              <Crown className="w-4 h-4 text-yellow-600" />
+                                              {provider?.label ||
+                                                `Provider ${i + 1}`}
                                             </p>
-                                          )}
-                                        </div>
-                                      );
-                                    })}
+                                            {provider?.rating && (
+                                              <p className="text-xs text-gray-600 mt-1 flex items-center gap-1">
+                                                <Star className="w-3 h-3 text-yellow-500" />
+                                                {provider.rating} •{" "}
+                                                {provider.reviews || 0} reviews
+                                              </p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+                                    )}
                                   </div>
                                 </div>
                               )}
@@ -3448,11 +3594,10 @@ export default function BookingFlowModal({
                                       </p>
                                       <div className="flex flex-wrap gap-2">
                                         {data.clientMaterials.kitchenAppliances
-                                          .map(
-                                            (app) =>
-                                              KITCHEN_APPLIANCES.find(
-                                                (ka) => ka.value === app
-                                              )
+                                          .map((app) =>
+                                            KITCHEN_APPLIANCES.find(
+                                              (ka) => ka.value === app
+                                            )
                                           )
                                           .filter(Boolean)
                                           .map((appliance, i) => (
@@ -3474,11 +3619,10 @@ export default function BookingFlowModal({
                                       </p>
                                       <div className="flex flex-wrap gap-2">
                                         {data.clientMaterials.utensils
-                                          .map(
-                                            (utensil) =>
-                                              UTENSIL_TYPES.find(
-                                                (ut) => ut.value === utensil
-                                              )
+                                          .map((utensil) =>
+                                            UTENSIL_TYPES.find(
+                                              (ut) => ut.value === utensil
+                                            )
                                           )
                                           .filter(Boolean)
                                           .map((utensil, i) => (
@@ -3510,11 +3654,10 @@ export default function BookingFlowModal({
                                       </p>
                                       <div className="flex flex-wrap gap-2">
                                         {data.otherRequirements.additionalServices
-                                          .map(
-                                            (service) =>
-                                              ADDITIONAL_SERVICES.find(
-                                                (as) => as.value === service
-                                              )
+                                          .map((service) =>
+                                            ADDITIONAL_SERVICES.find(
+                                              (as) => as.value === service
+                                            )
                                           )
                                           .filter(Boolean)
                                           .map((service, i) => (

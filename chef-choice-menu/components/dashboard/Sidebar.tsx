@@ -285,7 +285,7 @@ export default function Sidebar() {
           ✨ Navigation
         </p>
         
-        {menuItems.map((item) => {
+        {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = pathname === item.href 
           //   (item.submenu && item.submenu.some(sub => pathname === sub.href));
@@ -293,7 +293,7 @@ export default function Sidebar() {
           const hasSubmenu = item.submenu || false;
 
           return (
-            <div key={item.name} className="relative group">
+            <div key={index + 1} className="relative group">
               {hasSubmenu ? (
                 <>
                   <button
@@ -323,9 +323,9 @@ export default function Sidebar() {
                   {/* Submenu */}
                   {activeSubmenu === item.name && item.submenu && (
                     <div className="ml-3 mt-2 mb-2 space-y-1 pl-6 border-l-2 border-gradient-to-b from-[#e59f4a] to-transparent animate-in fade-in slide-in-from-top-2 duration-200">
-                      {item.submenu.map((subItem) => (
+                      {item.submenu.map((subItem, index) => (
                         <Link
-                          key={subItem.name}
+                          key={index + 1}
                           href={subItem.href}
                           className={`block py-2.5 px-3 rounded-lg text-sm transition-all duration-200 font-medium
                             ${pathname === subItem.href
@@ -539,13 +539,13 @@ export default function Sidebar() {
       {/* Mobile Bottom Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-2xl">
         <div className="px-4 py-3 flex justify-around">
-          {menuItems.slice(0, 4).map((item) => {
+          {menuItems.slice(0, 4).map((item, index) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
             return (
               <Link
-                key={item.name}
+                key={ index +1}
                 href={item.href}
                 className={`flex flex-col items-center justify-center py-2 px-4 rounded-xl transition-all relative group
                   ${isActive
