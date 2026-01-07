@@ -94,36 +94,48 @@ export default function BankAccountFormModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    
-    // Apply input restrictions based on field type
-    let processedValue = value;
-    
-    if (name === 'account_number') {
-      // Allow only numbers
-      processedValue = value.replace(/\D/g, '');
-    } else if (name === 'ifsc_code') {
-      // Convert to uppercase and allow only letters and numbers
-      processedValue = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    } else if (name === 'bank_name' || name === 'account_name' || name === 'branch_name') {
-      // Remove numbers from text fields (allow only letters, spaces, and basic punctuation)
-      processedValue = value.replace(/[0-9]/g, '');
-    }
+const handleChange = (
+  e: React.ChangeEvent<
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  >
+) => {
+  const { name, value } = e.target;
 
-    setFormData(prev => ({
+  // Checkbox safety (only inputs have checked/type)
+  const isCheckbox =
+    e.target instanceof HTMLInputElement && e.target.type === "checkbox";
+
+  let processedValue = value;
+
+  // Apply input restrictions
+  if (name === "account_number") {
+    processedValue = value.replace(/\D/g, "");
+  } else if (name === "ifsc_code") {
+    processedValue = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  } else if (
+    name === "bank_name" ||
+    name === "account_name" ||
+    name === "branch_name"
+  ) {
+    processedValue = value.replace(/[0-9]/g, "");
+  }
+
+  setFormData(prev => ({
+    ...prev,
+    [name]: isCheckbox
+      ? (e.target as HTMLInputElement).checked
+      : processedValue,
+  }));
+
+  // Clear error when user starts typing
+  if (errors[name]) {
+    setErrors(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : processedValue
+      [name]: "",
     }));
+  }
+};
 
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,22 +168,45 @@ export default function BankAccountFormModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Bank Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Bank Name *
-            </label>
-            <input
-              type="text"
-              name="bank_name"
-              value={formData.bank_name}
-              onChange={handleChange}
-              className={`w-full px-4 py-2.5 rounded-lg border ${errors.bank_name ? 'border-red-300' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-              placeholder="Enter bank name"
-              maxLength={50}
-            />
-            {errors.bank_name && (
-              <p className="mt-1 text-sm text-red-600">{errors.bank_name}</p>
-            )}
-          </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Bank Name *
+  </label>
+
+  <select
+    name="bank_name"
+    value={formData.bank_name}
+    onChange={handleChange}
+    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="">Select bank</option>
+    <option value="State Bank of India">State Bank of India</option>
+    <option value="HDFC Bank">HDFC Bank</option>
+    <option value="ICICI Bank">ICICI Bank</option>
+    <option value="Axis Bank">Axis Bank</option>
+    <option value="Punjab National Bank">Punjab National Bank</option>
+    <option value="Bank of Baroda">Bank of Baroda</option>
+    <option value="Canara Bank">Canara Bank</option>
+    <option value="Union Bank of India">Union Bank of India</option>
+    <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+    <option value="Yes Bank">Yes Bank</option>
+    <option value="Other">Other</option>
+  </select>
+
+  {formData.bank_name === "Other" && (
+    <input
+      type="text"
+      name="custom_bank_name"
+      placeholder="Enter bank name"
+      onChange={handleChange}
+      className="mt-3 w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  )}
+
+  {errors.bank_name && (
+    <p className="mt-1 text-sm text-red-600">{errors.bank_name}</p>
+  )}
+</div>
+
 
           {/* Account Name */}
           <div>

@@ -99,7 +99,7 @@ export default function BankAccountsPage() {
         <DashboardLayout>
             <div className="space-y-6 relative h-full min-h-[calc(100vh-8rem)]">
                 {/* Header */}
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-400 to-indigo-500 p-6 md:p-8 text-white shadow-md">
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 p-6 md:p-8 text-white shadow-md">
                     {/* Subtle Decorative Elements */}
                     <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full blur-2xl -mr-20 -mt-20"></div>
                     <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full blur-2xl -ml-16 -mb-16"></div>
