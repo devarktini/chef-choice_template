@@ -12,7 +12,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
+
   /* Light mode defaults */
   background-color: #FFFFFF;
   color: #2D3748;
@@ -49,11 +49,12 @@
   font-family: 'Julius Sans One', 'Poppins', sans-serif;
   margin-top: 105px;
   text-align: center;
-  color: #FC7000; /* Orange stays the same in both modes */
+  color: #FC7000;
+  /* Orange stays the same in both modes */
 }
 
 .headingText2 {
-  font-family: 'Julius Sans One','Poppins',sans-serif;
+  font-family: 'Julius Sans One', 'Poppins', sans-serif;
   text-align: center;
   font-size: clamp(18px, 5vw, 35px);
   padding: 0px 0px;
@@ -101,7 +102,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  
+
   /* Add overlay for better text readability in both modes */
   position: relative;
 }
@@ -113,17 +114,20 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.01); /* Dark overlay */
+  background: rgba(0, 0, 0, 0.01);
+  /* Dark overlay */
   z-index: 1;
 }
 
 [data-theme="light"] .secRigh::before {
-  background: rgba(255, 255, 255, 0.1); /* Light overlay */
+  background: rgba(255, 255, 255, 0.1);
+  /* Light overlay */
 }
 
-.secRigh > * {
+.secRigh>* {
   position: relative;
-  z-index: 2; /* Keep content above overlay */
+  z-index: 2;
+  /* Keep content above overlay */
 }
 
 .secondFir {
@@ -150,7 +154,8 @@
   border-radius: 20px;
   font-family: 'Roboto', sans-serif;
   font-weight: 600;
-  color: white; /* Ensure text is readable on orange background */
+  color: white;
+  /* Ensure text is readable on orange background */
 }
 
 .secondFir p,
@@ -210,10 +215,10 @@
   font-weight: 600;
   transition: all 0.3s ease;
   display: inline-block;
-  
+
   /* Light mode */
   /* background-color: transparent; */
-   color: white;
+  color: white;
 }
 
 .appButton:hover {
@@ -238,23 +243,26 @@
   .mainSection {
     gap: 50px;
   }
+
   .secondDiv {
     flex-direction: column;
   }
+
   .secondLeft {
     padding-left: 0px;
     width: 100%;
   }
+
   .secRigh {
     width: 100%;
     min-height: 60vh;
     padding-top: 100px;
   }
-  
+
   .arrImg1 {
     margin-left: 80px;
   }
-  
+
   .secRighInn {
     flex-direction: column;
     gap: 15px;
@@ -267,12 +275,102 @@
     padding-left: 20px;
     padding-right: 20px;
   }
-  
+
   .arrImg1 {
     margin-left: 40px;
   }
-  
+
   .headingText {
     margin-top: 80px;
+  }
+
+  /* ThirdSection.module.css */
+
+  /* Animation for the steps */
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Hover effect for steps */
+  .hover-lift:hover {
+    animation: float 0.3s ease-in-out;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Gradient text animation */
+  .gradient-text {
+    background-size: 200% auto;
+    animation: gradient 3s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  /* Shimmer effect for buttons */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 100%);
+    transform: rotate(30deg);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%) rotate(30deg);
+    }
+
+    100% {
+      transform: translateX(100%) rotate(30deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .phone-mockup {
+      scale: 0.9;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .phone-mockup {
+      scale: 0.8;
+    }
+
+    .download-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
   }
 }
