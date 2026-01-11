@@ -67,5 +67,22 @@ export const useAuthStore = create<AuthState>((set) => ({
         if (currentData) {
             AuthService.storeUserData({ ...currentData, user });
         }
-    }
+    },
+    updateAuthData: (data: any) => {
+        set({
+            user: data.user,
+            clientProfile: data.client_profile,
+            serviceProviderProfile: data.service_provider,
+            address: data.address,
+        });
+
+        // persist to storage
+        const currentData = AuthService.getUserData();
+        if (currentData) {
+            AuthService.storeUserData({
+                ...currentData,
+                ...data,
+            });
+        }
+    },
 }));

@@ -23,6 +23,8 @@ import {
   Briefcase,
   Award,
   Star,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useProgressStore } from "@/stores/progressStore";
@@ -37,7 +39,7 @@ interface ServiceArea {
 }
 
 export default function ProfilePage() {
-  const { user, clientProfile, tokens, login, updateUser } = useAuthStore();
+  const { user, clientProfile, tokens, login, updateUser, updateAuthData } = useAuthStore();
   const { startLoading, stopLoading } = useProgressStore();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,13 +112,16 @@ export default function ProfilePage() {
     if (!user?.id) return;
     try {
       const freshUser = await AuthService.getUser1();
+      console.log(freshUser);
       if (freshUser) {
-        updateUser(freshUser.data.user);
+        updateAuthData(freshUser.data);
       }
     } catch (error) {
       console.error("Failed to fetch user details", error);
     }
   }, [user?.id, updateUser]);
+
+  console.log(user);
 
   const fetchAddresses = useCallback(async () => {
     try {
@@ -391,6 +396,35 @@ export default function ProfilePage() {
   };
 
   // --- Profile Handlers ---
+  const handleOpenProfileModal = () => {
+    if (user) {
+      // Helper to parse the preferences from potentially nested arrays
+      const parsePreferences = (prefs: any) => {
+        if (!prefs) return "";
+        if (Array.isArray(prefs)) {
+          // Handle nested array case: [["item1", "item2"]] or ["item1", "item2"]
+          if (prefs.length > 0 && Array.isArray(prefs[0])) {
+            return prefs[0].join(", ");
+          }
+          return prefs.join(", ");
+        }
+        return String(prefs || "");
+      };
+
+      console.log(clientProfile);
+      setProfileFormData({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        dietary_restrictions: parsePreferences(clientProfile?.dietary_restrictions),
+        culinary_preferences: parsePreferences(clientProfile?.culinary_preferences),
+      });
+      setProfileFormErrors({});
+      setProfileFormError("");
+      setIsProfileModalOpen(true);
+    }
+  };
+
   const handleProfileInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -854,7 +888,7 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 pb-20">
+      <div className=" pb-20">
         {/* Page Header with Enhanced Design */}
         <div className="relative rounded-2xl overflow-hidden shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-r from-[#e59f4a] via-[#e68125] to-[#d46f1f]"></div>
@@ -871,13 +905,13 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Card with Enhanced Design */}
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 relative overflow-hidden">
+        <div className="bg-gradient-to-br mt-10 from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 relative overflow-hidden">
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-orange-100/20 to-transparent rounded-full blur-2xl"></div>
 
           {/* Edit Button - Top Right */}
           <button
-            onClick={() => setIsProfileModalOpen(true)}
+            onClick={handleOpenProfileModal}
             className="absolute top-6 right-6 z-10 flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#e59f4a] to-[#e68125] text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold"
           >
             <Edit2 className="w-4 h-4" />
@@ -923,16 +957,14 @@ export default function ProfilePage() {
 
                 <div className="flex flex-wrap gap-3 items-center">
                   <span
-                    className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${
-                      user?.is_verified
-                        ? "bg-green-100 text-green-700 border border-green-300"
-                        : "bg-yellow-100 text-yellow-700 border border-yellow-300"
-                    }`}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${user?.is_verified
+                      ? "bg-green-100 text-green-700 border border-green-300"
+                      : "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                      }`}
                   >
                     <div
-                      className={`w-2.5 h-2.5 rounded-full ${
-                        user?.is_verified ? "bg-green-600" : "bg-yellow-600"
-                      }`}
+                      className={`w-2.5 h-2.5 rounded-full ${user?.is_verified ? "bg-green-600" : "bg-yellow-600"
+                        }`}
                     ></div>
                     {user?.is_verified
                       ? "✓ Verified Account"
@@ -984,7 +1016,7 @@ export default function ProfilePage() {
 
         {/* Addresses Section - Enhanced */}
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center mt-10 justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl">
                 <MapPin className="w-6 h-6 text-orange-600" />
@@ -1084,7 +1116,7 @@ export default function ProfilePage() {
 
         {/* Preferences (Client Only) - Enhanced */}
         {clientProfile && (
-          <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-200">
+          <div className="bg-gradient-to-br mt-10 from-white to-gray-50 rounded-2xl p-8 shadow-lg border border-gray-200">
             <div className="flex items-center gap-3 mb-8">
               <div className="p-3 bg-gradient-to-br from-purple-100 to-purple-50 rounded-xl">
                 <Calendar className="w-6 h-6 text-purple-600" />
@@ -1223,11 +1255,10 @@ export default function ProfilePage() {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.floor(providerData.avg_rating)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
+                              className={`w-4 h-4 ${i < Math.floor(providerData.avg_rating)
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
+                                }`}
                             />
                           ))}
                         </div>
@@ -1236,11 +1267,10 @@ export default function ProfilePage() {
                         </p>
                       </div>
                       <div
-                        className={`px-4 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 ${
-                          providerData.verified
-                            ? "bg-green-100 text-green-700 border border-green-300"
-                            : "bg-yellow-100 text-yellow-700 border border-yellow-300"
-                        }`}
+                        className={`px-4 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 ${providerData.verified
+                          ? "bg-green-100 text-green-700 border border-green-300"
+                          : "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                          }`}
                       >
                         {providerData.verified ? "✓ Verified" : "⏳ Pending"}
                       </div>
@@ -1277,9 +1307,8 @@ export default function ProfilePage() {
                       </p>
                       <div className="text-sm font-semibold text-gray-900">
                         {providerData.service_area.includes(";")
-                          ? `${
-                              providerData.service_area.split(";").length
-                            } areas covered`
+                          ? `${providerData.service_area.split(";").length
+                          } areas covered`
                           : "1 area covered"}
                       </div>
                     </div>
@@ -1345,11 +1374,10 @@ export default function ProfilePage() {
                     name="label"
                     value={addressFormData.label}
                     onChange={handleAddressInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      addressFormErrors.label
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                    className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.label
+                      ? "border-red-300"
+                      : "border-gray-300"
+                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                   >
                     <option value="">Select address label</option>
                     <option value="Home">Home</option>
@@ -1375,11 +1403,10 @@ export default function ProfilePage() {
                       name="zip_code"
                       value={addressFormData.zip_code}
                       onChange={handleAddressInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        addressFormErrors.zip_code
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                      className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.zip_code
+                        ? "border-red-300"
+                        : "border-gray-300"
+                        } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                       placeholder="Enter 6-digit Pincode"
                       maxLength={6}
                     />
@@ -1410,11 +1437,10 @@ export default function ProfilePage() {
                       name="city"
                       value={addressFormData.city}
                       onChange={handleAddressInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        addressFormErrors.city
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                      className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.city
+                        ? "border-red-300"
+                        : "border-gray-300"
+                        } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                     />
                     {addressFormErrors.city && (
                       <p className="mt-1 text-sm text-red-600">
@@ -1431,11 +1457,10 @@ export default function ProfilePage() {
                       name="state"
                       value={addressFormData.state}
                       onChange={handleAddressInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        addressFormErrors.state
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                      className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.state
+                        ? "border-red-300"
+                        : "border-gray-300"
+                        } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                     />
                     {addressFormErrors.state && (
                       <p className="mt-1 text-sm text-red-600">
@@ -1454,11 +1479,10 @@ export default function ProfilePage() {
                     name="address_line1"
                     value={addressFormData.address_line1}
                     onChange={handleAddressInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      addressFormErrors.address_line1
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                    className={`w-full px-4 py-2.5 rounded-xl border ${addressFormErrors.address_line1
+                      ? "border-red-300"
+                      : "border-gray-300"
+                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                     placeholder="Street address, building, floor, etc."
                   />
                   {addressFormErrors.address_line1 && (
@@ -1503,11 +1527,10 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={addressFormLoading || hasAddressErrors}
-                    className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${
-                      addressFormLoading || hasAddressErrors
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105"
-                    }`}
+                    className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${addressFormLoading || hasAddressErrors
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105"
+                      }`}
                   >
                     {addressFormLoading ? "Saving..." : "Save Address"}
                   </button>
@@ -1520,201 +1543,299 @@ export default function ProfilePage() {
         {/* Profile Edit Modal - Enhanced */}
         {isProfileModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop with blur effect */}
             <div
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-md"
               onClick={() => setIsProfileModalOpen(false)}
             ></div>
-            <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 animate-scale-in max-h-[90vh] overflow-y-auto border border-gray-200">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    ✏️ Edit Profile
-                  </h3>
-                  <p className="text-gray-600 text-sm mt-1">
-                    Update your personal information
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsProfileModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
 
-              <form onSubmit={handleProfileSubmit} className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      First Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="first_name"
-                      value={profileFormData.first_name}
-                      onChange={handleProfileInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        profileFormErrors.first_name
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
-                    />
-                    {profileFormErrors.first_name && (
-                      <p className="mt-1 text-sm text-red-600">
-                        {profileFormErrors.first_name}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Last Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="last_name"
-                      value={profileFormData.last_name}
-                      onChange={handleProfileInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        profileFormErrors.last_name
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
-                    />
-                    {profileFormErrors.last_name && (
-                      <p className="mt-1 text-sm text-red-600">
-                        {profileFormErrors.last_name}
-                      </p>
-                    )}
-                  </div>
-                </div>
+            {/* Modal Container with subtle animation */}
+            <div className="relative w-full max-w-lg animate-fade-in-up bg-white rounded-3xl shadow-2xl p-0 overflow-hidden border border-gray-200/50 max-h-[92vh]">
+              {/* Gradient top accent */}
+              <div className="h-1.5 bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 w-full"></div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={profileFormData.email}
-                    onChange={handleProfileInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      profileFormErrors.email
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
-                  />
-                  {profileFormErrors.email && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {profileFormErrors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Profile Picture
-                  </label>
-                  <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-orange-400 hover:bg-orange-50/30 transition-all duration-300">
-                    <div className="text-center">
-                      <Upload className="w-8 h-8 text-orange-500 mx-auto mb-2" />
-                      <span className="text-sm text-gray-600">
-                        {profileImage
-                          ? profileImage.name
-                          : "Upload New Picture"}
-                      </span>
-                      <p className="text-xs text-gray-500 mt-1">
-                        PNG, JPG up to 5MB
+              {/* Header with subtle background */}
+              <div className="px-8 pt-8 pb-6 bg-gradient-to-b from-white to-gray-50/30">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange-100 to-amber-50 shadow-sm">
+                      <div className="text-orange-500">✏️</div>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-800 bg-clip-text text-transparent">
+                        Edit Profile
+                      </h3>
+                      <p className="text-gray-500 text-sm mt-1.5">
+                        Update your personal information and preferences
                       </p>
                     </div>
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                  </label>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Dietary Restrictions{" "}
-                    <span className="text-gray-400 font-normal text-xs">
-                      (comma separated)
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    name="dietary_restrictions"
-                    value={profileFormData.dietary_restrictions}
-                    onChange={handleProfileInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      profileFormErrors.dietary_restrictions
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
-                    placeholder="e.g. Vegetarian, Gluten-Free, Vegan"
-                  />
-                  {profileFormErrors.dietary_restrictions && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {profileFormErrors.dietary_restrictions}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Culinary Preferences{" "}
-                    <span className="text-gray-400 font-normal text-xs">
-                      (comma separated)
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    name="culinary_preferences"
-                    value={profileFormData.culinary_preferences}
-                    onChange={handleProfileInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      profileFormErrors.culinary_preferences
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
-                    placeholder="e.g. Italian, Mexican, Indian, Asian"
-                  />
-                  {profileFormErrors.culinary_preferences && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {profileFormErrors.culinary_preferences}
-                    </p>
-                  )}
-                </div>
-
-                {profileFormError && (
-                  <div className="text-red-600 text-sm bg-red-50 p-4 rounded-xl border border-red-200">
-                    {profileFormError}
                   </div>
-                )}
+                  <button
+                    onClick={() => setIsProfileModalOpen(false)}
+                    className="text-gray-400 hover:text-gray-700 p-2 hover:bg-gray-100/80 rounded-xl transition-all duration-200 active:scale-95"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
 
-                <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+              {/* Scrollable Form Area with custom scrollbar */}
+              <div className="px-8 py-2 max-h-[calc(92vh-200px)] overflow-y-auto 
+        [&::-webkit-scrollbar]:w-2.5
+        [&::-webkit-scrollbar-track]:bg-gray-100/50
+        [&::-webkit-scrollbar-track]:rounded-full
+        [&::-webkit-scrollbar-thumb]:bg-gradient-to-b
+        [&::-webkit-scrollbar-thumb]:from-orange-300/60
+        [&::-webkit-scrollbar-thumb]:to-amber-400/60
+        [&::-webkit-scrollbar-thumb]:rounded-full
+        [&::-webkit-scrollbar-thumb]:hover:from-orange-400/80
+        [&::-webkit-scrollbar-thumb]:hover:to-amber-500/80
+        [&::-webkit-scrollbar-thumb]:transition-all
+        [&::-webkit-scrollbar-thumb]:duration-300">
+
+                <form onSubmit={handleProfileSubmit} className="space-y-6 pb-2">
+                  {/* Name Fields with card-like appearance */}
+                  <div className="grid grid-cols-2 gap-5">
+                    <div className="relative group">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2.5 ml-0.5">
+                        First Name *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="first_name"
+                          value={profileFormData.first_name}
+                          onChange={handleProfileInputChange}
+                          className={`w-full px-4 py-3 rounded-xl border-2 bg-white/80 transition-all duration-200 
+                    ${profileFormErrors.first_name
+                              ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-200"
+                              : "border-gray-200/80 focus:border-orange-400 focus:ring-3 focus:ring-orange-100"
+                            } outline-none placeholder:text-gray-400 group-hover:shadow-sm`}
+                          placeholder="John"
+                        />
+                        <div className="absolute inset-0 rounded-xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                      </div>
+                      {profileFormErrors.first_name && (
+                        <p className="mt-2 ml-1 text-sm text-red-600 flex items-center gap-1.5">
+                          <span className="text-red-500">⚠</span> {profileFormErrors.first_name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="relative group">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2.5 ml-0.5">
+                        Last Name *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="last_name"
+                          value={profileFormData.last_name}
+                          onChange={handleProfileInputChange}
+                          className={`w-full px-4 py-3 rounded-xl border-2 bg-white/80 transition-all duration-200 
+                    ${profileFormErrors.last_name
+                              ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-200"
+                              : "border-gray-200/80 focus:border-orange-400 focus:ring-3 focus:ring-orange-100"
+                            } outline-none placeholder:text-gray-400 group-hover:shadow-sm`}
+                          placeholder="Doe"
+                        />
+                        <div className="absolute inset-0 rounded-xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                      </div>
+                      {profileFormErrors.last_name && (
+                        <p className="mt-2 ml-1 text-sm text-red-600 flex items-center gap-1.5">
+                          <span className="text-red-500">⚠</span> {profileFormErrors.last_name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Email Field */}
+                  <div className="relative group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5 ml-0.5">
+                      Email Address *
+                    </label>
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        ✉️
+                      </div>
+                      <input
+                        type="email"
+                        name="email"
+                        value={profileFormData.email}
+                        onChange={handleProfileInputChange}
+                        className={`w-full pl-12 pr-4 py-3 rounded-xl border-2 bg-white/80 transition-all duration-200 
+                  ${profileFormErrors.email
+                            ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-200"
+                            : "border-gray-200/80 focus:border-orange-400 focus:ring-3 focus:ring-orange-100"
+                          } outline-none placeholder:text-gray-400 group-hover:shadow-sm`}
+                        placeholder="john@example.com"
+                      />
+                      <div className="absolute inset-0 rounded-xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                    </div>
+                    {profileFormErrors.email && (
+                      <p className="mt-2 ml-1 text-sm text-red-600 flex items-center gap-1.5">
+                        <span className="text-red-500">⚠</span> {profileFormErrors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Profile Picture Upload with enhanced design */}
+                  <div className="relative group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5 ml-0.5">
+                      Profile Picture
+                    </label>
+                    <label className="flex flex-col items-center justify-center w-full p-6 border-3 border-dashed border-gray-200/80 rounded-2xl cursor-pointer 
+              bg-gradient-to-br from-gray-50/50 to-white/50 
+              hover:border-orange-300 hover:bg-gradient-to-br hover:from-orange-50/30 hover:to-amber-50/20 
+              active:scale-[0.995] transition-all duration-300 group">
+                      <div className="text-center p-3">
+                        <div className="relative mb-3">
+                          <div className="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center shadow-inner">
+                            <Upload className="w-7 h-7 text-orange-400" />
+                          </div>
+                          <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white border-2 border-orange-200 flex items-center justify-center">
+                            <Plus className="w-3.5 h-3.5 text-orange-500" />
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700 block mb-1">
+                          {profileImage ? profileImage.name : "Click to upload"}
+                        </span>
+                        <p className="text-xs text-gray-500">
+                          PNG, JPG up to 5MB • Recommended: 400×400px
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Dietary Restrictions with icon */}
+                  <div className="relative group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5 ml-0.5 flex items-center gap-2">
+                      <span className="text-lg">🥗</span> Dietary Restrictions
+                      <span className="text-gray-400 font-normal text-xs">
+                        (comma separated)
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="dietary_restrictions"
+                        value={profileFormData.dietary_restrictions}
+                        onChange={handleProfileInputChange}
+                        className={`w-full px-4 py-3 rounded-xl border-2 bg-white/80 transition-all duration-200 
+                  ${profileFormErrors.dietary_restrictions
+                            ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-200"
+                            : "border-gray-200/80 focus:border-orange-400 focus:ring-3 focus:ring-orange-100"
+                          } outline-none placeholder:text-gray-400 group-hover:shadow-sm`}
+                        placeholder="Vegetarian, Gluten-Free, Vegan, Peanut Allergy"
+                      />
+                      <div className="absolute inset-0 rounded-xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                    </div>
+                    {profileFormErrors.dietary_restrictions && (
+                      <p className="mt-2 ml-1 text-sm text-red-600 flex items-center gap-1.5">
+                        <span className="text-red-500">⚠</span> {profileFormErrors.dietary_restrictions}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2 ml-1">
+                      Add dietary restrictions or allergies. Use commas to separate multiple items.
+                    </p>
+                  </div>
+
+                  {/* Culinary Preferences */}
+                  <div className="relative group">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2.5 ml-0.5">
+                      Culinary Preferences
+                      <span className="text-gray-400 font-normal text-xs ml-2">
+                        (comma separated)
+                      </span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        name="culinary_preferences"
+                        value={profileFormData.culinary_preferences}
+                        onChange={handleProfileInputChange}
+                        className={`w-full px-4 py-3 rounded-xl border-2 bg-white/80 transition-all duration-200 
+                  ${profileFormErrors.culinary_preferences
+                            ? "border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-200"
+                            : "border-gray-200/80 focus:border-orange-400 focus:ring-3 focus:ring-orange-100"
+                          } outline-none placeholder:text-gray-400 group-hover:shadow-sm`}
+                        placeholder="Italian, Mexican, Indian, Asian, Mediterranean"
+                      />
+                      <div className="absolute inset-0 rounded-xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                    </div>
+                    {profileFormErrors.culinary_preferences && (
+                      <p className="mt-2 ml-1 text-sm text-red-600 flex items-center gap-1.5">
+                        <span className="text-red-500">⚠</span> {profileFormErrors.culinary_preferences}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Error Message with better styling */}
+                  {profileFormError && (
+                    <div className="text-red-600 text-sm bg-gradient-to-r from-red-50/80 to-red-50/40 p-4 rounded-2xl border border-red-200/70 shadow-sm mt-2">
+                      <div className="flex items-start gap-3">
+                        <div className="p-1.5 rounded-lg bg-red-100 mt-0.5">
+                          <AlertCircle className="w-4 h-4 text-red-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-red-700">Update Failed</p>
+                          <p className="text-red-600/90 mt-0.5">{profileFormError}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </form>
+              </div>
+
+              {/* Fixed Footer with gradient border */}
+              <div className="px-8 mb-12 pt-2 mt-2 bg-gradient-to-t from-white via-white to-white/95 border-t border-gray-100/80">
+                <div className="flex justify-end gap-4">
                   <button
                     type="button"
                     onClick={() => setIsProfileModalOpen(false)}
-                    className="px-6 py-2.5 text-gray-700 font-semibold hover:bg-gray-100 rounded-xl transition-all"
+                    className="px-7 py-3 text-gray-600 font-semibold hover:bg-gray-100/80 rounded-xl 
+              transition-all duration-200 active:scale-95 border border-gray-200/70 
+              hover:border-gray-300 hover:shadow-sm"
                     disabled={profileFormLoading}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
+                    onClick={handleProfileSubmit}
                     disabled={profileFormLoading || hasProfileErrors}
-                    className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${
-                      profileFormLoading || hasProfileErrors
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105"
-                    }`}
+                    className={`px-7 py-3 rounded-xl font-semibold transition-all duration-300 active:scale-[0.98]
+              ${profileFormLoading || hasProfileErrors
+                        ? "bg-gradient-to-r from-gray-300 to-gray-200 cursor-not-allowed text-gray-500"
+                        : "bg-gradient-to-r from-[#FF9D43] via-[#FF8A33] to-[#FF7A23] hover:shadow-lg hover:shadow-orange-200/50 text-white hover:scale-[1.02]"
+                      } relative overflow-hidden group`}
                   >
-                    {profileFormLoading ? "Updating..." : "Update Profile"}
+                    {/* Shine effect on hover */}
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
+              -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+
+                    <span className="relative flex items-center justify-center gap-2">
+                      {profileFormLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Updating...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-5 h-5" />
+                          Update Profile
+                        </>
+                      )}
+                    </span>
                   </button>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
         )}
@@ -1772,11 +1893,10 @@ export default function ProfilePage() {
                       name="service_type"
                       value={providerFormData.service_type}
                       onChange={handleProviderInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        providerFormError.service_type
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                      className={`w-full px-4 py-2.5 rounded-xl border ${providerFormError.service_type
+                        ? "border-red-300"
+                        : "border-gray-300"
+                        } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                       placeholder="e.g. Chef, Caterer, Event Cook"
                     />
                   </div>
@@ -1795,11 +1915,10 @@ export default function ProfilePage() {
                     name="company_name"
                     value={providerFormData.company_name}
                     onChange={handleProviderInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      providerFormError.company_name
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                    className={`w-full px-4 py-2.5 rounded-xl border ${providerFormError.company_name
+                      ? "border-red-300"
+                      : "border-gray-300"
+                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                     placeholder="Leave blank for individual providers"
                   />
                 </div>
@@ -1855,11 +1974,10 @@ export default function ProfilePage() {
                           : providerFormData.experience_years
                       }
                       onChange={handleProviderInputChange}
-                      className={`w-full px-4 py-2.5 rounded-xl border ${
-                        providerFormError.experience_years
-                          ? "border-red-300"
-                          : "border-gray-300"
-                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                      className={`w-full px-4 py-2.5 rounded-xl border ${providerFormError.experience_years
+                        ? "border-red-300"
+                        : "border-gray-300"
+                        } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                       min="0"
                       max="50"
                     />
@@ -1917,11 +2035,10 @@ export default function ProfilePage() {
                                 e.target.value
                               )
                             }
-                            className={`w-full px-4 py-2.5 rounded-xl border ${
-                              serviceAreaErrors[index]
-                                ? "border-red-300"
-                                : "border-gray-300"
-                            } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                            className={`w-full px-4 py-2.5 rounded-xl border ${serviceAreaErrors[index]
+                              ? "border-red-300"
+                              : "border-gray-300"
+                              } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                             placeholder="Enter 6-digit Pincode"
                             maxLength={6}
                           />
@@ -2012,11 +2129,10 @@ export default function ProfilePage() {
                     name="specialization"
                     value={providerFormData.specialization}
                     onChange={handleProviderInputChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      providerFormError.specialization
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
+                    className={`w-full px-4 py-2.5 rounded-xl border ${providerFormError.specialization
+                      ? "border-red-300"
+                      : "border-gray-300"
+                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all`}
                     placeholder="e.g. Italian, Indian, Chinese, Continental"
                   />
                 </div>
@@ -2030,11 +2146,10 @@ export default function ProfilePage() {
                     value={providerFormData.description}
                     onChange={handleProviderInputChange}
                     rows={5}
-                    className={`w-full px-4 py-2.5 rounded-xl border ${
-                      providerFormError.description
-                        ? "border-red-300"
-                        : "border-gray-300"
-                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all resize-none`}
+                    className={`w-full px-4 py-2.5 rounded-xl border ${providerFormError.description
+                      ? "border-red-300"
+                      : "border-gray-300"
+                      } focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all resize-none`}
                     placeholder="Tell clients about your experience, specialties, and what makes you unique..."
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -2060,11 +2175,10 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={providerFormLoading || hasProviderErrors}
-                    className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${
-                      providerFormLoading || hasProviderErrors
-                        ? "bg-gray-300 cursor-not-allowed"
-                        : "bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105"
-                    }`}
+                    className={`px-6 py-2.5 rounded-xl font-semibold shadow-md transition-all ${providerFormLoading || hasProviderErrors
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gradient-to-r from-[#e59f4a] to-[#e68125] hover:shadow-lg hover:scale-105"
+                      }`}
                   >
                     {providerFormLoading ? "Saving..." : "Save Details"}
                   </button>

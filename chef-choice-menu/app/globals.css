@@ -53,7 +53,7 @@ html {
 }
 
 .bg-pattern-grid {
-  background-image: 
+  background-image:
     linear-gradient(rgba(229, 168, 85, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(229, 168, 85, 0.1) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -106,12 +106,10 @@ html {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 70%
-  );
+  background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 70%);
   transform: translateX(-100%);
   transition: transform 0.6s;
 }
@@ -122,9 +120,12 @@ html {
 
 /* Floating animation */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
@@ -136,9 +137,12 @@ html {
 
 /* Pulse glow effect */
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(229, 168, 85, 0.3);
   }
+
   50% {
     box-shadow: 0 0 40px rgba(229, 168, 85, 0.6);
   }
@@ -184,7 +188,8 @@ html {
   line-height: 1.75;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   margin-top: 1.25em;
   margin-bottom: 1.25em;
   padding-left: 1.625em;
@@ -201,7 +206,7 @@ html {
   color: #6B7280;
   border-left-width: 0.25rem;
   border-left-color: #E5E7EB;
-  quotes: "\201C""\201D""\2018""\2019";
+  quotes: "\201C" "\201D" "\2018" "\2019";
   margin-top: 1.6em;
   margin-bottom: 1.6em;
   padding-left: 1em;
@@ -233,7 +238,8 @@ html {
 
 /* fine-tune inner content width for very long lines (optional) */
 .wmde-markdown {
-  --max-line-length: 85ch; /* optional: cap line length for readability */
+  --max-line-length: 85ch;
+  /* optional: cap line length for readability */
   max-width: var(--max-line-length);
   margin-left: auto;
   margin-right: auto;
@@ -271,6 +277,7 @@ html {
   margin-bottom: 0.75rem;
   padding-left: 1.25rem;
 }
+
 .wmde-markdown li {
   margin: 0.25rem 0;
   line-height: 1.5;
@@ -312,6 +319,7 @@ html {
   border-collapse: collapse;
   margin: 0.9rem 0;
 }
+
 .wmde-markdown th,
 .wmde-markdown td {
   border: 1px solid #e6e9ee;
@@ -340,6 +348,7 @@ html {
     opacity: 0;
     transform: translateY(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -351,6 +360,7 @@ html {
     opacity: 0;
     transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -362,6 +372,7 @@ html {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -373,6 +384,7 @@ html {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -384,6 +396,7 @@ html {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -414,18 +427,24 @@ html {
 /* Add to your global.css or create a new CSS file */
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -435,6 +454,7 @@ html {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -491,7 +511,7 @@ html {
     margin-left: -16px;
     margin-right: -16px;
   }
-  
+
   .mobile-padding {
     padding-left: 16px;
     padding-right: 16px;
@@ -512,4 +532,36 @@ html {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
 }
