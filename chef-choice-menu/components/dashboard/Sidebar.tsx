@@ -37,7 +37,7 @@ export default function Sidebar() {
   const { user, logout, serviceProviderProfile } = useAuthStore();
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
- console.log("1111", serviceProviderProfile)
+  console.log("1111", serviceProviderProfile)
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -82,7 +82,7 @@ export default function Sidebar() {
         // { name: "Completed", href: "/dashboard/bookings?filter=completed" },
       ]
     },
-     {
+    {
       name: "Payment & Invoice",
       href: "/dashboard/payment&invoice",
       icon: Landmark,
@@ -175,7 +175,7 @@ export default function Sidebar() {
     //     // { name: "Calendar", href: "/dashboard/bookings/calendar" },
     //   ]
     // },
-    
+
     // {
     //   name: "Earnings",
     //   href: "/dashboard/earnings",
@@ -201,7 +201,7 @@ export default function Sidebar() {
     //     { name: "Packages", href: "/dashboard/services/packages" },
     //   ]
     // },
-    
+
     // {
     //   name: "Analytics",
     //   href: "/dashboard/analytics",
@@ -245,7 +245,6 @@ export default function Sidebar() {
   const toggleSubmenu = (itemName: string) => {
     setActiveSubmenu(activeSubmenu === itemName ? null : itemName);
   };
-{console.log("ssss", user)}
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* User Profile Card */}
@@ -268,7 +267,7 @@ export default function Sidebar() {
             <p className="font-bold text-lg truncate">
               {user?.first_name} {user?.last_name}
             </p>
-            
+
             <p className="text-orange-100 text-sm capitalize font-medium">
               {user?.role?.replace("_", " ")}
             </p>
@@ -284,10 +283,10 @@ export default function Sidebar() {
         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest px-4 mb-4">
           ✨ Navigation
         </p>
-        
+
         {menuItems.map((item, index) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href 
+          const isActive = pathname === item.href
           //   (item.submenu && item.submenu.some(sub => pathname === sub.href));
 
           const hasSubmenu = item.submenu || false;
@@ -545,7 +544,7 @@ export default function Sidebar() {
 
             return (
               <Link
-                key={ index +1}
+                key={index + 1}
                 href={item.href}
                 className={`flex flex-col items-center justify-center py-2 px-4 rounded-xl transition-all relative group
                   ${isActive
@@ -570,7 +569,7 @@ export default function Sidebar() {
               </Link>
             );
           })}
-          
+
           {/* More Button */}
           <button
             onClick={() => setIsMobileMenuOpen(true)}

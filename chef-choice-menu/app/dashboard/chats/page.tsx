@@ -153,7 +153,7 @@ export default function ChatsPage() {
       console.log('Loading initial messages for conversation:', convId);
       const data = await ChatService.syncMessages(convId, '');
       console.log('Loaded messages:', data);
-      
+
       if (data && Array.isArray(data)) {
         const transformedMessages = data.map(transformMessage);
         // Sort by time ascending
@@ -177,34 +177,35 @@ export default function ChatsPage() {
 
   // Sync new messages
   const syncMessages = useCallback(async (convId: string) => {
+    console.log('Syncing messages for conversation:', convId);
     if (!convId) return;
 
-    console.log("111111", messages[messages.length - 1].id)
     try {
       // Get the most recent message timestamp
-      const lastMessageId = messages.length > 0 
+      const lastMessageId = messages.length > 0
         ? messages[messages.length - 1].id
         : '';
-      
-    //   console.log('Syncing messages since:', lastMessageTime);
-      
+
+      //   console.log('Syncing messages since:', lastMessageTime);
+
       const data = await ChatService.syncMessages(convId, lastMessageId);
-      
+      console.log('Synced messages:', convId, lastMessageId);
+
       if (data && Array.isArray(data) && data.length > 0) {
         console.log('Found', data.length, 'new messages');
-        
+
         // Filter out optimistic messages that might have been sent
         const newMessages = data
           .map(transformMessage)
           // Filter out messages that might already exist
           .filter(newMsg => {
-            const existing = messages.find(msg => 
-              msg.id === newMsg.id || 
+            const existing = messages.find(msg =>
+              msg.id === newMsg.id ||
               (msg.text === newMsg.text && Math.abs(new Date(msg.time).getTime() - new Date(newMsg.time).getTime()) < 60000)
             );
             return !existing;
           });
-        
+
         if (newMessages.length > 0) {
           setMessages(prev => {
             const combined = [...prev, ...newMessages];
@@ -214,7 +215,7 @@ export default function ChatsPage() {
           });
         }
       }
-      
+
       setLastSyncTime(new Date().toISOString());
     } catch (error) {
       console.error('Failed to sync messages', error);
@@ -233,12 +234,12 @@ export default function ChatsPage() {
   useEffect(() => {
     if (conversationId && !initialLoadRef.current) {
       console.log('Setting up auto-sync for conversation:', conversationId);
-      
+
       // Clear any existing interval
       if (syncIntervalRef.current) {
         clearInterval(syncIntervalRef.current);
       }
-      
+
       // Set up new sync interval
       syncIntervalRef.current = setInterval(() => {
         console.log('Auto-sync triggered at:', new Date().toISOString());
@@ -285,7 +286,7 @@ export default function ChatsPage() {
       updated.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
       return updated;
     });
-    
+
     const messageToSend = message;
     setMessage('');
     setSending(true);
@@ -302,11 +303,11 @@ export default function ChatsPage() {
       // Update the optimistic message with server response
       if (response && (response.id || response.message)) {
         const serverMessageData = response.id ? response : response.message;
-        
+
         setMessages(prev => {
           // Remove the optimistic message
           const filtered = prev.filter(msg => msg.id !== tempId);
-          
+
           // Add the server message
           const transformed = transformMessage({
             ...serverMessageData,
@@ -314,12 +315,12 @@ export default function ChatsPage() {
             sender_role: user.role === 'client' ? 'client' : 'admin',
             is_admin_message: user.role !== 'client'
           });
-          
+
           const updated = [...filtered, transformed];
           updated.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
           return updated;
         });
-        
+
         // Trigger immediate sync to ensure we have all messages
         setTimeout(() => {
           syncMessages(conversationId);
@@ -333,17 +334,17 @@ export default function ChatsPage() {
       }
     } catch (error) {
       console.error('Failed to send message', error);
-      
+
       // Update optimistic message to show error
       setMessages(prev =>
         prev.map(msg =>
           msg.id === tempId
-            ? { 
-                ...msg, 
-                sender: 'system', 
-                text: 'Failed to send message. Please try again.',
-                isOptimistic: false 
-              }
+            ? {
+              ...msg,
+              sender: 'system',
+              text: 'Failed to send message. Please try again.',
+              isOptimistic: false
+            }
             : msg
         )
       );
@@ -362,48 +363,47 @@ export default function ChatsPage() {
 
   // Format message time (shows local time)
   const formatMessageTime = (time: string) => {
-    console.log("timedddddd", time)
     try {
       const date = new Date(time);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         return 'Invalid time';
       }
-      
+
       // Convert to local time string
-      return date.toLocaleTimeString([], { 
-        hour: '2-digit', 
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       });
     } catch (error) {
       console.error('Error formatting time:', error, time);
       return time;
     }
   };
-// const formatMessageTime = (time: string) => {
-//   try {
-//     const date = new Date(time); // treat as local time
-//     return date.toLocaleTimeString("en-IN", {
-//       hour: "numeric",
-//       minute: "2-digit",
-//       hour12: true,
-//     });
-//   } catch {
-//     return "";
-//   }
-// };
+  // const formatMessageTime = (time: string) => {
+  //   try {
+  //     const date = new Date(time); // treat as local time
+  //     return date.toLocaleTimeString("en-IN", {
+  //       hour: "numeric",
+  //       minute: "2-digit",
+  //       hour12: true,
+  //     });
+  //   } catch {
+  //     return "";
+  //   }
+  // };
 
 
   // Format date for display
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        month: 'short', 
-        day: 'numeric' 
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
       });
     } catch {
       return dateString;
@@ -434,15 +434,15 @@ export default function ChatsPage() {
   // Get relative time for last sync
   const getLastSyncText = () => {
     if (!lastSyncTime) return 'Never synced';
-    
+
     const now = new Date();
     const lastSync = new Date(lastSyncTime);
     const diffMinutes = Math.floor((now.getTime() - lastSync.getTime()) / (1000 * 60));
-    
+
     if (diffMinutes < 1) return 'Just now';
     if (diffMinutes === 1) return '1 minute ago';
     if (diffMinutes < 60) return `${diffMinutes} minutes ago`;
-    
+
     const diffHours = Math.floor(diffMinutes / 60);
     if (diffHours === 1) return '1 hour ago';
     return `${diffHours} hours ago`;
@@ -524,7 +524,7 @@ export default function ChatsPage() {
                   {filteredBookings.map((booking) => {
                     const firstDate = Object.keys(booking.dates || {})[0] || '';
                     const eventIcon = getEventIcon(booking.event_type);
-                    
+
                     return (
                       <div
                         key={booking.id}
@@ -584,7 +584,7 @@ export default function ChatsPage() {
                 <div className="relative overflow-hidden p-4 border-b-2 border-orange-200 flex items-center justify-between bg-gradient-to-r from-orange-50 to-red-50">
                   {/* Subtle background gradient */}
                   <div className="absolute inset-0 opacity-30 pointer-events-none"></div>
-                  
+
                   <div className="relative z-10 flex items-center gap-3 flex-1">
                     <button
                       onClick={() => setSelectedBookingId(null)}
@@ -627,7 +627,7 @@ export default function ChatsPage() {
                 </div>
 
                 {/* Chat Messages */}
-                <div 
+                <div
                   ref={chatContainerRef}
                   className="flex-1 overflow-y-auto bg-gradient-to-b from-gray-50/50 to-white p-4"
                 >
@@ -652,7 +652,7 @@ export default function ChatsPage() {
                   ) : (
                     <div className="max-w-4xl mx-auto space-y-4 pb-4">
                       {messages.map((msg, index) => {
-                        const showSender = index === 0 || 
+                        const showSender = index === 0 ||
                           messages[index - 1].sender !== msg.sender ||
                           new Date(msg.time).getTime() - new Date(messages[index - 1].time).getTime() > 300000;
 
@@ -676,18 +676,16 @@ export default function ChatsPage() {
                                   </p>
                                 )}
                                 <div
-                                  className={`px-4 py-3 rounded-2xl shadow-md transition-all ${
-                                    msg.sender === 'user'
-                                      ? 'bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-br-md hover:shadow-lg'
-                                      : msg.sender === 'chef'
+                                  className={`px-4 py-3 rounded-2xl shadow-md transition-all ${msg.sender === 'user'
+                                    ? 'bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-br-md hover:shadow-lg'
+                                    : msg.sender === 'chef'
                                       ? 'bg-white border-2 border-gray-200 rounded-bl-md shadow-sm hover:border-orange-200'
                                       : 'bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 text-gray-800 rounded-bl-md'
-                                  }`}
+                                    }`}
                                 >
                                   <p className="text-sm leading-relaxed font-medium">{msg.text}</p>
-                                  <p className={`text-xs mt-2 font-semibold ${
-                                    msg.sender === 'user' ? 'text-orange-200' : 'text-gray-600'
-                                  }`}>
+                                  <p className={`text-xs mt-2 font-semibold ${msg.sender === 'user' ? 'text-orange-200' : 'text-gray-600'
+                                    }`}>
                                     {formatMessageTime(msg.time)}
                                     {msg.isOptimistic && ' • Sending...'}
                                   </p>

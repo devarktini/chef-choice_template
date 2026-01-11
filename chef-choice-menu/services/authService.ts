@@ -106,7 +106,7 @@ export class AuthService {
      * Store user data in localStorage
      */
     static storeUserData(data: any): void {
-    
+
         if (typeof window !== 'undefined') {
             localStorage.setItem('user_data', JSON.stringify(data));
         }
@@ -148,7 +148,7 @@ export class AuthService {
         }
     }
 
-        static async getUser1(): Promise<any> {
+    static async getUser1(): Promise<any> {
         try {
             const tokens = this.getTokens();
             const response = await fetch(`${API_BASE_URL}/api/users/me/`, {
@@ -214,7 +214,6 @@ export class AuthService {
                 },
                 body: JSON.stringify({ role }),
             });
-            console.log("Ssss", response)
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
@@ -229,28 +228,28 @@ export class AuthService {
     }
 
     static async getGalleryItems(page: number = 1, pageSize: number = 10): Promise<any> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/gallery/?page=${page}&page_size=${pageSize}`, 
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-           },
-      }
-    );
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/gallery/?page=${page}&page_size=${pageSize}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            );
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Failed to fetch gallery items");
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Failed to fetch gallery items");
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Get Gallery error:", error);
+            throw error;
+        }
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Get Gallery error:", error);
-    throw error;
-  }
-}
 
 
 }
