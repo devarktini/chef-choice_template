@@ -29,25 +29,25 @@ export default function AddOnServices() {
     <section className="py-20 bg-white relative overflow-hidden">
       {/* Decorative circles */}
       <div className="absolute top-20 right-10 w-72 h-72 bg-warm-200 rounded-full filter blur-3xl opacity-20 animate-pulse-slow"></div>
-      <div className="absolute bottom-20 left-10 w-72 h-72 bg-primary-200 rounded-full filter blur-3xl opacity-20 animate-pulse-slow" style={{animationDelay: '1s'}}></div>
+      <div className="absolute bottom-20 left-10 w-72 h-72 bg-primary-200 rounded-full filter blur-3xl opacity-20 animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-slide-down">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Services</h2>
-          <h3 className="text-2xl font-semibold text-primary-500 mb-4">Add On Services</h3>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Additional Services</h2>
+          {/* <h3 className="text-2xl font-semibold text-primary-500 mb-4">Add On Services</h3> */}
           <p className="text-gray-600 max-w-3xl mx-auto">
-            To make your event completely stress-free, we offer additional support services 
-            that ensure everything runs smoothly. Add these to your booking at checkout for 
+            To make your event completely stress-free, we offer additional support services
+            that ensure everything runs smoothly. Add these to your booking at checkout for
             a truly seamless experience.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {addOns.map((service, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="bg-gradient-to-br from-white to-cream-50 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden group animate-scale-in"
-              style={{animationDelay: `${index * 0.1}s`}}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Image Header */}
               <div className="relative h-56 overflow-hidden">

@@ -71,8 +71,8 @@ export default function Hero({ onHowItWorksClick }: HeroProps) {
               className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
             >
               <Link href="/service?scrollTo=services">
-                <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full text-lg font-bold hover:from-orange-600 hover:to-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 group">
-                  Book Now
+                <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full text-md font-bold hover:from-orange-600 hover:to-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 group">
+                  Explore Our Servcies
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>

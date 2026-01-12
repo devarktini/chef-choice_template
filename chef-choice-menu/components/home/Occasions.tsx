@@ -1,10 +1,13 @@
 "use client";
 
-import { Cake, Heart, PartyPopper, Coffee, Gift, Users, Baby, Home, Church, Music, Flame, Calendar } from 'lucide-react';
+import { Cake, Heart, PartyPopper, Coffee, Gift, Users, Baby, Home, Church, Music, Flame, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function Occasions() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const occasions = [
     {
       icon: <Cake className="w-8 h-8" />,
@@ -92,52 +95,144 @@ export default function Occasions() {
     }
   ];
 
+  // Calculate items per view based on screen size
+  const getItemsPerView = () => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth < 640) return 1; // Mobile
+      if (window.innerWidth < 1024) return 2; // Tablet
+      return 4; // Desktop
+    }
+    return 4;
+  };
+
+  const [itemsPerView, setItemsPerView] = useState(getItemsPerView());
+
+  // Update items per view on resize
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', () => {
+      setItemsPerView(getItemsPerView());
+    });
+  }
+
+  const maxIndex = Math.max(0, occasions.length - itemsPerView);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
+  };
+
   return (
     <section className="py-20 bg-gradient-to-br from-primary-50 via-cream-50 to-warm-50 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-pattern-dots opacity-30"></div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <h2 className="text-4xl font-bold text-center text-gray-900 mb-4 animate-slide-down">
-          Special occasions we specialize in
-        </h2>
-        <p className="text-center text-gray-600 max-w-3xl mx-auto mb-16 animate-slide-down" style={{ animationDelay: '0.1s' }}>
-          From intimate birthdays to grand weddings, Chef Choice Menu crafts culinary experiences
-          that make every celebration memorable.
-        </p>
+        {/* Header with View All Link */}
+        <div className="flex flex-col md:flex-row justify-between  mx-20 items-center mb-8">
+          <div className="text-center md:text-left mb-4 md:mb-0">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4 animate-slide-down">
+              Our Services
+            </h2>
+            {/* <p className="text-gray-600 max-w-2xl animate-slide-down" style={{ animationDelay: '0.1s' }}>
+              From intimate birthdays to grand weddings, Chef Choice Menu crafts culinary experiences
+              that make every celebration memorable.
+            </p> */}
+          </div>
+          <Link
+            href="/service"
+            className="flex items-center gap-2  text-orange-600 rounded-full font-semibold hover:text-orange-800 hover:scale-110 hover:underline  transition-all duration-300"
+          >
+            View All
+            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
 
-        <div className="grid md:grid-cols-4 gap-6">
-          {occasions.map((occasion, index) => (
-            <Link
-              href={'/contact'}
-              key={index}
-              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2 animate-scale-in"
-              style={{ animationDelay: `${index * 0.05}s` }}
+        {/* Slider Container */}
+        <div className="relative max-w-8xl mx-auto px-12 md:px-16">
+          {/* Left Navigation Button */}
+          <button
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white rounded-full p-3 md:p-4 shadow-xl hover:shadow-2xl transition-all duration-300 ${currentIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-50 hover:scale-110'
+              }`}
+            aria-label="Previous"
+          >
+            <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-orange-600" />
+          </button>
+
+          {/* Slider Content */}
+          <div className="overflow-hidden">
+            <div
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+                gap: itemsPerView === 1 ? '0px' : '18px'
+              }}
             >
-              {/* Image with Icon Overlay */}
-              <div className="relative h-40 overflow-hidden">
-                <Image
-                  src={occasion.image}
-                  alt={occasion.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className={`absolute top-3 right-3 bg-gradient-to-r ${occasion.color} text-white p-2 rounded-full shadow-lg`}>
-                  {occasion.icon}
-                </div>
-              </div>
+              {occasions.map((occasion, index) => (
+                <Link
+                  href={'/contact'}
+                  key={index}
+                  className="flex-shrink-0 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2"
+                  style={{
+                    width: itemsPerView === 1
+                      ? '100%'
+                      : `calc((100% - ${(itemsPerView - 1) * 24}px) / ${itemsPerView})`
+                  }}
+                >
+                  {/* Image with Icon Overlay */}
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
+                      src={occasion.image}
+                      alt={occasion.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className={`absolute top-3 right-3 bg-gradient-to-r ${occasion.color} text-white p-2 rounded-full shadow-lg`}>
+                      {occasion.icon}
+                    </div>
+                  </div>
 
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-500 transition-colors">
-                  {occasion.title}
-                </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {occasion.description}
-                </p>
-              </div>
-            </Link>
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-500 transition-colors">
+                      {occasion.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {occasion.description}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Navigation Button */}
+          <button
+            onClick={handleNext}
+            disabled={currentIndex >= maxIndex}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white rounded-full p-3 md:p-4 shadow-xl hover:shadow-2xl transition-all duration-300 ${currentIndex >= maxIndex ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-50 hover:scale-110'
+              }`}
+            aria-label="Next"
+          >
+            <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-orange-600" />
+          </button>
+        </div>
+
+        {/* Dots Indicator */}
+        <div className="flex justify-center gap-2 mt-8">
+          {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`h-2 rounded-full transition-all duration-300 ${currentIndex === index ? 'w-8 bg-orange-600' : 'w-2 bg-orange-300 hover:bg-orange-400'
+                }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
           ))}
         </div>
       </div>

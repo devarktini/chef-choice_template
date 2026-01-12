@@ -1,5 +1,5 @@
 'use client';
-import { Heart, Sparkles, Users, Building, Home, Star, Award, ChevronRight, ChefHat, Utensils, UtensilsCrossed, Wine, X } from 'lucide-react';
+import { Heart, Sparkles, Users, Building, Home, Star, Award, ChevronRight, ChefHat, Utensils, UtensilsCrossed, Wine, X, Cake, PartyPopper, Coffee, Baby, Church, Music, Flame, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import { useState, useEffect, useRef } from 'react';
@@ -116,11 +116,98 @@ export default function ServicePage() {
     }
   ];
 
+  const occasions = [
+    {
+      icon: <Cake className="w-8 h-8" />,
+      title: "Birthday",
+      description: "Celebrate birthdays at home with our private chefs.",
+      image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=400&h=300&fit=crop",
+      color: "from-pink-400 to-pink-500"
+    },
+    {
+      icon: <Heart className="w-8 h-8" />,
+      title: "Anniversary",
+      description: "Make anniversaries unforgettable with gourmet meals.",
+      image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop",
+      color: "from-red-400 to-red-500"
+    },
+    {
+      icon: <PartyPopper className="w-8 h-8" />,
+      title: "Party",
+      description: "Host an unforgettable party with our chef-on-demand service.",
+      image: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400&h=300&fit=crop",
+      color: "from-purple-400 to-purple-500"
+    },
+    {
+      icon: <Coffee className="w-8 h-8" />,
+      title: "Kitty Party",
+      description: "Enjoy fun-filled kitty parties with delicious catering.",
+      image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=300&fit=crop",
+      color: "from-amber-400 to-amber-500"
+    },
+    {
+      icon: <Coffee className="w-8 h-8" />,
+      title: "High Tea",
+      description: "Elevate your high tea gatherings with gourmet treats.",
+      image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=300&fit=crop",
+      color: "from-teal-400 to-teal-500"
+    },
+    {
+      icon: <Users className="w-8 h-8" />,
+      title: "Inviting Guests",
+      description: "Host guests at home with ease and style.",
+      image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&h=300&fit=crop",
+      color: "from-blue-400 to-blue-500"
+    },
+    {
+      icon: <Baby className="w-8 h-8" />,
+      title: "Baby Shower",
+      description: "Celebrate your baby shower with tasty and safe meals.",
+      image: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400&h=300&fit=crop",
+      color: "from-cyan-400 to-cyan-500"
+    },
+    {
+      icon: <Home className="w-8 h-8" />,
+      title: "Weekend Chill",
+      description: "Make your weekends relaxing with home chef services.",
+      image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop",
+      color: "from-green-400 to-green-500"
+    },
+    {
+      icon: <Church className="w-8 h-8" />,
+      title: "Wedding Ceremony",
+      description: "Indulge in handcrafted wedding menus.",
+      image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop",
+      color: "from-rose-400 to-rose-500"
+    },
+    {
+      icon: <Music className="w-8 h-8" />,
+      title: "Bachelor Party",
+      description: "Throw epic bachelor parties with customized catering.",
+      image: "https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?w=400&h=300&fit=crop",
+      color: "from-indigo-400 to-indigo-500"
+    },
+    {
+      icon: <Flame className="w-8 h-8" />,
+      title: "Pooja Ceremony",
+      description: "Enhance pooja ceremonies with traditional offerings.",
+      image: "https://images.unsplash.com/photo-1662720868850-e60cefb03201?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1473",
+      color: "from-orange-400 to-orange-500"
+    },
+    {
+      icon: <Calendar className="w-8 h-8" />,
+      title: "Other Occasions",
+      description: "Any special occasion deserves culinary excellence.",
+      image: "https://images.unsplash.com/photo-1555244162-803834f70033?w=400&h=300&fit=crop",
+      color: "from-yellow-400 to-yellow-500"
+    }
+  ];
+
   return (
     <>
       <AnimatedBackground />
       <main className="min-h-screen pt-20 relative z-10">
-        <section className="bg-gradient-to-br from-orange-50 via-amber-50 to-red-50 py-20">
+        {/* <section className="bg-gradient-to-br from-orange-50 via-amber-50 to-red-50 py-20">
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">Services</h1>
             <div className="inline-block bg-white px-8 py-6 rounded-full shadow-xl mb-8">
@@ -143,7 +230,7 @@ export default function ServicePage() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <div ref={servicesRef} className="container mx-auto pt-20 px-4">
           {/* Header */}
@@ -157,29 +244,37 @@ export default function ServicePage() {
           </div>
 
           {/* Services Grid - Card Style */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
-            {services.map((service, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 hover:scale-105 border border-orange-100">
-                <div className="text-center mb-4">
-                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <service.icon className="w-8 h-8 text-orange-600" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {occasions.map((occasion, index) => (
+              <Link
+                href="/contact"
+                key={index}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2"
+              >
+                {/* Image with Icon Overlay */}
+                <div className="relative h-40 overflow-hidden">
+                  <Image
+                    src={occasion.image}
+                    alt={occasion.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${occasion.color} opacity-60 group-hover:opacity-70 transition-opacity`}></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full border-2 border-white/50">
+                      {occasion.icon}
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{service.title}</h3>
-                  <p className="text-orange-600 font-semibold mb-3">{service.subtitle}</p>
-                  <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
 
-                <button
-                  onClick={() => setSelectedService(service)}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
-                >
-                  Learn More
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+                {/* Content */}
+                <div className="p-4 text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{occasion.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{occasion.description}</p>
+                </div>
+              </Link>
             ))}
           </div>
-
           {/* Modal for Full Description */}
           {selectedService && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -265,6 +360,52 @@ export default function ServicePage() {
             </div>
           </div>
         </section>
+
+        {/* Occasions Section */}
+        {/* <section className="py-20 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Special <span className="text-orange-600">Occasions</span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                From intimate birthdays to grand weddings, we cater to every special moment
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {occasions.map((occasion, index) => (
+                <Link
+                  href="/contact"
+                  key={index}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group transform hover:-translate-y-2"
+                >
+                  
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
+                      src={occasion.image}
+                      alt={occasion.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${occasion.color} opacity-60 group-hover:opacity-70 transition-opacity`}></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full border-2 border-white/50">
+                        {occasion.icon}
+                      </div>
+                    </div>
+                  </div>
+
+                
+                  <div className="p-4 text-center">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{occasion.title}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">{occasion.description}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section> */}
 
         {/* New Service Providers Section */}
         <section className="py-20 bg-gray-50">
