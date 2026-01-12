@@ -129,7 +129,7 @@ export default function Services() {
           ))}
         </div>
 
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -137,11 +137,11 @@ export default function Services() {
           className="mt-20 text-center"
         >
           <Link href="/service">
-            <button className="px-10 py-5 bg-white text-gray-900 border border-gray-200 rounded-full text-lg font-bold hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all duration-500 shadow-xl hover:shadow-2xl active:scale-95">
+            <button className="px-10 py-5 bg-gradient-to-r from-orange-500 to-red-600 text-white border-2 border-orange-400 rounded-full text-lg font-bold hover:from-orange-600 hover:to-red-700 hover:border-orange-500 transition-all duration-500 shadow-xl hover:shadow-2xl active:scale-95">
               Discover All Our Offerings
             </button>
           </Link>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );

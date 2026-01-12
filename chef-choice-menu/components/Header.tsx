@@ -37,8 +37,8 @@ export default function Header() {
     setShowUserMenu(false);
     router.push('/');
   };
-  
-    // if (pathname?.startsWith('/dashboard')) return null;
+
+  // if (pathname?.startsWith('/dashboard')) return null;
 
   return (
     <header
@@ -54,50 +54,54 @@ export default function Header() {
           </Link>
 
           {/* Desktop Menu */}
-          {pathname?.startsWith('/dashboard') ? null : (    
-          <div className="hidden md:flex items-center space-x-8 animate-slide-down">
-            <Link href="/" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              Home
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link href="/about" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link href="/service" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              Services
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
+          {pathname?.startsWith('/dashboard') ? null : (
+            <div className="hidden md:flex items-center space-x-8 animate-slide-down">
+              <Link href="/" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Home
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="/about" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                About
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="/service" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Services
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="/subscription" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Subscription
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
 
-            <Link href="/blog" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              Blog
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link href="/contact" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              Contact
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link href="/venue" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              Venue
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-            <Link href="/gallery" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
-              Gallery
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
-            </Link>
-          </div>
+              <Link href="/blog" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Blog
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="/contact" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Contact
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="/venue" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Venue
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <Link href="/gallery" className="nav-link text-gray-700 hover:text-primary-500 transition-all duration-300 font-medium relative group">
+                Gallery
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+            </div>
           )}
 
           <div className="hidden md:flex items-center space-x-4 animate-slide-left">
             {user?.role === 'service_provider' ? null : (
-               <button
-              onClick={() => setIsBookingModalOpen(true)}
-              className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
-            >
-              Book Now
-            </button>
+              <button
+                onClick={() => setIsBookingModalOpen(true)}
+                className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-2.5 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-semibold"
+              >
+                Book Now
+              </button>
             )}
-           
+
 
             {isAuthenticated && user ? (
               <div className="relative">

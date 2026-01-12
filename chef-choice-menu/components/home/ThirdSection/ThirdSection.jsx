@@ -152,12 +152,13 @@ const ThirdSection = () => {
                 className="relative w-full  cursor-pointer"
               >
                 {/* Floating Pill Container - Brand Gradient */}
-                <div className={`relative w-full rounded-full bg-gradient-to-r from-primary-500 to-warm-500 shadow-sm shadow-primary-500/20 py-4 px-8 flex  ${index % 2 === 0 ? 'items-center justify-start bg-gradient-to-l from-[#FFFAF5] from-[10%] via-warm-500 to-warm-600' : 'items-center justify-end bg-gradient-to-r from-[#FFFAF5] from-[10%] via-warm-500 to-warm-600'}  overflow-hidden`}>
+                <div className={`relative w-full rounded-full bg-gradient-to-r from-primary-500 to-warm-500  py-4 px-8 flex  ${index % 2 === 0 ? 'items-center justify-start bg-gradient-to-l from-[#FFFAF5]  via-warm-500 to-[70%] to-white' : 'items-center justify-end bg-gradient-to-r from-white from-[20%] via-warm-500 to-warm-600'}  overflow-hidden`}>
 
                   {/* Subtle Shimmer Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
 
                   {/* Icon Container (Left) */}
+
                   <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full shrink-0 group-hover:bg-white/30 transition-colors">
                     <feature.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>

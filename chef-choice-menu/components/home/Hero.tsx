@@ -6,7 +6,11 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Hero() {
+interface HeroProps {
+  onHowItWorksClick?: () => void;
+}
+
+export default function Hero({ onHowItWorksClick }: HeroProps) {
   const images = ["/1.jpg", "/2.jpg", "/3.jpg", "/4.png"];
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -66,18 +70,19 @@ export default function Hero() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
             >
-              <Link href="/service">
-                <button className="w-full sm:w-auto px-8 py-4 bg-gray-900 text-white rounded-full text-lg font-bold hover:bg-primary-600 transition-colors duration-300 shadow-xl flex items-center justify-center gap-3 group">
+              <Link href="/service?scrollTo=services">
+                <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full text-lg font-bold hover:from-orange-600 hover:to-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 group">
                   Book Now
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
-              <Link href="/menu">
-                <button className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-full text-lg font-bold hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center gap-2">
-                  <Play className="w-4 h-4 fill-current" />
-                  How It Works
-                </button>
-              </Link>
+              <button
+                onClick={onHowItWorksClick}
+                className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-full text-lg font-bold hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center gap-2"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                How It Works
+              </button>
             </motion.div>
 
             <motion.div

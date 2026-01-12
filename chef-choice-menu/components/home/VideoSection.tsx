@@ -24,17 +24,17 @@ export default function VideoSection() {
     "https://res.cloudinary.com/dzvvb0z0h/image/upload/f_auto,q_auto/v1760203335/Screenshot_2025-10-11_225051_rk9kfd.png";
 
   const stats = [
-    { icon: <Users className="w-5 h-5" />, label: "150+", sublabel: "Master Chefs", color: "bg-primary-500", position: "top-[10%] left-[-10%]", delay: 0.2 },
-    { icon: <Calendar className="w-5 h-5" />, label: "5000+", sublabel: "Events Catered", color: "bg-warm-500", position: "bottom-[20%] right-[-12%]", delay: 0.4 },
-    { icon: <MapPin className="w-5 h-5" />, label: "15+", sublabel: "Cities Covered", color: "bg-accent-500", position: "top-[40%] right-[-15%]", delay: 0.6 },
+    { icon: <Users className="w-5 h-5" />, label: "150+", sublabel: "Master Chefs", color: "bg-gradient-to-br from-orange-500 to-red-500", position: "top-[10%] left-[-10%]", delay: 0.2 },
+    { icon: <Calendar className="w-5 h-5" />, label: "5000+", sublabel: "Events Catered", color: "bg-gradient-to-br from-amber-500 to-orange-500", position: "bottom-[20%] right-[-12%]", delay: 0.4 },
+    { icon: <MapPin className="w-5 h-5" />, label: "15+", sublabel: "Cities Covered", color: "bg-gradient-to-br from-red-500 to-orange-600", position: "top-[40%] right-[-15%]", delay: 0.6 },
   ];
 
   return (
-    <section ref={containerRef} className="py-24 bg-[#0a0a0a] relative overflow-hidden">
-      {/* Cinematic Background Elements */}
+    <section ref={containerRef} className="py-24 bg-gradient-to-b from-orange-50 via-amber-50 to-orange-50 relative overflow-hidden">
+      {/* Decorative Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-primary-900/20 rounded-full filter blur-[120px] animate-pulse-slow"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-warm-900/20 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-orange-200/30 rounded-full filter blur-[120px] animate-pulse-slow"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-200/30 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -43,7 +43,7 @@ export default function VideoSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="flex items-center space-x-2 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-primary-400 text-sm font-semibold tracking-widest uppercase"
+            className="flex items-center space-x-2 px-4 py-1.5 bg-orange-100 border border-orange-300 rounded-full text-orange-700 text-sm font-semibold tracking-widest uppercase shadow-sm"
           >
             <Sparkles className="w-4 h-4 fill-current" />
             <span>Witness Perfection</span>
@@ -53,16 +53,16 @@ export default function VideoSection() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-bold text-white max-w-4xl leading-tight"
+            className="text-4xl md:text-6xl font-bold text-gray-900 max-w-4xl leading-tight"
           >
-            The Art of <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-warm-400 to-accent-400">Culinary Performance</span>
+            The Art of <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-amber-600 to-red-600">Culinary Performance</span>
           </motion.h2>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-gray-400 text-lg md:text-xl font-light max-w-2xl"
+            className="text-gray-700 text-lg md:text-xl font-light max-w-2xl"
           >
             A cinematic glimpse into the passion and precision behind every plate we serve.
           </motion.p>
@@ -80,13 +80,13 @@ export default function VideoSection() {
                 transition={{ delay: stat.delay, duration: 0.8 }}
                 className={`absolute ${stat.position} z-30 group`}
               >
-                <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-6 rounded-[2rem] shadow-2xl flex items-center space-x-4 group-hover:bg-white/15 transition-all duration-300">
-                  <div className={`${stat.color} p-3 rounded-2xl text-white shadow-lg shadow-white/5 group-hover:scale-110 transition-transform`}>
+                <div className="bg-white/90 backdrop-blur-xl border border-orange-200 p-6 rounded-[2rem] shadow-2xl flex items-center space-x-4 group-hover:bg-white transition-all duration-300">
+                  <div className={`${stat.color} p-3 rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform`}>
                     {stat.icon}
                   </div>
                   <div className="text-left">
-                    <p className="text-2xl font-bold text-white leading-none mb-1">{stat.label}</p>
-                    <p className="text-xs text-gray-400 uppercase tracking-widest">{stat.sublabel}</p>
+                    <p className="text-2xl font-bold text-gray-900 leading-none mb-1">{stat.label}</p>
+                    <p className="text-xs text-gray-600 uppercase tracking-widest">{stat.sublabel}</p>
                   </div>
                 </div>
               </motion.div>
@@ -95,10 +95,10 @@ export default function VideoSection() {
 
           <motion.div
             style={{ y }}
-            className="relative rounded-[3rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] group border border-white/10"
+            className="relative rounded-[3rem] overflow-hidden shadow-[0_0_60px_rgba(251,146,60,0.3)] group border-4 border-orange-200/50"
           >
             {/* Video Container */}
-            <div className="relative aspect-video bg-[#111]">
+            <div className="relative aspect-video bg-gradient-to-br from-orange-100 to-amber-100">
               {!videoError && (
                 <video
                   autoPlay
@@ -107,14 +107,14 @@ export default function VideoSection() {
                   playsInline
                   preload="none"
                   poster={posterSrc}
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700"
                   onError={() => setVideoError(true)}
                 >
                   <source src={videoSrc} type="video/mp4" />
                 </video>
               )}
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/20 group-hover:from-black/40 transition-all duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-orange-900/20 via-transparent to-orange-900/10 group-hover:from-orange-900/10 transition-all duration-500"></div>
 
               {/* Enhanced Play Button */}
               <div className="absolute inset-0 flex items-center justify-center">
@@ -124,8 +124,8 @@ export default function VideoSection() {
                   onClick={() => setIsPlaying(!isPlaying)}
                   className="relative z-20"
                 >
-                  <div className="absolute inset-0 bg-primary-500 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                  <div className="relative bg-white text-gray-900 rounded-full p-8 shadow-2xl flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                  <div className="relative bg-white text-orange-600 rounded-full p-8 shadow-2xl flex items-center justify-center border-4 border-orange-200">
                     {isPlaying ? (
                       <Volume2 className="w-10 h-10" />
                     ) : (
@@ -134,15 +134,15 @@ export default function VideoSection() {
                   </div>
 
                   {/* Rotating Border (Visible on hover) */}
-                  <div className="absolute inset-[-10px] border-2 border-dashed border-white/20 rounded-full animate-spin-slow opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute inset-[-10px] border-2 border-dashed border-orange-400/40 rounded-full animate-spin-slow opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </motion.button>
               </div>
 
               {/* Cinematic Labels */}
               <div className="absolute bottom-10 left-10 hidden md:block">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-px bg-primary-400"></div>
-                  <p className="text-white font-medium tracking-[0.3em] uppercase text-sm">Now Playing: Our Passion</p>
+                  <div className="w-12 h-px bg-gradient-to-r from-orange-500 to-red-500"></div>
+                  <p className="text-gray-900 font-semibold tracking-[0.3em] uppercase text-sm bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full">Now Playing: Our Passion</p>
                 </div>
               </div>
             </div>
@@ -152,13 +152,13 @@ export default function VideoSection() {
         {/* Mobile Stats (Grid Interface) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 lg:hidden">
           {stats.map((stat, index) => (
-            <div key={index} className="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center space-x-4">
-              <div className={`${stat.color} p-3 rounded-2xl text-white`}>
+            <div key={index} className="bg-white/90 border border-orange-200 p-6 rounded-3xl flex items-center space-x-4 shadow-lg hover:shadow-xl transition-shadow">
+              <div className={`${stat.color} p-3 rounded-2xl text-white shadow-md`}>
                 {stat.icon}
               </div>
               <div className="text-left">
-                <p className="text-xl font-bold text-white">{stat.label}</p>
-                <p className="text-sm text-gray-400">{stat.sublabel}</p>
+                <p className="text-xl font-bold text-gray-900">{stat.label}</p>
+                <p className="text-sm text-gray-600">{stat.sublabel}</p>
               </div>
             </div>
           ))}

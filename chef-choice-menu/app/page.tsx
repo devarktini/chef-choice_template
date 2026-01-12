@@ -1,3 +1,6 @@
+'use client';
+
+import { useRef } from 'react';
 import Hero from "@/components/home/Hero";
 import Services from "@/components/home/Services";
 import BookingSteps from "@/components/home/BookingSteps";
@@ -11,14 +14,25 @@ import ThirdSection from "@/components/home/ThirdSection/ThirdSection";
 import SubscriptionPlans from "@/components/home/SubscriptionPlans";
 
 export default function Home() {
+  const thirdSectionRef = useRef<HTMLDivElement>(null);
+
+  const scrollToThirdSection = () => {
+    thirdSectionRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
+
   return (
     <>
       <AnimatedBackground />
       <main className="min-h-screen pt-20 relative z-10">
-        <Hero />
+        <Hero onHowItWorksClick={scrollToThirdSection} />
         <VideoSection />
         <Services />
-        <ThirdSection />
+        <div ref={thirdSectionRef}>
+          <ThirdSection />
+        </div>
         {/* <BookingSteps /> */}
         <AddOnServices />
         <SubscriptionPlans />

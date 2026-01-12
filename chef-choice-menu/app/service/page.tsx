@@ -2,14 +2,17 @@
 import { Heart, Sparkles, Users, Building, Home, Star, Award, ChevronRight, ChefHat, Utensils, UtensilsCrossed, Wine, X } from 'lucide-react';
 import Image from 'next/image';
 import AnimatedBackground from '@/components/AnimatedBackground';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ProviderService } from '@/services/providerService';
 import { ServiceProviderProfile } from '@/types/auth';
+import { useSearchParams } from 'next/navigation';
 
 export default function ServicePage() {
   const [selectedService, setSelectedService] = useState<any>(null);
   const [providers, setProviders] = useState<ServiceProviderProfile[]>([]);
+  const servicesRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -30,6 +33,19 @@ export default function ServicePage() {
     };
     fetchProviders();
   }, []);
+
+  // Scroll to services section when scrollTo param is present
+  useEffect(() => {
+    const scrollTo = searchParams?.get('scrollTo');
+    if (scrollTo === 'services' && servicesRef.current) {
+      setTimeout(() => {
+        servicesRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+    }
+  }, [searchParams]);
 
   const services = [
     {
@@ -129,7 +145,7 @@ export default function ServicePage() {
           </div>
         </section>
 
-        <div className="container mx-auto px-4">
+        <div ref={servicesRef} className="container mx-auto pt-20 px-4">
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
