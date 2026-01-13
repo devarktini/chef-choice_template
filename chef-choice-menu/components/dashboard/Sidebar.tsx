@@ -37,7 +37,7 @@ export default function Sidebar() {
   const { user, logout, serviceProviderProfile } = useAuthStore();
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  console.log("1111", serviceProviderProfile)
+  // console.log("1111", serviceProviderProfile)
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -488,12 +488,12 @@ export default function Sidebar() {
       {/* Mobile Menu Toggle Button */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-6 left-6 z-50 p-3 bg-gradient-to-br from-[#e59f4a] to-[#e68125] text-white rounded-xl shadow-lg mobile-menu-toggle hover:shadow-xl transition-all hover:scale-110 active:scale-95"
+        className={isMobileMenuOpen ? "lg:hidden fixed top-6 left-6 z-50 p-3 bg-gradient-to-br from-[#e59f4a] to-[#e68125] text-white rounded-xl shadow-lg mobile-menu-toggle hover:shadow-xl transition-all hover:scale-110 active:scale-95" : ""}
       >
         {isMobileMenuOpen ? (
           <X className="w-5 h-5" />
         ) : (
-          <Menu className="w-5 h-5" />
+          ""
         )}
       </button>
 

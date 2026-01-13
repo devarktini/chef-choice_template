@@ -135,20 +135,20 @@ export default function DashboardPage() {
         setBookingsLoading(true);
         const data = await BookingService.getBookings();
         console.log("Bookings data:", data);
-        
+
         let upcomingBookings = [];
-        
+
         if (user?.role === "service_provider") {
           // For service providers: filter upcoming jobs
           upcomingBookings = data.results || [];
-          
+
           // Filter upcoming events and sort by date
           upcomingBookings = upcomingBookings
             .filter(booking => {
               // Check if booking is upcoming (any date in the future)
               const dates = booking.dates ? Object.keys(booking.dates) : [];
               if (dates.length === 0) return false;
-              
+
               const earliestDate = new Date(dates[0]);
               return earliestDate > new Date();
             })
@@ -156,21 +156,21 @@ export default function DashboardPage() {
               const aDates = a.dates ? Object.keys(a.dates) : [];
               const bDates = b.dates ? Object.keys(b.dates) : [];
               if (aDates.length === 0 || bDates.length === 0) return 0;
-              
+
               return new Date(aDates[0]).getTime() - new Date(bDates[0]).getTime();
             })
             .slice(0, 3); // Get only 3 upcoming bookings
         } else {
           // For clients: filter upcoming events
           upcomingBookings = data.results || [];
-          
+
           // Filter upcoming events and sort by date
           upcomingBookings = upcomingBookings
             .filter(booking => {
               // Check if any booking date is in the future
               const dates = booking.dates ? Object.keys(booking.dates) : [];
               if (dates.length === 0) return false;
-              
+
               const earliestDate = new Date(dates[0]);
               return earliestDate > new Date();
             })
@@ -178,12 +178,12 @@ export default function DashboardPage() {
               const aDates = a.dates ? Object.keys(a.dates) : [];
               const bDates = b.dates ? Object.keys(b.dates) : [];
               if (aDates.length === 0 || bDates.length === 0) return 0;
-              
-             return new Date(aDates[0]).getTime() - new Date(bDates[0]).getTime();
+
+              return new Date(aDates[0]).getTime() - new Date(bDates[0]).getTime();
             })
             .slice(0, 3);
         }
-        
+
         console.log("Filtered upcoming bookings:", upcomingBookings);
         setRecentBookings(upcomingBookings);
       } catch (error) {
@@ -239,7 +239,7 @@ export default function DashboardPage() {
   };
 
   // Get event type icon
-  const getEventIcon = (eventType : any) => {
+  const getEventIcon = (eventType: any) => {
     switch (eventType?.toLowerCase()) {
       case "family gathering":
       case "family event":
@@ -261,7 +261,7 @@ export default function DashboardPage() {
   };
 
   // Get appropriate icon based on booking type
-  const getBookingIcon = (booking : any) => {
+  const getBookingIcon = (booking: any) => {
     if (user?.role === "service_provider") {
       return ChefHat;
     } else {
@@ -270,9 +270,9 @@ export default function DashboardPage() {
   };
 
   // Get booking title based on role
-  const getBookingTitle = (booking : any) => {
+  const getBookingTitle = (booking: any) => {
     if (user?.role === "service_provider") {
-      return booking.client 
+      return booking.client
         ? `${booking.client.first_name} ${booking.client.last_name}'s Event`
         : booking.event_type || "Service Booking";
     } else {
@@ -281,17 +281,17 @@ export default function DashboardPage() {
   };
 
   // Get booking details based on role
-  const getBookingDetails = (booking : any) => {
-    const totalGuests = (booking.guests?.adults || 0) + 
-                       (booking.guests?.children || 0) + 
-                       (booking.guests?.babies || 0);
-    
+  const getBookingDetails = (booking: any) => {
+    const totalGuests = (booking.guests?.adults || 0) +
+      (booking.guests?.children || 0) +
+      (booking.guests?.babies || 0);
+
     if (user?.role === "service_provider") {
       return {
         guests: `${totalGuests} ${totalGuests === 1 ? 'guest' : 'guests'}`,
         service: booking.event_type || "Catering Service",
-        location: booking.event_address ? 
-          `${booking.event_address.city}, ${booking.event_address.state}` : 
+        location: booking.event_address ?
+          `${booking.event_address.city}, ${booking.event_address.state}` :
           "Location not specified",
         dates: booking.dates ? Object.keys(booking.dates) : [],
       };
@@ -299,8 +299,8 @@ export default function DashboardPage() {
       return {
         guests: `${totalGuests} ${totalGuests === 1 ? 'person' : 'people'}`,
         service: booking.event_type || "Chef Service",
-        location: booking.event_address ? 
-          `${booking.event_address.city}, ${booking.event_address.state}` : 
+        location: booking.event_address ?
+          `${booking.event_address.city}, ${booking.event_address.state}` :
           "Location not specified",
         dates: booking.dates ? Object.keys(booking.dates) : [],
       };
@@ -308,7 +308,7 @@ export default function DashboardPage() {
   };
 
   // Get first date for display
-  const getFirstDate = (booking : any) => {
+  const getFirstDate = (booking: any) => {
     if (!booking.dates || Object.keys(booking.dates).length === 0) {
       return null;
     }
@@ -316,7 +316,7 @@ export default function DashboardPage() {
   };
 
   // Get meal timing for a specific date
-  const getMealTiming = (booking: any, date : any) => {
+  const getMealTiming = (booking: any, date: any) => {
     if (!booking.meal_timings || !date || !booking.meal_timings[date]) {
       return "Time not set";
     }
@@ -326,11 +326,11 @@ export default function DashboardPage() {
   // Count menu items
   const countMenuItems = (booking: any) => {
     if (!booking.menu_items_details) return 0;
-    
+
     if (Array.isArray(booking.menu_items_details.items)) {
       return booking.menu_items_details.items.length;
     }
-    
+
     // Handle different menu structures
     if (typeof booking.menu_items_details === 'object') {
       const keys = Object.keys(booking.menu_items_details);
@@ -342,24 +342,24 @@ export default function DashboardPage() {
       });
       return total;
     }
-    
+
     return 0;
   };
 
   // Get cuisine type
   const getCuisineType = (booking: any) => {
     if (!booking.food_cuisines_preferences) return "Not specified";
-    
+
     const type = booking.food_cuisines_preferences.type;
-    return type === "veg" ? "Vegetarian" : 
-           type === "non_veg" ? "Non-Vegetarian" : 
-           type || "Not specified";
+    return type === "veg" ? "Vegetarian" :
+      type === "non_veg" ? "Non-Vegetarian" :
+        type || "Not specified";
   };
 
   // Get payment amount
-  const getPaymentAmount = (booking:  any) => {
+  const getPaymentAmount = (booking: any) => {
     if (booking.payment_details && booking.payment_details.length > 0) {
-      const totalPaid = booking.payment_details.reduce((sum: any, payment : any) => {
+      const totalPaid = booking.payment_details.reduce((sum: any, payment: any) => {
         return sum + (parseFloat(payment.amount) || 0);
       }, 0);
       return totalPaid;
@@ -414,41 +414,41 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {loading
             ? Array(4)
-                .fill(0)
-                .map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl p-6 shadow-md animate-pulse h-40"
-                  ></div>
-                ))
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl p-6 shadow-md animate-pulse h-40"
+                ></div>
+              ))
             : stats.map((stat, index) => {
-                const Icon = stat.icon;
-                const isPositive =
-                  stat.change?.startsWith("+") || !stat.change?.includes("-");
-                return (
-                  <div
-                    key={stat.name}
-                    className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 hover:border-orange-200"
-                    style={{
-                      animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
-                    }}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div
-                        className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
-                      >
-                        <Icon className="w-7 h-7 text-white" />
-                      </div>
+              const Icon = stat.icon;
+              const isPositive =
+                stat.change?.startsWith("+") || !stat.change?.includes("-");
+              return (
+                <div
+                  key={stat.name}
+                  className="group bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 hover:border-orange-200"
+                  style={{
+                    animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div
+                      className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      <Icon className="w-7 h-7 text-white" />
                     </div>
-                    <p className="text-gray-600 text-sm font-medium mb-2">
-                      {stat.name}
-                    </p>
-                    <p className="text-3xl font-bold text-gray-900">
-                      {stat.value}
-                    </p>
                   </div>
-                );
-              })}
+                  <p className="text-gray-600 text-sm font-medium mb-2">
+                    {stat.name}
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {stat.value}
+                  </p>
+                </div>
+              );
+            })}
         </div>
 
         {/* Quick Actions with Enhanced Design */}
@@ -641,7 +641,7 @@ export default function DashboardPage() {
                               <h3 className="font-semibold text-gray-900">
                                 {bookingTitle}
                               </h3>
-                              
+
                               {/* Event date and time */}
                               <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                                 <span className="flex items-center gap-1">
@@ -722,8 +722,7 @@ export default function DashboardPage() {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            {/* Performance Card */}
-            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300">
+            {/* <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg">Your Score</h3>
                 <Award className="w-6 h-6 text-indigo-200" />
@@ -742,7 +741,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Activity Stats */}
             <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
               <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-green-500" />
@@ -781,9 +779,9 @@ export default function DashboardPage() {
                   ></div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            {/* Help Card */}
+
             <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-xl p-6 border border-orange-200">
               <AlertCircle className="w-5 h-5 text-orange-600 mb-3" />
               <h3 className="font-bold text-gray-900 mb-2">Need Help?</h3>

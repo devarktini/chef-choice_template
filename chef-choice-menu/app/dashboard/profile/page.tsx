@@ -1128,6 +1128,7 @@ export default function ProfilePage() {
 
             <div className="grid md:grid-cols-2 gap-8">
               {/* Dietary Restrictions */}
+              {/* {console.log(clientProfile.dietary_restrictions)} */}
               <div>
                 <h4 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">
                   🥗 Dietary Restrictions

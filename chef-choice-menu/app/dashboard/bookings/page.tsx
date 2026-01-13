@@ -339,13 +339,15 @@ export default function BookingsPage() {
                                                     <Eye className="w-4 h-4 mr-2" />
                                                     View
                                                 </button>
-                                                <button
-                                                    onClick={() => handleEdit(booking)}
-                                                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-sm font-medium flex items-center"
-                                                >
-                                                    <Edit2 className="w-4 h-4 mr-2" />
-                                                    Edit
-                                                </button>
+                                                {booking.request_status?.toLowerCase() === 'pending' && (
+                                                    <button
+                                                        onClick={() => handleEdit(booking)}
+                                                        className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all text-sm font-medium flex items-center"
+                                                    >
+                                                        <Edit2 className="w-4 h-4 mr-2" />
+                                                        Edit
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -384,7 +386,7 @@ export default function BookingsPage() {
                         <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-gray-800 mb-2">No bookings yet</h3>
                         <p className="text-gray-600 mb-6">Start by booking your first chef experience!</p>
-                        <button onClick={()=> setIsEditModalOpen(true)} className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
+                        <button onClick={() => setIsEditModalOpen(true)} className="bg-gradient-to-r from-primary-500 to-warm-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all font-semibold">
                             Book a Chef
                         </button>
                     </div>

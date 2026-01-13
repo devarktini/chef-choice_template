@@ -2,9 +2,9 @@
 
 import { Booking } from '@/services/bookingService';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Calendar, Clock, MapPin, User, Utensils, ChefHat, FileText, CheckCircle2,
-  Home, Flame, Package, Users, Award, Phone, Mail, MessageSquare
+import {
+    X, Calendar, Clock, MapPin, User, Utensils, ChefHat, FileText, CheckCircle2,
+    Home, Flame, Package, Users, Award, Phone, Mail, MessageSquare
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -36,19 +36,18 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                     <div>
                         <div className="flex items-center gap-3 mb-1">
                             <h2 className="text-2xl font-bold text-gray-800 capitalize">
-                                {booking.event_type} Event Booking
+                                {booking.event_type}
                             </h2>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold capitalize ${
-                                booking.request_status === 'approved' || booking.request_status === 'confirmed'
-                                    ? 'bg-green-100 text-green-700'
-                                    : booking.request_status === 'pending'
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold capitalize ${booking.request_status === 'approved' || booking.request_status === 'confirmed'
+                                ? 'bg-green-100 text-green-700'
+                                : booking.request_status === 'pending'
                                     ? 'bg-yellow-100 text-yellow-700'
                                     : 'bg-red-100 text-red-700'
-                            }`}>
+                                }`}>
                                 {booking.request_status}
                             </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">ID: {booking.id}</p>
+                        {/* <p className="text-xs text-gray-500 mt-1">ID: {booking.id}</p> */}
                         <p className="text-xs text-gray-500">Created: {new Date(booking.created_date).toLocaleString()}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500">
@@ -102,9 +101,9 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                                     return (
                                         <div key={dateKey} className="bg-white p-3 rounded-lg border border-blue-200">
                                             <p className="font-semibold text-gray-800 flex items-center gap-2">
-                                                📅 {new Date(dateStr).toLocaleDateString(undefined, { 
-                                                    weekday: 'short', 
-                                                    month: 'short', 
+                                                📅 {new Date(dateStr).toLocaleDateString(undefined, {
+                                                    weekday: 'short',
+                                                    month: 'short',
                                                     day: 'numeric',
                                                     year: 'numeric'
                                                 })}
@@ -112,7 +111,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                                             {timing && (
                                                 <div className="text-xs text-gray-600 mt-2 space-y-1">
                                                     <p className="flex items-center gap-2">
-                                                        <Clock className="w-3 h-3" /> 
+                                                        <Clock className="w-3 h-3" />
                                                         <span className="font-medium">Meals:</span> {timing.meals.map(m => m.replace(/_/g, ' ')).join(', ')}
                                                     </p>
                                                     {timing.time && (
@@ -159,7 +158,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                             <Utensils className="w-5 h-5 text-amber-600" />
                             Food Preferences & Selected Menu
                         </h3>
-                        
+
                         <div className="grid md:grid-cols-2 gap-4 mb-4">
                             {/* Food Type & Cuisines */}
                             <div className="bg-gradient-to-br from-red-50 to-orange-50 p-4 rounded-lg border border-red-200">
@@ -241,7 +240,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                     </div>
 
                     {/* Service Provider */}
-                    {booking.services_selections?.providers && booking.services_selections.providers.length > 0 && (
+                    {/* {booking.services_selections?.providers && booking.services_selections.providers.length > 0 && (
                         <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border border-green-100">
                             <h3 className="text-sm font-bold text-green-800 mb-4 flex items-center gap-2">
                                 <Award className="w-5 h-5" />
@@ -256,7 +255,7 @@ export default function BookingDetailsModal({ isOpen, onClose, booking }: Bookin
                                 ))}
                             </div>
                         </div>
-                    )}
+                    )} */}
 
                     {/* Kitchen & Materials */}
                     <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-5 rounded-xl border border-purple-100">
