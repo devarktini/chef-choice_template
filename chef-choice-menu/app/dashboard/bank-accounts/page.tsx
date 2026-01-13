@@ -26,6 +26,7 @@ export default function BankAccountsPage() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(null);
+    const [togglingId, setTogglingId] = useState<string | null>(null);
 
     // Delete confirmation state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -90,6 +91,28 @@ export default function BankAccountsPage() {
         }
     };
 
+    const handleToggleActive = async (account: BankAccount) => {
+        if (togglingId || account.is_active) return; // Prevent multiple toggles or redundant activation
+        setTogglingId(account.id);
+        try {
+            // Set as active
+            await BankAccountService.update(account.id, { is_active: true });
+
+            // Enforce single-select in frontend: only this account is active
+            setAccounts(prevAccounts =>
+                prevAccounts.map(acc => ({
+                    ...acc,
+                    is_active: acc.id === account.id
+                }))
+            );
+        } catch (error) {
+            console.error(`Failed to activate account ${account.id}:`, error);
+            alert('Failed to update account status.');
+        } finally {
+            setTogglingId(null);
+        }
+    };
+
     const openTransactions = (accountId: string) => {
         setSelectedAccountForTransactions(accountId);
         setIsTransactionsModalOpen(true);
@@ -139,7 +162,8 @@ export default function BankAccountsPage() {
                         {accounts.map((account, index) => (
                             <div
                                 key={account.id}
-                                className="group relative bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                                onClick={() => handleToggleActive(account)}
+                                className={`group relative bg-white p-6 rounded-xl shadow-sm border ${account.is_active ? 'border-blue-400 ring-1 ring-blue-400' : 'border-gray-200'} hover:border-blue-400 hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer ${togglingId === account.id ? 'opacity-70 cursor-wait' : ''}`}
                                 style={{
                                     animation: `fadeInUp 0.5s ease-out ${index * 0.05}s backwards`
                                 }}
@@ -189,14 +213,18 @@ export default function BankAccountsPage() {
                                     {/* Actions */}
                                     <div className="flex justify-between items-center gap-1 pt-4 border-t border-gray-100">
                                         <button
-                                            onClick={() => openTransactions(account.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                openTransactions(account.id);
+                                            }}
                                             className="flex-1 p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-xs font-medium"
                                             title="View Transactions"
                                         >
                                             <CreditCard className="w-4 h-4 mx-auto" />
                                         </button>
                                         <button
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 setSelectedAccount(account);
                                                 setIsEditModalOpen(true);
                                             }}
@@ -206,7 +234,8 @@ export default function BankAccountsPage() {
                                             <Pencil className="w-4 h-4 mx-auto" />
                                         </button>
                                         <button
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 setSelectedAccount(account);
                                                 setIsDeleteModalOpen(true);
                                             }}

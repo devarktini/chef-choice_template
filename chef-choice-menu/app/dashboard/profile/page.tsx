@@ -1017,7 +1017,7 @@ export default function ProfilePage() {
         {/* Addresses Section - Enhanced */}
         <div>
           <div className="flex items-center mt-10 justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <h2 className="xl:text-2xl text-lg font-bold text-gray-900 flex items-center gap-2">
               <div className="p-3 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl">
                 <MapPin className="w-6 h-6 text-orange-600" />
               </div>
@@ -1128,7 +1128,7 @@ export default function ProfilePage() {
 
             <div className="grid md:grid-cols-2 gap-8">
               {/* Dietary Restrictions */}
-              {/* {console.log(clientProfile.dietary_restrictions)} */}
+
               <div>
                 <h4 className="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">
                   🥗 Dietary Restrictions
@@ -1186,8 +1186,8 @@ export default function ProfilePage() {
         {/* Service Provider Details Section - Enhanced */}
         {user?.role === "service_provider" && (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <div className="flex pt-10 items-center justify-between mb-6">
+              <h2 className="xl:text-2xl text-lg font-bold text-gray-900 flex items-center gap-2">
                 <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl">
                   <Briefcase className="w-6 h-6 text-blue-600" />
                 </div>

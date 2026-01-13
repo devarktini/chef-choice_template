@@ -582,15 +582,14 @@ const ProviderDetailModal = ({
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    provider.badge === "Top Rated"
-                      ? "bg-amber-100 text-amber-800"
-                      : provider.badge === "Popular"
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${provider.badge === "Top Rated"
+                    ? "bg-amber-100 text-amber-800"
+                    : provider.badge === "Popular"
                       ? "bg-pink-100 text-pink-800"
                       : provider.badge === "Budget Friendly"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-purple-100 text-purple-800"
-                  }`}
+                        ? "bg-green-100 text-green-800"
+                        : "bg-purple-100 text-purple-800"
+                    }`}
                 >
                   {provider.badge}
                 </span>
@@ -1228,9 +1227,8 @@ export default function BookingFlowModal({
                   <Sparkles className="w-3 h-3 text-amber-500" />
                   {step === 8
                     ? "Final Step!"
-                    : `Step ${step} of ${totalSteps} - ${
-                        selectedEvent?.label || "Plan Your Event"
-                      }`}
+                    : `Step ${step} of ${totalSteps} - ${selectedEvent?.label || "Plan Your Event"
+                    }`}
                 </p>
               </div>
             </div>
@@ -1250,7 +1248,7 @@ export default function BookingFlowModal({
           {/* Main Content */}
           <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
             {/* Sidebar - Progress Steps (Desktop) */}
-            <div className="overflow-y-auto md:flex md:w-1/4 lg:w-1/5 bg-white border-r border-gray-200 p-4 flex-col">
+            <div className="hidden md:flex overflow-y-auto md:w-1/4 lg:w-1/5 bg-white border-r border-gray-200 p-4 flex-col">
               {/* Steps Section - Simplified */}
               <div className="space-y-2 mb-6">
                 {[
@@ -1306,23 +1304,21 @@ export default function BookingFlowModal({
                   <button
                     key={s.id}
                     onClick={() => setStep(s.id)}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      step === s.id
-                        ? "bg-amber-50 border border-amber-200"
-                        : completedSteps.includes(s.id)
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${step === s.id
+                      ? "bg-amber-50 border border-amber-200"
+                      : completedSteps.includes(s.id)
                         ? "bg-green-50 border border-green-200"
                         : "border border-gray-100 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-8 h-8 rounded-md flex items-center justify-center ${
-                          step === s.id
-                            ? "bg-amber-500 text-white"
-                            : completedSteps.includes(s.id)
+                        className={`w-8 h-8 rounded-md flex items-center justify-center ${step === s.id
+                          ? "bg-amber-500 text-white"
+                          : completedSteps.includes(s.id)
                             ? "bg-green-500 text-white"
                             : "bg-gray-100 text-gray-500"
-                        }`}
+                          }`}
                       >
                         {completedSteps.includes(s.id) ? (
                           <Check className="w-4 h-4" />
@@ -1332,9 +1328,8 @@ export default function BookingFlowModal({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p
-                          className={`font-medium text-sm ${
-                            step === s.id ? "text-amber-700" : "text-gray-800"
-                          }`}
+                          className={`font-medium text-sm ${step === s.id ? "text-amber-700" : "text-gray-800"
+                            }`}
                         >
                           {s.label}
                         </p>
@@ -1429,25 +1424,21 @@ export default function BookingFlowModal({
                                     updateData({ eventType: type.value })
                                   }
                                   disabled={isRestricted}
-                                  className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${
-                                    data.eventType === type.value
-                                      ? `${type.color.split(" ")[0]} ${
-                                          type.color.split(" ")[1]
-                                        } border-orange-500 text-white shadow-2xl`
-                                      : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
-                                  } ${
-                                    isRestricted
+                                  className={`relative group aspect-square p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-300 overflow-hidden ${data.eventType === type.value
+                                    ? `${type.color.split(" ")[0]} ${type.color.split(" ")[1]
+                                    } border-orange-500 text-white shadow-2xl`
+                                    : "border-gray-200 hover:border-amber-300 bg-white hover:bg-amber-50 text-gray-700"
+                                    } ${isRestricted
                                       ? "opacity-70 cursor-not-allowed"
                                       : "cursor-pointer"
-                                  }`}
+                                    }`}
                                 >
                                   {/* Background Gradient */}
                                   <div
-                                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                                      type.color.includes("from")
-                                        ? type.color
-                                        : "from-amber-500 to-orange-500"
-                                    }`}
+                                    className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${type.color.includes("from")
+                                      ? type.color
+                                      : "from-amber-500 to-orange-500"
+                                      }`}
                                   />
 
                                   <span className="text-3xl md:text-4xl relative z-10">
@@ -1491,11 +1482,10 @@ export default function BookingFlowModal({
                             </div>
 
                             <div
-                              className={`bg-white w-1/2 border-2 ${
-                                data.dates.length > 0
-                                  ? "border-amber-200"
-                                  : "border-gray-200"
-                              } rounded-2xl p-4 shadow-lg`}
+                              className={`bg-white xl:w-1/2 w-full border-2 ${data.dates.length > 0
+                                ? "border-amber-200"
+                                : "border-gray-200"
+                                } rounded-2xl p-4 shadow-lg`}
                             >
                               <DatePicker
                                 selected={data.dates[selectedDateIndex] || null}
@@ -1529,13 +1519,12 @@ export default function BookingFlowModal({
                                   const isToday =
                                     date.toDateString() ===
                                     new Date().toDateString();
-                                  return `!rounded-xl !transition-all ${
-                                    isSelected
-                                      ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
-                                      : isToday
+                                  return `!rounded-xl !transition-all ${isSelected
+                                    ? "!bg-gradient-to-r from-amber-500 to-orange-500 !text-white !font-bold"
+                                    : isToday
                                       ? "!bg-amber-100 !text-amber-700"
                                       : "hover:!bg-amber-50"
-                                  }`;
+                                    }`;
                                 }}
                               />
 
@@ -1644,11 +1633,10 @@ export default function BookingFlowModal({
                                   onClick={() =>
                                     updateData({ menuType: type.value as any })
                                   }
-                                  className={`relative group p-2 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${
-                                    data.menuType === type.value
-                                      ? `${type.color} border-orange-500 text-white shadow-xl`
-                                      : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
-                                  }`}
+                                  className={`relative group p-2 rounded-2xl border-2 transition-all duration-300 overflow-hidden ${data.menuType === type.value
+                                    ? `${type.color} border-orange-500 text-white shadow-xl`
+                                    : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                                    }`}
                                 >
                                   <div className="flex flex-col items-center gap-3">
                                     <span className="text-4xl">
@@ -1723,16 +1711,15 @@ export default function BookingFlowModal({
                                       const newCuisines =
                                         data.cuisines.includes(cuisine)
                                           ? data.cuisines.filter(
-                                              (c) => c !== cuisine
-                                            )
+                                            (c) => c !== cuisine
+                                          )
                                           : [...data.cuisines, cuisine];
                                       updateData({ cuisines: newCuisines });
                                     }}
-                                    className={`p-3 rounded-lg border-2 flex flex-row items-center space-x-1 justify-center transition-all text-center font-medium ${
-                                      data.cuisines.includes(cuisine)
-                                        ? "border-amber-500 bg-amber-50 text-amber-900"
-                                        : "border-gray-200 bg-white text-gray-700 hover:border-amber-200"
-                                    }`}
+                                    className={`p-3 rounded-lg border-2 flex flex-row items-center space-x-1 justify-center transition-all text-center font-medium ${data.cuisines.includes(cuisine)
+                                      ? "border-amber-500 bg-amber-50 text-amber-900"
+                                      : "border-gray-200 bg-white text-gray-700 hover:border-amber-200"
+                                      }`}
                                   >
                                     <div className="text-sm">{cuisine}</div>
                                     {data.cuisines.includes(cuisine) && (
@@ -1786,11 +1773,10 @@ export default function BookingFlowModal({
                                 />
                                 <div className="relative w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                   <div
-                                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                                      data.isMealConfigSkipped
-                                        ? "left-7"
-                                        : "left-1"
-                                    }`}
+                                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${data.isMealConfigSkipped
+                                      ? "left-7"
+                                      : "left-1"
+                                      }`}
                                   ></div>
                                 </div>
                               </label>
@@ -1854,11 +1840,10 @@ export default function BookingFlowModal({
                                         return (
                                           <label
                                             key={mealType}
-                                            className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                                              isSelected
-                                                ? "border-amber-500 bg-amber-50"
-                                                : "border-gray-200 hover:border-gray-300"
-                                            }`}
+                                            className={`flex flex-col items-center justify-center p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected
+                                              ? "border-amber-500 bg-amber-50"
+                                              : "border-gray-200 hover:border-gray-300"
+                                              }`}
                                           >
                                             <div className="flex items-center justify-center w-8 h-8 mb-2">
                                               <span className="text-lg">
@@ -1876,8 +1861,8 @@ export default function BookingFlowModal({
                                                 ] || { meals: [], time: "" };
                                                 const newMeals = isSelected
                                                   ? config.meals.filter(
-                                                      (m) => m !== mealType
-                                                    )
+                                                    (m) => m !== mealType
+                                                  )
                                                   : [...config.meals, mealType];
 
                                                 // Also update selectedMealTypes
@@ -2003,15 +1988,15 @@ export default function BookingFlowModal({
                                     (dishes) => dishes.length > 0
                                   )
                               ) && (
-                                <button
-                                  onClick={() =>
-                                    updateData({ selectedDishIds: {} })
-                                  }
-                                  className="px-3 py-1.5 bg-white border border-amber-200 text-amber-700 rounded-lg text-sm hover:bg-amber-50 transition-colors"
-                                >
-                                  Clear All Selection
-                                </button>
-                              )}
+                                  <button
+                                    onClick={() =>
+                                      updateData({ selectedDishIds: {} })
+                                    }
+                                    className="px-3 py-1.5 bg-white border border-amber-200 text-amber-700 rounded-lg text-sm hover:bg-amber-50 transition-colors"
+                                  >
+                                    Clear All Selection
+                                  </button>
+                                )}
                             </div>
                           </div>
 
@@ -2103,16 +2088,16 @@ export default function BookingFlowModal({
                                                   <p className="text-blue-100 text-sm mt-1">
                                                     {mealTypesForDate.length > 0
                                                       ? mealTypesForDate
-                                                          .map((mt) =>
-                                                            mt.replace("_", " ")
-                                                          )
-                                                          .join(", ")
+                                                        .map((mt) =>
+                                                          mt.replace("_", " ")
+                                                        )
+                                                        .join(", ")
                                                       : "No meals configured"}
                                                   </p>
                                                 </div>
                                                 {Object.keys(
                                                   data.selectedDishIds[
-                                                    dateKey
+                                                  dateKey
                                                   ] || {}
                                                 ).reduce(
                                                   (sum, mealType) =>
@@ -2122,23 +2107,23 @@ export default function BookingFlowModal({
                                                     ][mealType]?.length || 0),
                                                   0
                                                 ) > 0 && (
-                                                  <span className="px-3 py-1 bg-white text-blue-600 rounded-full text-sm font-medium">
-                                                    {Object.keys(
-                                                      data.selectedDishIds[
+                                                    <span className="px-3 py-1 bg-white text-blue-600 rounded-full text-sm font-medium">
+                                                      {Object.keys(
+                                                        data.selectedDishIds[
                                                         dateKey
-                                                      ] || {}
-                                                    ).reduce(
-                                                      (sum, mealType) =>
-                                                        sum +
-                                                        (data.selectedDishIds[
-                                                          dateKey
-                                                        ][mealType]?.length ||
-                                                          0),
-                                                      0
-                                                    )}{" "}
-                                                    dishes
-                                                  </span>
-                                                )}
+                                                        ] || {}
+                                                      ).reduce(
+                                                        (sum, mealType) =>
+                                                          sum +
+                                                          (data.selectedDishIds[
+                                                            dateKey
+                                                          ][mealType]?.length ||
+                                                            0),
+                                                        0
+                                                      )}{" "}
+                                                      dishes
+                                                    </span>
+                                                  )}
                                               </div>
                                             </div>
 
@@ -2228,22 +2213,22 @@ export default function BookingFlowModal({
                                                                 mealType
                                                               ]?.includes(d.id)
                                                           ).length > 0 && (
-                                                            <span className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                                              {
-                                                                dishesByMealType.filter(
-                                                                  (d) =>
-                                                                    data.selectedDishIds[
-                                                                      dateKey
-                                                                    ]?.[
-                                                                      mealType
-                                                                    ]?.includes(
-                                                                      d.id
-                                                                    )
-                                                                ).length
-                                                              }{" "}
-                                                              selected
-                                                            </span>
-                                                          )}
+                                                              <span className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                                                {
+                                                                  dishesByMealType.filter(
+                                                                    (d) =>
+                                                                      data.selectedDishIds[
+                                                                        dateKey
+                                                                      ]?.[
+                                                                        mealType
+                                                                      ]?.includes(
+                                                                        d.id
+                                                                      )
+                                                                  ).length
+                                                                }{" "}
+                                                                selected
+                                                              </span>
+                                                            )}
                                                           <motion.div
                                                             animate={{
                                                               rotate:
@@ -2266,87 +2251,86 @@ export default function BookingFlowModal({
                                                           {expandedMealTypes.has(
                                                             `${dateKey}-${mealType}`
                                                           ) && (
-                                                            <motion.div
-                                                              initial={{
-                                                                height: 0,
-                                                                opacity: 0,
-                                                              }}
-                                                              animate={{
-                                                                height: "auto",
-                                                                opacity: 1,
-                                                              }}
-                                                              exit={{
-                                                                height: 0,
-                                                                opacity: 0,
-                                                              }}
-                                                              transition={{
-                                                                duration: 0.2,
-                                                              }}
-                                                            >
-                                                              {dishesByMealType.length >
-                                                              0 ? (
-                                                                <div className="p-4 bg-white grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-                                                                  {dishesByMealType.map(
-                                                                    (dish) => (
-                                                                      <div
-                                                                        key={
-                                                                          dish.id
-                                                                        }
-                                                                        onClick={() => {
-                                                                          const currentDateDishes =
-                                                                            data
-                                                                              .selectedDishIds[
+                                                              <motion.div
+                                                                initial={{
+                                                                  height: 0,
+                                                                  opacity: 0,
+                                                                }}
+                                                                animate={{
+                                                                  height: "auto",
+                                                                  opacity: 1,
+                                                                }}
+                                                                exit={{
+                                                                  height: 0,
+                                                                  opacity: 0,
+                                                                }}
+                                                                transition={{
+                                                                  duration: 0.2,
+                                                                }}
+                                                              >
+                                                                {dishesByMealType.length >
+                                                                  0 ? (
+                                                                  <div className="p-4 bg-white grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                                                                    {dishesByMealType.map(
+                                                                      (dish) => (
+                                                                        <div
+                                                                          key={
+                                                                            dish.id
+                                                                          }
+                                                                          onClick={() => {
+                                                                            const currentDateDishes =
+                                                                              data
+                                                                                .selectedDishIds[
                                                                               dateKey
-                                                                            ] ||
-                                                                            {};
-                                                                          const currentMealDishes =
-                                                                            currentDateDishes[
+                                                                              ] ||
+                                                                              {};
+                                                                            const currentMealDishes =
+                                                                              currentDateDishes[
                                                                               mealType
-                                                                            ] ||
-                                                                            [];
+                                                                              ] ||
+                                                                              [];
 
-                                                                          const newMealDishes =
-                                                                            currentMealDishes.includes(
-                                                                              dish.id
-                                                                            )
-                                                                              ? currentMealDishes.filter(
+                                                                            const newMealDishes =
+                                                                              currentMealDishes.includes(
+                                                                                dish.id
+                                                                              )
+                                                                                ? currentMealDishes.filter(
                                                                                   (
                                                                                     id
                                                                                   ) =>
                                                                                     id !==
                                                                                     dish.id
                                                                                 )
-                                                                              : [
+                                                                                : [
                                                                                   ...currentMealDishes,
                                                                                   dish.id,
                                                                                 ];
 
-                                                                          updateData(
-                                                                            {
-                                                                              selectedDishIds:
+                                                                            updateData(
+                                                                              {
+                                                                                selectedDishIds:
                                                                                 {
                                                                                   ...data.selectedDishIds,
                                                                                   [dateKey]:
-                                                                                    {
-                                                                                      ...currentDateDishes,
-                                                                                      [mealType]:
-                                                                                        newMealDishes,
-                                                                                    },
+                                                                                  {
+                                                                                    ...currentDateDishes,
+                                                                                    [mealType]:
+                                                                                      newMealDishes,
+                                                                                  },
                                                                                 },
-                                                                            }
-                                                                          );
-                                                                        }}
-                                                                        className="cursor-pointer"
-                                                                      >
-                                                                        <motion.div
-                                                                          whileHover={{
-                                                                            scale: 1.02,
+                                                                              }
+                                                                            );
                                                                           }}
-                                                                          whileTap={{
-                                                                            scale: 0.98,
-                                                                          }}
-                                                                          className={`border-2 rounded-lg overflow-hidden transition-all relative ${
-                                                                            data.selectedDishIds[
+                                                                          className="cursor-pointer"
+                                                                        >
+                                                                          <motion.div
+                                                                            whileHover={{
+                                                                              scale: 1.02,
+                                                                            }}
+                                                                            whileTap={{
+                                                                              scale: 0.98,
+                                                                            }}
+                                                                            className={`border-2 rounded-lg overflow-hidden transition-all relative ${data.selectedDishIds[
                                                                               dateKey
                                                                             ]?.[
                                                                               mealType
@@ -2355,13 +2339,12 @@ export default function BookingFlowModal({
                                                                             )
                                                                               ? "border-amber-500 bg-amber-50"
                                                                               : "border-gray-200 hover:border-amber-300 bg-white"
-                                                                          }`}
-                                                                        >
-                                                                          {/* Checkbox */}
-                                                                          <div className="absolute top-2 right-2 z-10">
-                                                                            <div
-                                                                              className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                                                                                data.selectedDishIds[
+                                                                              }`}
+                                                                          >
+                                                                            {/* Checkbox */}
+                                                                            <div className="absolute top-2 right-2 z-10">
+                                                                              <div
+                                                                                className={`w-4 h-4 rounded border-2 flex items-center justify-center ${data.selectedDishIds[
                                                                                   dateKey
                                                                                 ]?.[
                                                                                   mealType
@@ -2370,81 +2353,81 @@ export default function BookingFlowModal({
                                                                                 )
                                                                                   ? "bg-amber-500 border-amber-500"
                                                                                   : "border-gray-300 bg-white"
-                                                                              }`}
-                                                                            >
-                                                                              {data.selectedDishIds[
-                                                                                dateKey
-                                                                              ]?.[
-                                                                                mealType
-                                                                              ]?.includes(
-                                                                                dish.id
-                                                                              ) && (
-                                                                                <Check className="w-2.5 h-2.5 text-white" />
+                                                                                  }`}
+                                                                              >
+                                                                                {data.selectedDishIds[
+                                                                                  dateKey
+                                                                                ]?.[
+                                                                                  mealType
+                                                                                ]?.includes(
+                                                                                  dish.id
+                                                                                ) && (
+                                                                                    <Check className="w-2.5 h-2.5 text-white" />
+                                                                                  )}
+                                                                              </div>
+                                                                            </div>
+
+                                                                            {/* Veg Badge */}
+                                                                            <div className="absolute top-2 left-2 z-10 text-xs">
+                                                                              {dish.isVeg ===
+                                                                                1 ? (
+                                                                                <span className="text-green-700">
+                                                                                  🥬
+                                                                                </span>
+                                                                              ) : (
+                                                                                <span className="text-red-700">
+                                                                                  🔥
+                                                                                </span>
                                                                               )}
                                                                             </div>
-                                                                          </div>
 
-                                                                          {/* Veg Badge */}
-                                                                          <div className="absolute top-2 left-2 z-10 text-xs">
-                                                                            {dish.isVeg ===
-                                                                            1 ? (
-                                                                              <span className="text-green-700">
-                                                                                🥬
-                                                                              </span>
-                                                                            ) : (
-                                                                              <span className="text-red-700">
-                                                                                🔥
-                                                                              </span>
-                                                                            )}
-                                                                          </div>
+                                                                            {/* Image */}
+                                                                            <div className="relative h-20 bg-gray-100 overflow-hidden">
+                                                                              <img
+                                                                                src={
+                                                                                  dish.image
+                                                                                }
+                                                                                alt={
+                                                                                  dish.name
+                                                                                }
+                                                                                className="w-full h-full object-cover"
+                                                                                onError={(
+                                                                                  e
+                                                                                ) => {
+                                                                                  (
+                                                                                    e.target as HTMLImageElement
+                                                                                  ).src =
+                                                                                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23f0f0f0' width='100' height='100'/%3E%3C/svg%3E";
+                                                                                }}
+                                                                              />
+                                                                            </div>
 
-                                                                          {/* Image */}
-                                                                          <div className="relative h-20 bg-gray-100 overflow-hidden">
-                                                                            <img
-                                                                              src={
-                                                                                dish.image
-                                                                              }
-                                                                              alt={
-                                                                                dish.name
-                                                                              }
-                                                                              className="w-full h-full object-cover"
-                                                                              onError={(
-                                                                                e
-                                                                              ) => {
-                                                                                (
-                                                                                  e.target as HTMLImageElement
-                                                                                ).src =
-                                                                                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23f0f0f0' width='100' height='100'/%3E%3C/svg%3E";
-                                                                              }}
-                                                                            />
-                                                                          </div>
-
-                                                                          {/* Content */}
-                                                                          <div className="p-2">
-                                                                            <h5 className="font-semibold text-gray-800 text-xs line-clamp-2">
-                                                                              {
-                                                                                dish.name
-                                                                              }
-                                                                            </h5>
-                                                                            <p className="text-xs text-gray-600 line-clamp-1">
-                                                                              {
-                                                                                dish.cuisine
-                                                                              }
-                                                                            </p>
-                                                                          </div>
-                                                                        </motion.div>
-                                                                      </div>
-                                                                    )
-                                                                  )}
-                                                                </div>
-                                                              ) : (
-                                                                <div className="p-8 text-center text-gray-500 text-sm bg-gray-50">
-                                                                  No dishes
-                                                                  available
-                                                                </div>
-                                                              )}
-                                                            </motion.div>
-                                                          )}
+                                                                            {/* Content */}
+                                                                            <div className="p-2">
+                                                                              <h5 className="font-semibold text-gray-800 text-xs line-clamp-2">
+                                                                                {
+                                                                                  dish.name
+                                                                                }
+                                                                              </h5>
+                                                                              <p className="text-xs text-gray-600 line-clamp-1">
+                                                                                {
+                                                                                  dish.cuisine
+                                                                                }
+                                                                              </p>
+                                                                            </div>
+                                                                          </motion.div>
+                                                                        </div>
+                                                                      )
+                                                                    )}
+                                                                  </div>
+                                                                ) : (
+                                                                  <div className="p-8 text-center text-gray-500 text-sm bg-gray-50">
+                                                                    No dishes
+                                                                    available
+                                                                  </div>
+                                                                )}
+                                                              </motion.div>
+                                                            )}
                                                         </AnimatePresence>
                                                       </div>
                                                     );
@@ -2539,7 +2522,7 @@ export default function BookingFlowModal({
                                             [item.key]: Math.max(
                                               0,
                                               data.guests[
-                                                item.key as keyof typeof data.guests
+                                              item.key as keyof typeof data.guests
                                               ] - 1
                                             ),
                                           },
@@ -2556,7 +2539,7 @@ export default function BookingFlowModal({
                                         min="0"
                                         value={
                                           data.guests[
-                                            item.key as keyof typeof data.guests
+                                          item.key as keyof typeof data.guests
                                           ]
                                         }
                                         onChange={(e) =>
@@ -2581,7 +2564,7 @@ export default function BookingFlowModal({
                                             ...data.guests,
                                             [item.key]:
                                               data.guests[
-                                                item.key as keyof typeof data.guests
+                                              item.key as keyof typeof data.guests
                                               ] + 1,
                                           },
                                         })
@@ -2697,11 +2680,10 @@ export default function BookingFlowModal({
                                 />
                                 <div className="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors">
                                   <div
-                                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
-                                      data.isServiceProviderSkipped
-                                        ? "translate-x-5"
-                                        : "translate-x-0.5"
-                                    }`}
+                                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${data.isServiceProviderSkipped
+                                      ? "translate-x-5"
+                                      : "translate-x-0.5"
+                                      }`}
                                   ></div>
                                 </div>
                               </label>
@@ -2739,7 +2721,7 @@ export default function BookingFlowModal({
                                   }
                                   placeholder="Search chefs or catering services..."
                                   disabled={isRestricted}
-                                  // className="text-sm"
+                                // className="text-sm"
                                 />
                               </div>
                             </div>
@@ -2789,18 +2771,17 @@ export default function BookingFlowModal({
                                               </div>
                                               <div className="flex flex-col items-end gap-1">
                                                 <span
-                                                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                                                    provider.badge ===
+                                                  className={`text-[10px] px-1.5 py-0.5 rounded-full ${provider.badge ===
                                                     "Top Rated"
-                                                      ? "bg-amber-100 text-amber-800"
-                                                      : provider.badge ===
-                                                        "Popular"
+                                                    ? "bg-amber-100 text-amber-800"
+                                                    : provider.badge ===
+                                                      "Popular"
                                                       ? "bg-pink-100 text-pink-800"
                                                       : provider.badge ===
                                                         "Budget Friendly"
-                                                      ? "bg-green-100 text-green-800"
-                                                      : "bg-purple-100 text-purple-800"
-                                                  }`}
+                                                        ? "bg-green-100 text-green-800"
+                                                        : "bg-purple-100 text-purple-800"
+                                                    }`}
                                                 >
                                                   {provider.badge}
                                                 </span>
@@ -2820,13 +2801,13 @@ export default function BookingFlowModal({
                                                   ))}
                                                 {provider.specialties.length >
                                                   2 && (
-                                                  <span className="text-[10px] text-gray-500">
-                                                    +
-                                                    {provider.specialties
-                                                      .length - 2}{" "}
-                                                    more
-                                                  </span>
-                                                )}
+                                                    <span className="text-[10px] text-gray-500">
+                                                      +
+                                                      {provider.specialties
+                                                        .length - 2}{" "}
+                                                      more
+                                                    </span>
+                                                  )}
                                               </div>
                                               <button
                                                 onClick={() =>
@@ -2854,122 +2835,120 @@ export default function BookingFlowModal({
                             {/* Available Providers Grid */}
                             {data.serviceProviders.length <
                               providers.length && (
-                              <div>
-                                <h3 className="text-sm font-semibold text-gray-800 mb-3">
-                                  Available Providers
-                                </h3>
+                                <div>
+                                  <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                                    Available Providers
+                                  </h3>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                  {providers
-                                    .filter(
-                                      (p) =>
-                                        !data.serviceProviders.includes(p.value)
-                                    )
-                                    .map((provider) => (
-                                      <div
-                                        key={provider.value}
-                                        className="bg-white border border-gray-200 rounded-lg p-3 hover:border-gray-300 hover:shadow-xs transition-all group"
-                                      >
-                                        <div className="space-y-2">
-                                          {/* Header */}
-                                          <div className="flex items-start justify-between gap-2">
-                                            <div className="flex items-center gap-2">
-                                              <img
-                                                src={provider.image}
-                                                alt={provider.label}
-                                                className="w-8 h-8 rounded-md object-cover"
-                                              />
-                                              <div className="min-w-0">
-                                                <h4 className="font-semibold text-gray-900 text-sm truncate">
-                                                  {provider.label}
-                                                </h4>
-                                                <p className="text-xs text-gray-500 truncate">
-                                                  {provider.title}
-                                                </p>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {providers
+                                      .filter(
+                                        (p) =>
+                                          !data.serviceProviders.includes(p.value)
+                                      )
+                                      .map((provider) => (
+                                        <div
+                                          key={provider.value}
+                                          className="bg-white border border-gray-200 rounded-lg p-3 hover:border-gray-300 hover:shadow-xs transition-all group"
+                                        >
+                                          <div className="space-y-2">
+                                            {/* Header */}
+                                            <div className="flex items-start justify-between gap-2">
+                                              <div className="flex items-center gap-2">
+                                                <img
+                                                  src={provider.image}
+                                                  alt={provider.label}
+                                                  className="w-8 h-8 rounded-md object-cover"
+                                                />
+                                                <div className="min-w-0">
+                                                  <h4 className="font-semibold text-gray-900 text-sm truncate">
+                                                    {provider.label}
+                                                  </h4>
+                                                  <p className="text-xs text-gray-500 truncate">
+                                                    {provider.title}
+                                                  </p>
+                                                </div>
                                               </div>
-                                            </div>
-                                            <span
-                                              className={`text-[10px] px-1.5 py-0.5 rounded ${
-                                                provider.badge === "Top Rated"
+                                              <span
+                                                className={`text-[10px] px-1.5 py-0.5 rounded ${provider.badge === "Top Rated"
                                                   ? "bg-amber-100 text-amber-800"
                                                   : provider.badge === "Popular"
-                                                  ? "bg-pink-100 text-pink-800"
-                                                  : "bg-gray-100 text-gray-800"
-                                              }`}
-                                            >
-                                              {provider.badge}
-                                            </span>
-                                          </div>
-
-                                          {/* Specialties */}
-                                          <div className="flex flex-wrap gap-1">
-                                            {provider.specialties
-                                              .slice(0, 2)
-                                              .map((spec: any, i: any) => (
-                                                <span
-                                                  key={i}
-                                                  className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
-                                                >
-                                                  {spec}
-                                                </span>
-                                              ))}
-                                            {provider.specialties.length >
-                                              2 && (
-                                              <span className="text-[10px] text-gray-500">
-                                                +
-                                                {provider.specialties.length -
-                                                  2}{" "}
-                                                more
+                                                    ? "bg-pink-100 text-pink-800"
+                                                    : "bg-gray-100 text-gray-800"
+                                                  }`}
+                                              >
+                                                {provider.badge}
                                               </span>
-                                            )}
-                                          </div>
+                                            </div>
 
-                                          {/* Action Buttons */}
-                                          <div className="flex items-center gap-2 pt-2">
-                                            <button
-                                              onClick={() =>
-                                                handleProviderClick(provider)
-                                              }
-                                              className="flex-1 text-xs font-medium text-blue-600 hover:text-blue-800 px-2 py-1.5 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
-                                            >
-                                              View Details
-                                            </button>
-                                            <button
-                                              onClick={() => {
-                                                updateData({
-                                                  serviceProviders: [
-                                                    ...data.serviceProviders,
-                                                    provider.value,
-                                                  ],
-                                                });
-                                              }}
-                                              disabled={
-                                                isRestricted ||
-                                                data.serviceProviders.includes(
-                                                  provider.value
-                                                )
-                                              }
-                                              className={`flex-1 text-xs font-medium px-2 py-1.5 rounded transition-colors ${
-                                                data.serviceProviders.includes(
+                                            {/* Specialties */}
+                                            <div className="flex flex-wrap gap-1">
+                                              {provider.specialties
+                                                .slice(0, 2)
+                                                .map((spec: any, i: any) => (
+                                                  <span
+                                                    key={i}
+                                                    className="px-1.5 py-0.5 bg-gray-100 text-gray-700 text-[10px] rounded"
+                                                  >
+                                                    {spec}
+                                                  </span>
+                                                ))}
+                                              {provider.specialties.length >
+                                                2 && (
+                                                  <span className="text-[10px] text-gray-500">
+                                                    +
+                                                    {provider.specialties.length -
+                                                      2}{" "}
+                                                    more
+                                                  </span>
+                                                )}
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex items-center gap-2 pt-2">
+                                              <button
+                                                onClick={() =>
+                                                  handleProviderClick(provider)
+                                                }
+                                                className="flex-1 text-xs font-medium text-blue-600 hover:text-blue-800 px-2 py-1.5 border border-blue-200 rounded hover:bg-blue-50 transition-colors"
+                                              >
+                                                View Details
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  updateData({
+                                                    serviceProviders: [
+                                                      ...data.serviceProviders,
+                                                      provider.value,
+                                                    ],
+                                                  });
+                                                }}
+                                                disabled={
+                                                  isRestricted ||
+                                                  data.serviceProviders.includes(
+                                                    provider.value
+                                                  )
+                                                }
+                                                className={`flex-1 text-xs font-medium px-2 py-1.5 rounded transition-colors ${data.serviceProviders.includes(
                                                   provider.value
                                                 )
                                                   ? "bg-green-100 text-green-700 cursor-not-allowed"
                                                   : "bg-amber-500 text-white hover:bg-amber-600"
-                                              }`}
-                                            >
-                                              {data.serviceProviders.includes(
-                                                provider.value
-                                              )
-                                                ? "Selected"
-                                                : "Select"}
-                                            </button>
+                                                  }`}
+                                              >
+                                                {data.serviceProviders.includes(
+                                                  provider.value
+                                                )
+                                                  ? "Selected"
+                                                  : "Select"}
+                                              </button>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    ))}
+                                      ))}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              )}
 
                             {/* Selection Status */}
                             {data.serviceProviders.length > 0 && (
@@ -3039,26 +3018,24 @@ export default function BookingFlowModal({
                                   ].map((option) => (
                                     <label
                                       key={option.value}
-                                      className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                        data.clientMaterials.kitchenType ===
+                                      className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${data.clientMaterials.kitchenType ===
                                         option.value
-                                          ? "border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 ring-2 ring-blue-200"
-                                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                                      }`}
+                                        ? "border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 ring-2 ring-blue-200"
+                                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                                        }`}
                                     >
                                       <div className="flex items-center gap-3">
                                         <div
-                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                            data.clientMaterials.kitchenType ===
+                                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${data.clientMaterials.kitchenType ===
                                             option.value
-                                              ? "border-blue-500 bg-blue-500"
-                                              : "border-gray-300"
-                                          }`}
+                                            ? "border-blue-500 bg-blue-500"
+                                            : "border-gray-300"
+                                            }`}
                                         >
                                           {data.clientMaterials.kitchenType ===
                                             option.value && (
-                                            <Check className="w-3 h-3 text-white" />
-                                          )}
+                                              <Check className="w-3 h-3 text-white" />
+                                            )}
                                         </div>
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2">
@@ -3099,66 +3076,65 @@ export default function BookingFlowModal({
                               {/* Kitchen Appliances - Only show when "I Provide Kitchen" */}
                               {data.clientMaterials.kitchenType ===
                                 "provided_kitchen" && (
-                                <div className="space-y-4">
-                                  <label className="block text-sm font-semibold text-gray-700">
-                                    Available Appliances
-                                    <span className="text-gray-500 text-sm font-normal ml-2">
-                                      (
-                                      {
-                                        data.clientMaterials.kitchenAppliances
-                                          .length
-                                      }{" "}
-                                      selected)
-                                    </span>
-                                  </label>
-                                  <div className="grid grid-cols-2 gap-3">
-                                    {KITCHEN_APPLIANCES.map((appliance) => {
-                                      const Icon = appliance.icon;
-                                      const isSelected =
-                                        data.clientMaterials.kitchenAppliances.includes(
-                                          appliance.value
-                                        );
-                                      return (
-                                        <label
-                                          key={appliance.value}
-                                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
-                                            isSelected
+                                  <div className="space-y-4">
+                                    <label className="block text-sm font-semibold text-gray-700">
+                                      Available Appliances
+                                      <span className="text-gray-500 text-sm font-normal ml-2">
+                                        (
+                                        {
+                                          data.clientMaterials.kitchenAppliances
+                                            .length
+                                        }{" "}
+                                        selected)
+                                      </span>
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      {KITCHEN_APPLIANCES.map((appliance) => {
+                                        const Icon = appliance.icon;
+                                        const isSelected =
+                                          data.clientMaterials.kitchenAppliances.includes(
+                                            appliance.value
+                                          );
+                                        return (
+                                          <label
+                                            key={appliance.value}
+                                            className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${isSelected
                                               ? "border-green-500 bg-green-50 text-green-700"
                                               : "border-gray-200 hover:border-gray-300 text-gray-600"
-                                          }`}
-                                        >
-                                          <input
-                                            type="checkbox"
-                                            checked={isSelected}
-                                            onChange={(e) => {
-                                              const current =
-                                                data.clientMaterials
-                                                  .kitchenAppliances;
-                                              const updated = e.target.checked
-                                                ? [...current, appliance.value]
-                                                : current.filter(
+                                              }`}
+                                          >
+                                            <input
+                                              type="checkbox"
+                                              checked={isSelected}
+                                              onChange={(e) => {
+                                                const current =
+                                                  data.clientMaterials
+                                                    .kitchenAppliances;
+                                                const updated = e.target.checked
+                                                  ? [...current, appliance.value]
+                                                  : current.filter(
                                                     (a) => a !== appliance.value
                                                   );
-                                              updateData({
-                                                clientMaterials: {
-                                                  ...data.clientMaterials,
-                                                  kitchenAppliances: updated,
-                                                },
-                                              });
-                                            }}
-                                            className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
-                                            disabled={isRestricted}
-                                          />
-                                          <Icon className="w-4 h-4" />
-                                          <span className="text-sm font-medium">
-                                            {appliance.label}
-                                          </span>
-                                        </label>
-                                      );
-                                    })}
+                                                updateData({
+                                                  clientMaterials: {
+                                                    ...data.clientMaterials,
+                                                    kitchenAppliances: updated,
+                                                  },
+                                                });
+                                              }}
+                                              className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                                              disabled={isRestricted}
+                                            />
+                                            <Icon className="w-4 h-4" />
+                                            <span className="text-sm font-medium">
+                                              {appliance.label}
+                                            </span>
+                                          </label>
+                                        );
+                                      })}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
                             </div>
                           </div>
 
@@ -3184,18 +3160,16 @@ export default function BookingFlowModal({
                                     return (
                                       <label
                                         key={item.value}
-                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${
-                                          isSelected
-                                            ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
-                                            : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                        }`}
+                                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all  ${isSelected
+                                          ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50"
+                                          : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
+                                          }`}
                                       >
                                         <Icon
-                                          className={`w-6 h-6 mb-2 ${
-                                            isSelected
-                                              ? "text-amber-600"
-                                              : "text-gray-500"
-                                          }`}
+                                          className={`w-6 h-6 mb-2 ${isSelected
+                                            ? "text-amber-600"
+                                            : "text-gray-500"
+                                            }`}
                                         />
                                         <span className="text-sm font-medium text-center">
                                           {item.label}
@@ -3209,8 +3183,8 @@ export default function BookingFlowModal({
                                             const updated = e.target.checked
                                               ? [...current, item.value]
                                               : current.filter(
-                                                  (i) => i !== item.value
-                                                );
+                                                (i) => i !== item.value
+                                              );
                                             updateData({
                                               clientMaterials: {
                                                 ...data.clientMaterials,
@@ -3251,20 +3225,18 @@ export default function BookingFlowModal({
                                 return (
                                   <label
                                     key={service.value}
-                                    className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                      isSelected
-                                        ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
-                                        : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
-                                    }`}
+                                    className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${isSelected
+                                      ? "border-purple-500 bg-gradient-to-r from-purple-50 to-pink-50"
+                                      : "border-gray-200 hover:border-purple-300 hover:bg-purple-50/50"
+                                      }`}
                                   >
                                     <div className="flex items-start justify-between">
                                       <div className="flex items-center gap-3">
                                         <div
-                                          className={`p-2 rounded-lg ${
-                                            isSelected
-                                              ? "bg-purple-100 text-purple-600"
-                                              : "bg-gray-100 text-gray-500"
-                                          }`}
+                                          className={`p-2 rounded-lg ${isSelected
+                                            ? "bg-purple-100 text-purple-600"
+                                            : "bg-gray-100 text-gray-500"
+                                            }`}
                                         >
                                           <Icon className="w-4 h-4" />
                                         </div>
@@ -3291,8 +3263,8 @@ export default function BookingFlowModal({
                                             const updated = e.target.checked
                                               ? [...current, service.value]
                                               : current.filter(
-                                                  (s) => s !== service.value
-                                                );
+                                                (s) => s !== service.value
+                                              );
                                             updateData({
                                               otherRequirements: {
                                                 ...data.otherRequirements,
@@ -3577,40 +3549,40 @@ export default function BookingFlowModal({
                                     </p>
                                     <p className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium">
                                       {data.clientMaterials.kitchenType ===
-                                      "own_kitchen"
+                                        "own_kitchen"
                                         ? "Chef Provides Own Kitchen"
                                         : data.clientMaterials.kitchenType ===
                                           "provided_kitchen"
-                                        ? "Client Provides Kitchen"
-                                        : "Not specified"}
+                                          ? "Client Provides Kitchen"
+                                          : "Not specified"}
                                     </p>
                                   </div>
 
                                   {data.clientMaterials.kitchenAppliances
                                     .length > 0 && (
-                                    <div>
-                                      <p className="text-xs font-medium text-gray-600 mb-2">
-                                        Kitchen Appliances Available
-                                      </p>
-                                      <div className="flex flex-wrap gap-2">
-                                        {data.clientMaterials.kitchenAppliances
-                                          .map((app) =>
-                                            KITCHEN_APPLIANCES.find(
-                                              (ka) => ka.value === app
+                                      <div>
+                                        <p className="text-xs font-medium text-gray-600 mb-2">
+                                          Kitchen Appliances Available
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {data.clientMaterials.kitchenAppliances
+                                            .map((app) =>
+                                              KITCHEN_APPLIANCES.find(
+                                                (ka) => ka.value === app
+                                              )
                                             )
-                                          )
-                                          .filter(Boolean)
-                                          .map((appliance, i) => (
-                                            <span
-                                              key={i}
-                                              className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium"
-                                            >
-                                              {appliance?.label}
-                                            </span>
-                                          ))}
+                                            .filter(Boolean)
+                                            .map((appliance, i) => (
+                                              <span
+                                                key={i}
+                                                className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium"
+                                              >
+                                                {appliance?.label}
+                                              </span>
+                                            ))}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {data.clientMaterials.utensils.length > 0 && (
                                     <div>
@@ -3648,92 +3620,92 @@ export default function BookingFlowModal({
                                 <div className="space-y-3">
                                   {data.otherRequirements.additionalServices
                                     .length > 0 && (
-                                    <div>
-                                      <p className="text-xs font-medium text-gray-600 mb-2">
-                                        Additional Services
-                                      </p>
-                                      <div className="flex flex-wrap gap-2">
-                                        {data.otherRequirements.additionalServices
-                                          .map((service) =>
-                                            ADDITIONAL_SERVICES.find(
-                                              (as) => as.value === service
+                                      <div>
+                                        <p className="text-xs font-medium text-gray-600 mb-2">
+                                          Additional Services
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {data.otherRequirements.additionalServices
+                                            .map((service) =>
+                                              ADDITIONAL_SERVICES.find(
+                                                (as) => as.value === service
+                                              )
                                             )
-                                          )
-                                          .filter(Boolean)
-                                          .map((service, i) => (
-                                            <span
-                                              key={i}
-                                              className="px-3 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-xs font-medium"
-                                            >
-                                              {service?.label}
-                                            </span>
-                                          ))}
+                                            .filter(Boolean)
+                                            .map((service, i) => (
+                                              <span
+                                                key={i}
+                                                className="px-3 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-xs font-medium"
+                                              >
+                                                {service?.label}
+                                              </span>
+                                            ))}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {data.otherRequirements.ambience.length >
                                     0 && (
-                                    <div>
-                                      <p className="text-xs font-medium text-gray-600 mb-2">
-                                        Ambience Preferences
-                                      </p>
-                                      <div className="flex flex-wrap gap-2">
-                                        {data.otherRequirements.ambience.map(
-                                          (item, i) => (
-                                            <span
-                                              key={i}
-                                              className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-xs font-medium"
-                                            >
-                                              {item}
-                                            </span>
-                                          )
-                                        )}
+                                      <div>
+                                        <p className="text-xs font-medium text-gray-600 mb-2">
+                                          Ambience Preferences
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {data.otherRequirements.ambience.map(
+                                            (item, i) => (
+                                              <span
+                                                key={i}
+                                                className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-xs font-medium"
+                                              >
+                                                {item}
+                                              </span>
+                                            )
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {data.otherRequirements.transportation
                                     .length > 0 && (
-                                    <div>
-                                      <p className="text-xs font-medium text-gray-600 mb-2">
-                                        Transportation Needs
-                                      </p>
-                                      <div className="flex flex-wrap gap-2">
-                                        {data.otherRequirements.transportation.map(
-                                          (item, i) => (
-                                            <span
-                                              key={i}
-                                              className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg text-xs font-medium"
-                                            >
-                                              {item}
-                                            </span>
-                                          )
-                                        )}
+                                      <div>
+                                        <p className="text-xs font-medium text-gray-600 mb-2">
+                                          Transportation Needs
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {data.otherRequirements.transportation.map(
+                                            (item, i) => (
+                                              <span
+                                                key={i}
+                                                className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg text-xs font-medium"
+                                              >
+                                                {item}
+                                              </span>
+                                            )
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
 
                                   {data.otherRequirements.dietaryRestrictions
                                     .length > 0 && (
-                                    <div>
-                                      <p className="text-xs font-medium text-gray-600 mb-2">
-                                        Dietary Restrictions
-                                      </p>
-                                      <div className="flex flex-wrap gap-2">
-                                        {data.otherRequirements.dietaryRestrictions.map(
-                                          (item, i) => (
-                                            <span
-                                              key={i}
-                                              className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium"
-                                            >
-                                              {item}
-                                            </span>
-                                          )
-                                        )}
+                                      <div>
+                                        <p className="text-xs font-medium text-gray-600 mb-2">
+                                          Dietary Restrictions
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                          {data.otherRequirements.dietaryRestrictions.map(
+                                            (item, i) => (
+                                              <span
+                                                key={i}
+                                                className="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium"
+                                              >
+                                                {item}
+                                              </span>
+                                            )
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
                                   {data.otherRequirements.specialRequests && (
                                     <div>
                                       <p className="text-xs font-medium text-gray-600 mb-2">
@@ -3804,11 +3776,10 @@ export default function BookingFlowModal({
                                             eventAddressId: addr.id,
                                           })
                                         }
-                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                                          data.eventAddressId === addr.id
-                                            ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
-                                            : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
-                                        }`}
+                                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${data.eventAddressId === addr.id
+                                          ? "border-amber-500 bg-gradient-to-r from-amber-50 to-orange-50 ring-2 ring-amber-200"
+                                          : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/50"
+                                          }`}
                                       >
                                         <div className="flex items-start justify-between">
                                           <div className="flex-1">
@@ -3818,10 +3789,10 @@ export default function BookingFlowModal({
                                               </span>
                                               {data.eventAddressId ===
                                                 addr.id && (
-                                                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                                                  Selected
-                                                </span>
-                                              )}
+                                                  <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                                                    Selected
+                                                  </span>
+                                                )}
                                             </div>
                                             <p className="text-sm text-gray-600">
                                               {addr.address_line1},{" "}
@@ -3926,17 +3897,16 @@ export default function BookingFlowModal({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between xl:justify-center gap-3">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleBack}
                       disabled={step === 1}
-                      className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                        step === 1
-                          ? "opacity-0 pointer-events-none"
-                          : "text-gray-600 hover:bg-gray-100 border border-gray-200"
-                      }`}
+                      className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${step === 1
+                        ? "opacity-0 pointer-events-none"
+                        : "text-gray-600 hover:bg-gray-100 border border-gray-200"
+                        }`}
                     >
                       <ChevronLeft className="w-4 h-4" />
                       Back
@@ -3947,13 +3917,11 @@ export default function BookingFlowModal({
                       whileTap={{ scale: canProceed() ? 0.95 : 1 }}
                       onClick={step === totalSteps ? handleSubmit : handleNext}
                       disabled={!canProceed()}
-                      className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${
-                        step === totalSteps
-                          ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
-                          : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                      } ${
-                        !canProceed() ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
+                      className={`px-8 py-3 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 ${step === totalSteps
+                        ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+                        : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                        } ${!canProceed() ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
                       {isSubmitting ? (
                         <>
