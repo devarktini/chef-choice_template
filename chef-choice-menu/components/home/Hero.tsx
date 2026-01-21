@@ -48,10 +48,12 @@ export default function Hero({ onHowItWorksClick }: HeroProps) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight"
+                className="text-5xl lg:text-5xl font-bold text-gray-900 leading-[1.1] tracking-tight"
               >
-                Taste the Art of <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-warm-600">Celebration.</span>
+                Your One-Stop Platform to  <br />
+                <span className="text-transparent lg:text-6xl bg-clip-text bg-gradient-to-r from-primary-600 to-warm-600">
+                  Hire Chefs & Caterers.
+                </span>
               </motion.h1>
 
               <motion.p
@@ -60,9 +62,12 @@ export default function Hero({ onHowItWorksClick }: HeroProps) {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-lg lg:text-xl text-gray-600 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed"
               >
-                Elevate your events with our exquisite menu and world-class chefs. From intimate gatherings to grand banquets, we create unforgettable flavors.
+                Book professional chefs, caterers, and service providers for every occasion.
+                From home parties to large events, we connect you with trusted experts who
+                deliver exceptional taste and service.
               </motion.p>
             </div>
+
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -76,13 +81,13 @@ export default function Hero({ onHowItWorksClick }: HeroProps) {
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
-              <button
+              {/* <button
                 onClick={onHowItWorksClick}
                 className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 border border-gray-200 rounded-full text-lg font-bold hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center gap-2"
               >
                 <Play className="w-4 h-4 fill-current" />
                 How It Works
-              </button>
+              </button> */}
             </motion.div>
 
             <motion.div
@@ -142,7 +147,7 @@ export default function Hero({ onHowItWorksClick }: HeroProps) {
             </div>
 
             {/* Floating Badge (Decorative) */}
-            <motion.div
+            {/* <motion.div
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -bottom-6 -left-6 md:bottom-20 md:-left-12 bg-white/90 backdrop-blur shadow-xl p-5 rounded-2xl z-30 hidden md:block border border-white/50"
@@ -155,7 +160,7 @@ export default function Hero({ onHowItWorksClick }: HeroProps) {
                 ))}
               </div>
               <p className="font-semibold text-gray-900 text-sm">Join 10k+ Food Lovers</p>
-            </motion.div>
+            </motion.div> */}
           </div>
         </div>
       </div>

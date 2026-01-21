@@ -50,7 +50,7 @@ const ThirdSection = () => {
           viewport={{ once: true }}
           className="text-3xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight"
         >
-          Effortless <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-warm-500">Booking</span>
+          book your event in  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-warm-500">just 2 min.</span>
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, x: 30 }}

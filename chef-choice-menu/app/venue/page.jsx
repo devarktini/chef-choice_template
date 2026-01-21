@@ -74,7 +74,7 @@ export default function VenuePage() {
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
             Find Your Perfect <span className="text-orange-600">Venue</span>
           </h1>
-          
+
           <div className="max-w-3xl mx-auto mb-12">
             <p className="text-xl text-gray-700 leading-relaxed">
               From cozy private parties to grand celebrations — we have got the perfect space with help of our preferred event Management company for every moment! Enjoy exclusive access to party halls, farmhouses, and beautiful event venues, all paired with our top-notch catering service.
@@ -111,7 +111,7 @@ export default function VenuePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Featured <span className="text-orange-600">Venues</span>
+              venue - Where We Serve /  <span className="text-orange-600">Event Locations</span>
             </h2>
             <p className="text-xl text-gray-600">
               Discover handpicked venues for your special occasions
@@ -158,7 +158,7 @@ export default function VenuePage() {
                       <span className="text-sm">{venue.capacity}</span>
                     </div>
                   </div>
-                  
+
                   <Link href="/contact">
                     <button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
                       <Calendar className="w-4 h-4" />
@@ -183,10 +183,10 @@ export default function VenuePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/contact">
-            <button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
-              <Utensils className="w-5 h-5" />
-              Book Venue & Catering
-            </button>
+              <button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
+                <Utensils className="w-5 h-5" />
+                Book Venue & Catering
+              </button>
             </Link>
             <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-colors">
               View All Venues

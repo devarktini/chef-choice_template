@@ -28,17 +28,18 @@ export default function Home() {
       <AnimatedBackground />
       <main className="min-h-screen pt-20 relative z-10">
         <Hero onHowItWorksClick={scrollToThirdSection} />
+        <Occasions />
         <VideoSection />
-        <Services />
+        {/* <Services /> */}
         <div ref={thirdSectionRef}>
           <ThirdSection />
         </div>
         {/* <BookingSteps /> */}
-        <AddOnServices />
+        {/* <AddOnServices /> */}
         <SubscriptionPlans />
-        <Occasions />
+
         <Testimonials />
-        <FAQ />
+        {/* <FAQ /> */}
       </main>
     </>
   );

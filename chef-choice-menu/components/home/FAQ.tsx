@@ -30,7 +30,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-cream-50 to-primary-50 relative overflow-hidden">
+    <section className="py-20 pt-24 bg-gradient-to-br from-cream-50 to-primary-50 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-pattern-grid opacity-20"></div>
 
@@ -45,12 +45,11 @@ export default function FAQ() {
 
         <div className="max-w-3xl mx-auto space-y-4">
           {faqs.map((faq, index) => (
-            <div 
-              key={index} 
-              className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 animate-slide-up ${
-                openIndex === index ? 'shadow-2xl' : ''
-              }`}
-              style={{animationDelay: `${index * 0.1}s`}}
+            <div
+              key={index}
+              className={`bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 animate-slide-up ${openIndex === index ? 'shadow-2xl' : ''
+                }`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
@@ -59,18 +58,16 @@ export default function FAQ() {
                 <span className="text-left font-semibold text-gray-900 group-hover:text-primary-500 transition-colors pr-4">
                   {faq.question}
                 </span>
-                <div className={`flex-shrink-0 transform transition-transform duration-300 ${
-                  openIndex === index ? 'rotate-180' : ''
-                }`}>
+                <div className={`flex-shrink-0 transform transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''
+                  }`}>
                   <div className="bg-primary-100 rounded-full p-2">
                     <ChevronDown className="w-5 h-5 text-primary-600" />
                   </div>
                 </div>
               </button>
 
-              <div className={`transition-all duration-300 ease-in-out ${
-                openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-              } overflow-hidden`}>
+              <div className={`transition-all duration-300 ease-in-out ${openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                } overflow-hidden`}>
                 <div className="px-6 pb-5 text-gray-600 leading-relaxed bg-gradient-to-br from-cream-50 to-white">
                   {faq.answer}
                 </div>

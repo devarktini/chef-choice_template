@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ProviderService } from '@/services/providerService';
 import { ServiceProviderProfile } from '@/types/auth';
 import { useSearchParams } from 'next/navigation';
+import AddOnServices from '@/components/home/AddOnServices';
 
 export default function ServicePage() {
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -328,6 +329,8 @@ export default function ServicePage() {
             </div>
           )}
         </div>
+
+        <AddOnServices />
 
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">

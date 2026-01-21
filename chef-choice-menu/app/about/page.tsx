@@ -29,7 +29,7 @@ export default function AboutPage() {
                   <p className="text-lg">
                     At <span className="font-bold text-orange-600">ChefChoiceMenu</span>, we believe that great food is the heart of every celebration. Whether you are hosting an intimate house gathering or a grand, luxurious party, we are here to make it unforgettable.
                   </p>
-                  
+
                   <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-lg">
                     <p className="text-gray-700 italic">
                       We proudly connect customers with professional chefs and caterers across India—<span className="font-bold text-orange-600">1000+ verified vendors</span> and <span className="font-bold text-orange-600">500+ talented chefs</span> who bring culinary excellence to your table.
@@ -61,7 +61,7 @@ export default function AboutPage() {
                     className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  
+
                   {/* Floating Stats Card */}
                   <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
                     <div className="flex items-center gap-4">
@@ -104,7 +104,7 @@ export default function AboutPage() {
                 </div>
 
                 {/* Vision */}
-                <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
+                <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
                   <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-3xl p-8 text-white relative overflow-hidden">
                     <div className="absolute top-4 right-4">
                       <Award className="w-12 h-12 text-white/20" />
@@ -197,7 +197,7 @@ export default function AboutPage() {
                 { num: "50+", label: "Cities Across India", icon: MapPin },
                 { num: "10k+", label: "Events Served", icon: Award }
               ].map((stat, i) => (
-                <div key={i} className="animate-scale-in" style={{animationDelay: `${i*0.1}s`}}>
+                <div key={i} className="animate-scale-in" style={{ animationDelay: `${i * 0.1}s` }}>
                   <div className="flex justify-center mb-4">
                     <stat.icon className="w-8 h-8 text-white/80" />
                   </div>
@@ -218,39 +218,39 @@ export default function AboutPage() {
                 Comprehensive culinary solutions for every occasion
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {[
-                { 
-                  title: "Private Chef at Home", 
+                {
+                  title: "Private Chef at Home",
                   img: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600&h=400&fit=crop",
                   description: "Expert chefs for intimate dining experiences"
                 },
-                { 
-                  title: "Wedding Catering", 
+                {
+                  title: "Wedding Catering",
                   img: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&h=400&fit=crop",
                   description: "Memorable feasts for your special day"
                 },
-                { 
-                  title: "Corporate Events", 
+                {
+                  title: "Corporate Events",
                   img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
                   description: "Professional catering for business gatherings"
                 },
-                { 
-                  title: "Outdoor Catering", 
+                {
+                  title: "Outdoor Catering",
                   img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&h=400&fit=crop",
                   description: "Perfect solutions for outdoor celebrations"
                 }
               ].map((service, i) => (
-                <div key={i} className="group animate-scale-in" style={{animationDelay: `${i*0.1}s`}}>
+                <div key={i} className="group animate-scale-in" style={{ animationDelay: `${i * 0.1}s` }}>
                   <div className="relative rounded-2xl overflow-hidden shadow-xl bg-white group-hover:shadow-2xl transition-all duration-500 h-full flex flex-col">
                     <div className="relative h-48 overflow-hidden">
-                      <Image 
-                        src={service.img} 
-                        alt={service.title} 
-                        width={600} 
-                        height={400} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      <Image
+                        src={service.img}
+                        alt={service.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </div>
@@ -282,9 +282,9 @@ export default function AboutPage() {
                 Lets work together to make your next celebration truly special with exceptional food and seamless service.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                
-                 <Link href="/contact"><button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
-                  Book a Consultation
+
+                <Link href="/contact"><button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-3">
+                  Book Your event
                   <ChevronRight className="w-5 h-5" />
                 </button></Link>
                 <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-colors">
